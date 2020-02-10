@@ -27,7 +27,10 @@
 %%------------- BEGIN CODE --------------
 
 %% 0. Add files to MATLAB path
-run('../startup_nncs.m')
+try
+    run('../startup_nncs.m')
+    run('/startup_nncs.m')
+end
 
 %% 1. Initialization
 clear;close all;clc;
@@ -53,13 +56,16 @@ if options.preprocessing_bool==1
 end
 %% 6. Train NN Controller
 %the assignments could go a function/file
+options.preprocessing_bool=1;
+options.preprocessing_eps=0.01;
 training_options.use_error_dyn=0;
 training_options.use_previous_u=1;      % default=2
 training_options.use_previous_ref=1;    % default=3
 training_options.use_previous_y=1;      % default=3
-
+training_options.neurons=[64];
+training_options.input_normalization=1;
 %add option for saved mat files
-net=nn_training(data,training_options,options);
+[net,data]=nn_training(data,training_options,options);
 
 %% 7. Create Simulink block for NN
 gensim(net)

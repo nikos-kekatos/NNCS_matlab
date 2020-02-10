@@ -64,7 +64,7 @@ for i=1:options.no_traces
     end
 end
 end
-%}
+
 REF=[];
 U=[];
 Y=[];
@@ -93,8 +93,14 @@ if options.save_sim
             temp_st='varying_ref_';
         end
     options.sim_name= strcat('array_sim_',temp_st,num2str(options.no_traces),'_traces_',num2str(options.no_ref),'x',num2str(options.no_x0),'_time_',num2str(options.T_train),'_',datestr(now,'dd-mm-yyyy_HH:MM'),'.mat');
+    try
+    destination_folder=strcat('/outputs/robotarm/',char(options.sim_name));
+    save(destination_folder,'REF','U','Y');   
+    end
+    try
     destination_folder=strcat('../outputs/robotarm/',char(options.sim_name));
     save(destination_folder,'REF','U','Y');   
+    end
 end
 
 end

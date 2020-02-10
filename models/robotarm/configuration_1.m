@@ -5,7 +5,7 @@
 options.T_train=60;
 
 % Choose reference type: (1) for constant and (2) for time varying
-options.reference_type=1;
+options.reference_type=2;
 
 if options.reference_type==1
     block_name=strcat(SLX_model,'/Switch');
@@ -35,7 +35,7 @@ if options.reference_type==2
     %     options.ref_seed=randi(2^32,[1 1000]); % moved to run_simulations
     
     % Choose number of different traces for references
-    options.no_ref=20;
+    options.no_ref=2;
 else
     options.ref_min=-0.5; % not used but needed by Simulink to avoid undeclared variables
     options.ref_max=0.5; % not used but needed by Simulink to avoid undeclared variables
@@ -65,6 +65,9 @@ else
     end
 end
 
+% Select if you want to plot one simulation trace from training
+options.plotting_sim=1;
+
 % Select if you want prepropreccing
 options.preprocessing_bool=1;
 options.preprocessing_eps=0.01;
@@ -74,7 +77,7 @@ options.save_sim=1;
 % options.sim_name=''; %if empty or commented, there will be a default option
 
 % Do NOT change this part
-dt=0.02; % PID sampling time
+options.dt=0.02; % PID sampling time
 if options.reference_type==1
     options.no_ref=numel(options.simin_ref);
 end
@@ -87,11 +90,11 @@ if options.reference_type==2
     if mod(options.T_train,options.ref_Ts)~=0
         warning(' The setpoints they do not have equal length. The REF array might have incorrect values')
     end
-    options.samples_per_setpoint=options.ref_Ts/dt;
+    options.samples_per_setpoint=options.ref_Ts/options.dt;
     fprintf('Each simulation trace produces %i points for each setpoint.\n',options.samples_per_setpoint); 
     fprintf('The number of setpoints is %i.\n\n',options.no_setpoints);
 end
-points_per_sim=options.T_train/dt;
+points_per_sim=options.T_train/options.dt;
 total_points=options.no_traces*points_per_sim;
 fprintf('Each simulation trace produces %i points for u and y.\n\n',points_per_sim);
 fprintf('All simulations produce %i points for u and y.\n\n',total_points);

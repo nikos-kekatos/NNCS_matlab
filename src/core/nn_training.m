@@ -1,4 +1,4 @@
-function [net] = nn_training(data,training_options,options)
+function [net,data] = nn_training(data,training_options,options)
 %nn_training This is for the NN training.
 %   Detailed explanation goes here
 
@@ -67,10 +67,12 @@ end
 out=U_array';
 
 % Input normalization
+if training_options.input_normalization==1
 in=mapminmax(in);
+end
 
 % net=feedforwardnet([64 64 ]);
-net=feedforwardnet([20 20 ]);
+net=feedforwardnet(training_options.neurons);
 %net.numLayers=3;
 net = configure(net,in,out);
 activationFcn='tansig' % 'tansig' 'logisg' 'purelin' 'poslin'
@@ -98,6 +100,7 @@ perf = perform(net,in,out)
 % load('random_reference_multiple_simulations_40traces_robotic_arm_time_05-02-2020_16:00.mat')
 % load('random_reference_random_x0_multiple_simulations_289traces_robotic_arm_time_06-02-2020_22:46.mat')
 
-
+data.in=in;
+data.out=out;
 end
 
