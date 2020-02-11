@@ -104,6 +104,7 @@ perf = perform(net,in,out)
 
 data.in=in;
 data.out=out;
+data.out_NN=uu;
 disp('')
 disp('Training finished')
 end

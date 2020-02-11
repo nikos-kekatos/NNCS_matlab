@@ -80,7 +80,7 @@ if options.save_sim
         end
     end
 end
-[REF,U,Y]=from_traces_to_training_data(REF_struct,U_struct,Y_struct,options);
+[REF,Y,U]=from_traces_to_training_data(REF_struct,Y_struct,U_struct,options);
 % remove slprj
 rmdir('slprj','s')
 delete robotarm_PID.slxc

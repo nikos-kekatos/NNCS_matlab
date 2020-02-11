@@ -82,7 +82,7 @@ if test_size
                  REF=[REF; REF_new_cell{i}'];
         end
         U=[U;U_struct(i).signals.values];
-        Y=[Y;U_struct(i).signals.values];
+        Y=[Y;Y_struct(i).signals.values];
         
     end
 else

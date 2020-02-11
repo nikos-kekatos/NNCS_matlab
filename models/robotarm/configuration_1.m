@@ -35,7 +35,7 @@ if options.reference_type==2
     %     options.ref_seed=randi(2^32,[1 1000]); % moved to run_simulations
     
     % Choose number of different traces for references
-    options.no_ref=30;
+    options.no_ref=30; %30
 else
     options.ref_min=-0.5; % not used but needed by Simulink to avoid undeclared variables
     options.ref_max=0.5; % not used but needed by Simulink to avoid undeclared variables
@@ -75,6 +75,10 @@ options.preprocessing_eps=0.01;
 % Select if you want to save the simulation data
 options.save_sim=1;
 % options.sim_name=''; %if empty or commented, there will be a default option
+
+% Load old datasets
+options.load==0;
+
 
 % Do NOT change this part
 options.dt=0.02; % PID sampling time
