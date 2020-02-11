@@ -71,11 +71,13 @@ if training_options.input_normalization==1
 in=mapminmax(in);
 end
 
+disp('')
+disp('Training started')
 % net=feedforwardnet([64 64 ]);
 net=feedforwardnet(training_options.neurons);
 %net.numLayers=3;
 net = configure(net,in,out);
-activationFcn='tansig' % 'tansig' 'logisg' 'purelin' 'poslin'
+activationFcn='tansig'; % 'tansig' 'logisg' 'purelin' 'poslin'
 net.layers{1}.transferFcn=activationFcn;
 net.layers{2}.transferFcn=activationFcn;
 
@@ -102,5 +104,7 @@ perf = perform(net,in,out)
 
 data.in=in;
 data.out=out;
+disp('')
+disp('Training finished')
 end
 

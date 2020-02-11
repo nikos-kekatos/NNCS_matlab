@@ -18,8 +18,11 @@ function [REF,Y,U] = from_traces_to_training_data(REF_struct,Y_struct,U_struct,o
 % 10/dt=10/0.02=500 points. So in total 3*500=1500 instead of 1501.
 random_index=randi(length(U_struct),1);
 u=U_struct(random_index);
+if options.plotting_sim
 figure; plot(u.time,u.signals.values,'x',max(u.time),u.signals.values(end),'ro','MarkerSize',8);
-
+xlabel('time (s)')
+ylabel ('u')
+title('Random Simulation Trace')
 % we need to delete last element from all Y_new, U_new and REF_new
 
 if mod(options.T_train,options.ref_Ts)==0

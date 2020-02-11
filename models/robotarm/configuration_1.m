@@ -31,11 +31,11 @@ if options.reference_type==2
     
     options.ref_min=-0.5;
     options.ref_max=0.5;
-    options.ref_Ts=10;
+    options.ref_Ts=4;
     %     options.ref_seed=randi(2^32,[1 1000]); % moved to run_simulations
     
     % Choose number of different traces for references
-    options.no_ref=2;
+    options.no_ref=30;
 else
     options.ref_min=-0.5; % not used but needed by Simulink to avoid undeclared variables
     options.ref_max=0.5; % not used but needed by Simulink to avoid undeclared variables
@@ -43,8 +43,8 @@ else
     options.ref_seed=0;
 end
 % Choose number of initial conditions for x_0, to be used in simulations
-options.no_x0=5;
-options.no_x0_repeated=4; %1 if all different
+options.no_x0=10;
+options.no_x0_repeated=1; %1 if all different
 
 % Minimum and maximum value of x0
 x0_min=-0.2;
@@ -56,7 +56,7 @@ if options.no_x0==0 || options.no_x0==1
     options.simin_x0=x0_default;
 else
     if options.no_x0_repeated==1
-        options.simin_x0=linspace(x0_min,x0_max,no_x0);
+        options.simin_x0=linspace(x0_min,x0_max,options.no_x0);
     else
         no_x0_ceiled=ceil(options.no_x0/options.no_x0_repeated)*options.no_x0_repeated;
         temp_x0=linspace(x0_min,x0_max,no_x0_ceiled/options.no_x0_repeated);

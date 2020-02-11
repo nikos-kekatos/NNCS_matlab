@@ -51,24 +51,25 @@ run('configuration_1.m')
 
 [data,options]=run_simulations_nncs(SLX_model,options);
 %% 5. Data Preprocessing 
+options.preprocessing_bool=1;
+options.preprocessing_eps=0.001;
 if options.preprocessing_bool==1
     [data,options]=preprocessing(data,options);
 end
 %% 6. Train NN Controller
 %the assignments could go a function/file
-options.preprocessing_bool=1;
-options.preprocessing_eps=0.01;
+
 training_options.use_error_dyn=0;
-training_options.use_previous_u=1;      % default=2
+training_options.use_previous_u=0;      % default=2
 training_options.use_previous_ref=1;    % default=3
 training_options.use_previous_y=1;      % default=3
 training_options.neurons=[64];
-training_options.input_normalization=1;
+training_options.input_normalization=0;
 %add option for saved mat files
 [net,data]=nn_training(data,training_options,options);
 
 %% 7. Create Simulink block for NN
-gensim(net)
+gensim(net,options.dt)
 %% 7. Analyse NNCS in Simulink
 % Currently, this part is done manually. The user has to copy the block
 % created in the previous step with 'gensim' and insert it in the SLX_model

@@ -38,10 +38,26 @@ for i=1:options.no_traces
 end
 
 if options.plotting_sim
-    figure;plot(y.time,ref.signals.values,'--r',y.time,y.signals.values,'x')
-    xlabel('time (sec)')
-    ylabel ('angle (rad)')
-    legend('ref','y')
+    if options.reference_type==2
+        temp.ref_time=ref.time([1, end])
+        temp.ref_time_new=temp.ref_time(1):options.dt:temp.ref_time(2);
+        temp.ref_time_new=temp.ref_time_new(1:end-1);
+        temp.ref_values=[];
+        for i=1:options.no_setpoints
+            temp.ref_values=[temp.ref_values,repmat(ref.signals.values(i),[1,length(temp.ref_time_new)/options.no_setpoints])];
+        end
+        figure;plot(temp.ref_time_new,temp.ref_values,'--r',y.time,y.signals.values)
+        xlabel('time (sec)')
+        ylabel ('angle (rad)')
+        legend('ref','y')
+        title('Random Simulation Trace')
+    else
+        figure;plot(ref.time,ref.signals.values,'--r',y.time,y.signals.values,'x')
+        xlabel('time (sec)')
+        ylabel ('angle (rad)')
+        legend('ref','y')
+        title('Random Simulation Trace')
+    end
 end
 if options.save_sim
     if ~isfield(options,'sim_name')

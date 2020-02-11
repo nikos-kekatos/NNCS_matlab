@@ -39,18 +39,34 @@ in_trimmed=in;
 in_trimmed(:,duplicate)=[];
 %}
 if  options.preprocessing_eps==0
-    [in_trimmed,index]=unique(in','rows');
-    in_trimmed=in_trimmed';
+%     [in_trimmed,index1,index2]=unique(in','rows','stable');
+    [~,index,index2]=unique(in','rows');
+    in_trimmed=in(:,sort(index));
     s='exact';
 else
-    [in_trimmed,index]=uniquetol(in',eps,'ByRows',true);
-    in_trimmed=in_trimmed';
+    [~,index]=uniquetol(in',eps,'ByRows',true);
+    in_trimmed=in(:,sort(index));
+%     in_trimmed=in_trimmed';
     s='approximate';
 end
 fprintf('The number of %s duplicates is %i out of %i.\n',s,length(in)-length(in_trimmed),length(in))
 disp('')
 fprintf('We keep %i values out of %i.\n',length(in_trimmed),length(in))
+% index=sort(index);
 data.REF_new=in_trimmed(1,:)';
 data.Y_new=in_trimmed(2,:)';
-data.U_new=data.U(index);
+data.U_new=data.U(sort(index));
+
+if options.plotting_sim
+    nn=1:1000;
+    figure;plot(nn,data.REF(nn),'b--',nn,data.Y(nn),'rx')
+    xlabel('time (s)')
+    ylabel('angle (rad)')
+    legend('ref','y')
+    title('Simulation before preprocessing (first 1000 points)'); 
+    figure;plot(nn,data.REF_new(nn),'b--',nn,data.Y_new(nn),'rx');
+    xlabel('time (s)')
+    ylabel('angle (rad)')
+    legend('ref','y')
+    title('Simulation after preprocessing (first 1000 points)');
 end
