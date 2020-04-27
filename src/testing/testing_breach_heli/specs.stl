@@ -1,0 +1,9 @@
+param tau = 5
+phi_1 :=  ev_[0,tau] ( alw_[0,0.1] (abs(y[t]-In1[t]) < 0.05 )) 
+
+phi_2 :=  ev_[0,tau] ( alw_[0,0.1] (abs(y_nn[t]-In1[t]) < 0.05 )) 
+
+phi := phi_1 and phi_2
+
+
+phi_overshoot :=  ev_[0,tau]  (abs(y_nn[t]-In1[t]) > 3 )

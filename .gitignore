@@ -6,3 +6,6 @@ slprj/
 models/HSCC_2020_part_1/
 models/useful Simulink code/
 *.original
+references/
+*.png
+*.zip

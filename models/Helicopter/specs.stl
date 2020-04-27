@@ -1,0 +1,4 @@
+param tau = 5
+phi_1 :=  ev_[0,tau] ( alw_[0,3] (abs(y[t]-psi[t]) < 0.01 )) 
+
+phi_2 :=  ev_[0,tau] ( alw_[0,3] (abs(y_nn[t]-psi[t]) < 0.01 )) 
