@@ -1,11 +1,24 @@
+# macOS
 .DS_Store
 slprj/
 *.m~
+
+# Simulink 
 *.autosave
+*.original
+
+# Cached
 *.slxc
+
+# Personal
 models/HSCC_2020_part_1/
 models/useful Simulink code/
-*.original
 references/
 *.png
 *.zip
+
+# Windows
+*.asv
+
+# MEX Binaries
+*.mex*

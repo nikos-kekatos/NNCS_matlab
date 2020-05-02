@@ -46,7 +46,7 @@ SLX_model='robotarm_PID';
 % SLX_model='quad_3_ref';
 % SLX_model='quad_3_ref_6_y';
 % SLX_model='helicopter';
-SLX_model='watertank_comp_design_mod';
+ SLX_model='watertank_comp_design_mod';
 load_system(SLX_model)
 % Uncomment next line if you want to open the model
 % open(SLX_model)
@@ -54,9 +54,9 @@ load_system(SLX_model)
 %% 3. Input: specify configuration parameters
 % run('../models/robotarm/configuration_1.m')
 % run('configuration_1.m')
-% run('config_quad_1_ref.m')
+%run('config_quad_1_ref.m')
 % run('config_heli_1.m')
-run('config_1_watertank.m')
+ run('config_1_watertank.m')
 %% 4a. Run simulations -- Generate training data
 options.error_mean=0%0.0001;
 options.error_sd=0%0.001;
@@ -79,7 +79,7 @@ if options.trimming
 end
 %% 5b. Data Preprocessing
 display_ranges(data);
-options.preprocessing_bool=1;
+options.preprocessing_bool=0;
 options.preprocessing_eps=0.001;
 if options.preprocessing_bool==1
     [data,options]=preprocessing(data,options);
@@ -88,9 +88,9 @@ end
 %the assignments could go a function/file
 training_options.retraining=0;
 training_options.use_error_dyn=0;
-training_options.use_previous_u=2;      % default=2
-training_options.use_previous_ref=3;    % default=3
-training_options.use_previous_y=3;      % default=3
+training_options.use_previous_u=0;      % default=2
+training_options.use_previous_ref=0;    % default=3
+training_options.use_previous_y=0;      % default=3
 % training_options.neurons=[20 10 10];
 training_options.neurons=[30 30];
 % training_options.neurons=[50 ];
@@ -252,16 +252,19 @@ fprintf('Plotting finished.\n\n')
 % 10) find best way to check them
 %% save simulation traces to csv for mining
 
-save_traces_csv(testing,options);
+options.save_csv=0;
+if options.save_csv
+    save_traces_csv(testing,options);
+end
 %% Retraining
 % we have already identified the counterexamples and here explore different
 % options to do the retraining.
 %now we just add one cex
 index=[6 7 14 36 43];
-options.testing_breach=1;
+options.testing_breach=0;
 testing.errors_final_index=index;
 training_options.retraining=1; % the structure of the NN remains the same.
-training_options.retraining_method=4; %1: start from scratch with all data,
+training_options.retraining_method=2; %1: start from scratch with all data,
 % 2: keep old net and use all data...
 % 3: keep old net and use only new data
 % 4: blend/mix old and new data
@@ -269,15 +272,15 @@ training_options.retraining_method=4; %1: start from scratch with all data,
  net.performFcn='msereg'; 
 % net.performParam.ratio=0.5;
 net.trainParam.goal=1e-6;
-net.trainParam.max_fail=50; 
+net.trainParam.max_fail=10; 
 [net_cex,data]=nn_retraining(net,data,training_options,options,testing);
 
 %% Create Simulink block for NN
 gensim(net_cex)
 
 %% Plot new NN traces with cex
-model_name='mrefrobotarm_previous_y_previous_u_previous_ref_cex_3';
-model_name='mrefrobotarm_previous_y_previous_u_previous_ref_cex_3b';
+% model_name='mrefrobotarm_previous_y_previous_u_previous_ref_cex_3';
+% model_name='mrefrobotarm_previous_y_previous_u_previous_ref_cex_3b';
 model_name='watertank_comp_design_mod_NN_comp';
 
 cc=-0.1;

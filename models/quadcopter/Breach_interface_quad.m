@@ -1,8 +1,8 @@
 %% Interface with Breach
 
 %% initialize
-% clear;clc;
-% InitBreach;
+clear;clc;
+InitBreach;
 %% use BreachSimulinkSystem
 
 SLX_model='quad_1_ref_ports';
@@ -404,7 +404,7 @@ for i=falsif_idx
     legend('reference','y_{nom}','y_{nn}')
     title(sprintf('Simulation -- trace no. %i', i));
     file_name=strcat('cex_',num2str(i),'.png');
-    saveas(gcf,file_name)
+%     saveas(gcf,file_name)
 end
 
 %% Print All traces
