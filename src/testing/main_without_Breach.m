@@ -53,18 +53,16 @@ load_system(SLX_model)
 % open(SLX_model)
 
 %% 3. Input: specify configuration parameters
+% run('../models/robotarm/configuration_1.m')
 % run('configuration_1.m')
-% run('config_quad_1_ref.m')
+%run('config_quad_1_ref.m')
+% run('config_heli_1.m')
  run('config_1_watertank.m')
 %% 4a. Run simulations -- Generate training data
 options.error_mean=0%0.0001;
 options.error_sd=0%0.001;
 
-% Breach options
-% options.no_traces=30;
-% options.breach_segments=2;
-
-[data,options]=trace_generation_nncs(SLX_model,options);
+[data,options]=run_simulations_nncs(SLX_model,options);
 
 %% 4b. Load previous saved traces
 if options.load==1
@@ -90,7 +88,7 @@ end
 %% 6. Train NN Controller
 %the assignments could go a function/file
 training_options.retraining=0;
-training_options.use_error_dyn=1;
+training_options.use_error_dyn=0;
 training_options.use_previous_u=2;      % default=2
 training_options.use_previous_ref=3;    % default=3
 training_options.use_previous_y=3;      % default=3
@@ -103,23 +101,10 @@ training_options.loss='msereg';
 % training_options.loss='wmse';
  training_options.div='dividerand';
 % training_options.div='dividetrain';
-training_options.error=1e-6;
-training_options.max_fail=10; % Validation performance has increased more than max_fail times since the last time it decreased (when using validation).
-training_options.regularization=0; %0-1
-training_options.param_ratio=0.5;
+
 training_options.algo= 'trainlm'%'trainlm'; % trainscg % trainrp
 %add option for saved mat files
-while true
-    [net,data,tr]=nn_training(data,training_options,options);
-    if tr.best_perf<training_options.error*100
-        break;
-    end
-end
-
-
-if options.plotting_sim
-    plotperform(tr)
-end
+[net,data]=nn_training(data,training_options,options);
 %{
 % Test the Network
 outputs = net(inputs);
@@ -127,6 +112,7 @@ errors = gsubtract(targets,outputs);
 performance = perform(net,targets,outputs);
 %}
 
+%net_trainParam
 %% 7. Evaluate NN
 plot_NN_sim(data,options)
 
@@ -136,149 +122,89 @@ plot_NN_sim(data,options)
 [options]=create_NN_diagram(options,net)
 
 %% 8b. Integrate NN block in the Simulink model 
-[options]=construct_SLX_with_NN(options);
+construct_SLX_with_NN(options)
 
 %% 9. Analyse NNCS in Simulink
-model_name=[];
-% model_name='watertank_comp_design_mod_NN';
-options.input_choice=1;
-options.sim_ref=8;
-options.ref_min=7;
-options.ref_max=12;
-options.sim_cov=[9;11];
-run_simulation_nncs(options,model_name)
-
-%% 10. Data matching (analysis w/ training data)
-if options.plotting_sim
-    plot_coverage_boxes(options,1);
+model_name='mrefrobotarm_modified_previous_y_previous_u_previous_ref';
+model_name='mrefrobotarm_modified_previous_y_previous_u_previous_ref_pert';
+model_name='mrefrobotarm_modified_previous_y_previous_u_previous_ref_pert_2';
+model_name='mrefrobotarm_modified_previous_y_previous_u_previous_ref_prepro';
+model_name='mrefrobotarm_modified_previous_y_previous_u_previous_ref_cover';
+model_name='mrefrobotarm_previous_y_previous_u_previous_ref_cover_test';
+model_name='mrefrobotarm_previous_y_previous_u_previous_ref_cover_test_2';
+model_name='mrefrobotarm_previous_y_previous_u_previous_ref_cover_test_3';
+model_name='quad_1_ref_NN';
+model_name='helicopter_NN';
+model_name='quad_3_ref_NN';
+model_name='quad_3_ref_6_y_NN';
+model_name='watertank_comp_design_mod_NN';
+%}
+cc=-0.1;
+% sim(model_name);
+% options.testing.sim_cov=[12,11];
+options.sim_cov=0;
+options.sim_ref=2.93;
+options.testing.ref_Ts=5;
+options.workspace = simset('SrcWorkspace','current');
+sim(model_name,[],options.workspace);
+%{
+figure;
+temp.ref_time=ref.time([1, end]);
+temp.ref_time_new=temp.ref_time(1):options.dt:temp.ref_time(2);
+temp.ref_time_new=temp.ref_time_new(1:end-1);
+temp.ref_values=[];
+% find set_points
+str_block=get_param('mrefrobotarm_modified_previous_y_previous_u_previous_ref/Random Reference','SampleTime');
+no_setpoints_sim=ref.time(end)/str2double(str_block);
+for i=1:no_setpoints_sim
+    temp.ref_values=[temp.ref_values,repmat(ref.signals.values(i),[1,length(temp.ref_time_new)/no_setpoints_sim])];
 end
-warning('This code only works for coverage')
-if options.reference_type~=3
-    error('It is not possible to perform data matching');
-end
-options.testing.plotting=0;
+figure;plot(temp.ref_time_new,temp.ref_values,'r',y.time,y.signals.values,'g--',y_nn.time,y_nn.signals.values,'b-.','Linewidth',0.75);
+xlabel('time (s)')
+ylabel('plant output')
+legend('reference','nominal','NN')
+title('Simulating NNCS both with PID and NN')
+% plot([x(3); x(3)], ylim, '-r')      % Plot the vertical line in red
+%}
+% ref vs y
+FIG = figure('rend', 'painters', 'pos', [200,200,1069,356], 'Color', 'w');
+AX = axes('NextPlot', 'add');
+set(AX, 'YScale', 'linear');
+axis(AX, 'tight');
+grid(AX);
+set(AX, 'FontSize', 12);
+xlabel(AX, '$t$', 'Interpreter', 'latex', 'FontSize', 20);
+ylabel(AX, '$\ y(k)$', 'Interpreter', 'latex', 'FontSize', 20);
+plot(ref.time(1:end-1),ref.signals.values(1:end-1),'r',y.time(1:end),y.signals.values(1:end),'g--',y_nn.time(1:end-1),y_nn.signals.values(1:end-1),'b-.','Linewidth',0.75);
+% xlabel('time (s)')
+% ylabel('plant output')
+legend('reference','nominal','NN','FontSize',14)
+title('Simulating NNCS both with PID and NN','FontSize',18,'FontWeight','bold');
 
-options.testing.train_data=0;% 0: for centers, 1: random points
-[testing,options]=test_coverage(options,model_name);
+% u_NN vs u_PID
+FIG = figure('rend', 'painters', 'pos', [200,200,1069,356], 'Color', 'w');
+AX = axes('NextPlot', 'add');
+set(AX, 'YScale', 'linear');
+axis(AX, 'tight');
+grid(AX);
+set(AX, 'FontSize', 12);
+xlabel(AX, '$t$', 'Interpreter', 'latex', 'FontSize', 20);
+ylabel(AX, '$\ u(k)$', 'Interpreter', 'latex', 'FontSize', 20);
+plot(u.time(1:end),[u.signals.values(1:end-1);u.signals.values(end-1)],'g--',u_nn.time(1:end-1),u_nn.signals.values(1:end-1),'b-.','Linewidth',0.75);
+% xlabel('time (s)')
+% ylabel('plant output')
+legend('nominal-PID','NN','FontSize',14)
+title('Simulating NNCS both with PID and NN','FontSize',18,'FontWeight','bold');
 
+fprintf(' The nominal value is %.5f. \n\n',y.signals.values(end))
 
-% The average MSE error over 49 simulations is 0.00031.
+fprintf(' The NN value is %.5f. \n\n',y_nn.signals.values(end))
 
-% The maximum MSE error over 49 simulations is 0.00207.
-%% 10. Falsification with Breach
+ss_abs=y_nn.signals.values(end)-y.signals.values(end);
+fprintf(' The absolute ss error is %.5f. \n\n',ss_abs)
+ss_rel=(y_nn.signals.values(end)-y.signals.values(end))/y.signals.values(end)*100;
+fprintf(' The reltive ss error is %.5f (perc). \n\n',ss_rel)
 
-clear Data_all data_cex Br falsif_pb net_all phi_1 phi_3 phi_all;
-
-options.testing_breach=1;
-training_options.combining_old_and_cex=1; % 1: combine old and cex
-falsif.iterations_max=1;
-falsif.method='quasi';
-falsif.num_samples=25;
-falsif.num_corners=5;
-falsif.max_obj_eval=10;
-falsif.max_obj_eval_local=10;
-falsif.seed=100;
-
-falsif.property_file='specs_watertank.stl';
-falsif.property_all=STL_ReadFile(falsif.property_file);
-falsif.property=falsif.property_all{2};%// TO-DO automatically specify the file
-falsif.breach_ref_min=8;
-falsif.breach_ref_max=12;
-falsif.stop_at_false=true;
-falsif.T=options.T_train;
-falsif.input_template='fixed';
-try
-    falsif.breach_segments=options.breach_segments;
-catch
-    falsif.breach_segments=2;
-end
-violated=1;
-i_f=1;
-file_name=strcat(options.SLX_NN_model,'_cex');
-options.input_choice=4;
-net_all{1}=net;
-seeds_all=falsif.seed*(1:falsif.iterations_max);
-while i_f<=falsif.iterations_max && violated
-    fprintf('\n Iteration %i.\n',i_f)
-%     if i_f>1
-%         fprintf('\n Testing the NN on the training data')
-%         [data_cex,falsif_pb]= falsification_breach(options,falsif,model_name);
-%         fprintf('The number of CEX is now %i.\n',length(falsif_pb.obj_false));
-%     end
-    fprintf('\n Beginning falsification with Breach.\n')
-    fprintf('\n We use the model %s for falsification.\n',options.SLX_NN_model);
-    if i_f==1
-        model_name=options.SLX_NN_model;
-    else
-        disp('Use model with cex -- currently overwrite the same model. Todo: Add duplicates')
-        model_name=file_name;
-    end
-    falsif.seed=seeds_all(i_f);
-    [data_cex,falsif_pb]= falsification_breach(options,falsif,model_name);
-    fprintf('The number of CEX is now %i.\n',length(falsif_pb.obj_false));
-
-    fprintf('\n End falsification with Breach.\n')
-    if isempty(data_cex)
-        fprintf('\n Breach could not falsify the STL formula.\n')
-        break;
-    end
-%     [data_cex_cluster]=cluster_and_sample(data_cex,falsif_pb,options)
-    fprintf('\n Beginning retraining with cex.\n')
-    training_options.retraining=1; % the structure of the NN remains the same.
-    training_options.retraining_method=2; %1: start from scratch with all data,
-    % 2: keep old net and use all data,  3: keep old net and use only new data
-    % 4: blend/mix old and new data,  5: weighted MSE
-    training_options.loss='msereg';
-    training_options.error=1e-6;
-    training_options.max_fail=10;
-    % net.performParam.ratio=0.5;
-    % Data_all contains the data from all cases (training, cex) and
-    % iterations.
-    if i_f==1
-        Data_all{i_f,1}=data;
-        Data_all{i_f,2}=data_cex;
-    elseif i_f>1
-       Data_all{i_f,1}=get_new_training_data( Data_all{i_f-1,1},Data_all{i_f-1,2},training_options);
-       Data_all{i_f,2}=data_cex;
-    end
-    
-    
-%     [net_cex,data]=nn_retraining(net,data,training_options,options,[],data_cex);
-    [net_all{i_f+1},~]=nn_retraining(net_all{i_f},Data_all{i_f,1},training_options,options,[],Data_all{i_f,2});
-    
-    fprintf('\n End retraining with cex.\n')
-    fprintf('\n Beginning Simulink construction with cex.\n')
-    [options]=create_NN_diagram(options,net_all{i_f+1})
-%     block_name=strcat('NN_cex_',num2str(i_f));
-    block_name=strcat('NN_cex_',num2str(1));
-
-    construct_SLX_with_NN(options,file_name,block_name)
-    fprintf('\n End Simulink construction with cex.\n')
-
-    fprintf('\n Testing the NN on the training data.\n')
-    fprintf('The number of original CEX was %i.\n',length(falsif_pb.obj_false));
-
-    fprintf('\n End of Iteration %i.\n',i_f)
-    if i_f<falsif.iterations_max
-        i_f=i_f+1;
-    else
-        fprintf('\n\n------------\n\n');
-        fprintf('Reached maximum number of iterations.\n');
-        break;
-    end
-    
-end
-
-%% 11. Evaluating retrained SLX model
-
-model_name=[];
-model_name='watertank_inport_NN_cex';
-options.input_choice=3;
-options.sim_ref=8;
-options.ref_min=7;
-options.ref_max=12;
-options.sim_cov=[9;11];
-run_simulation_nncs(options,model_name,1) %3rd input is true for counterexamples
 
 %% Test multiple reference traces
 plot_coverage_boxes(options,0)

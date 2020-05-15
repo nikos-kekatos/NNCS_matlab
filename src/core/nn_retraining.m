@@ -1,4 +1,4 @@
-function [net_cex,data] = nn_retraining(net,data,training_options,options,testing)
+function [net_cex,data] = nn_retraining(net,data,training_options,options,testing,data_cex)
 %nn_training This is for NN retraining.
 %   Similar setting with NN training but more options.
 
@@ -14,9 +14,9 @@ if options.testing_breach==0
         Y_cex=[Y_cex;testing.data.Y_test{i}];
     end
 elseif options.testing_breach==1
-    REF_cex=data.REF_cex_breach;
-    U_cex=data.U_cex_breach;
-    Y_cex=data.Y_cex_breach;
+    REF_cex=data_cex.REF;
+    U_cex=data_cex.U;
+    Y_cex=data_cex.Y;
 elseif options.testing_breach==2 % split training in parts
     REF_cex=data.REF_cex;
     U_cex=data.U_cex;
@@ -56,7 +56,7 @@ elseif training_options.retraining_method==4 % find a cluster and blend/mix/comb
         [idx,C]=kmeans(ALL,options.no_clusters);
         % for each cluster we select find the centroid (center of the cluster)
         % and then find 10 closest points
-        E = evalclusters(ALL,'kmeans','silhouette','klist',[1:60])
+%         E = evalclusters(ALL,'kmeans','silhouette','klist',[1:60])
 
         nn_cluster=[];no_idx=[];
         for j=1:options.no_clusters
@@ -184,7 +184,7 @@ if training_options.retraining_method==1 % retrain with all from scratch
     perf = perform(net_cex,in,out)
 elseif training_options.retraining_method==2  % 2: keep old net and use all data...
     net.divideFcn=training_options.div;
-    net.trainParam.goal=1e-6
+    net.trainParam.goal=training_options.error;
     [net_cex,tr] = train(net, in, out);
     p = [in];
     uu = sim(net_cex,p);
@@ -218,8 +218,8 @@ elseif training_options.retraining_method==5
     net_cex = init(net_cex);
     net_cex.divideFcn=training_options.div;
     net_cex.trainFcn='trainrp'%'trainlm'; % trainscg % trainrp
-    net_cex.trainParam.max_fail=50;
-    net_cex.trainParam.goal=1e-6;
+    net_cex.trainParam.max_fail=training_optins.max_fail;
+    net_cex.trainParam.goal=training_optins.error;
     
     global w;
     size_n=length((REF_test));

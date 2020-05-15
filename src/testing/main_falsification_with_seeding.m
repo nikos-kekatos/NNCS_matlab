@@ -60,10 +60,9 @@ load_system(SLX_model)
 options.error_mean=0%0.0001;
 options.error_sd=0%0.001;
 
-% Breach options
 % options.no_traces=30;
-% options.breach_segments=2;
 
+options.breach_segments=2;
 [data,options]=trace_generation_nncs(SLX_model,options);
 
 %% 4b. Load previous saved traces
@@ -74,7 +73,7 @@ if options.load==1
 dataset{1}='array_sim_constant_ref_25_traces_25x1_time_10_18-04-2020_19:22.mat';
     [data,options]= load_data(dataset,options);
 end
-%% 5a. Data Selection (per Thao's suggestion)
+%% 5a. Data Selection 
 options.trimming=0;
 options.keepData_factor=5;% we keep one out of every 5 data
 if options.trimming
@@ -136,7 +135,7 @@ plot_NN_sim(data,options)
 [options]=create_NN_diagram(options,net)
 
 %% 8b. Integrate NN block in the Simulink model 
-[options]=construct_SLX_with_NN(options);
+[options]=construct_SLX_with_NN(options)
 
 %% 9. Analyse NNCS in Simulink
 model_name=[];
@@ -148,31 +147,14 @@ options.ref_max=12;
 options.sim_cov=[9;11];
 run_simulation_nncs(options,model_name)
 
-%% 10. Data matching (analysis w/ training data)
-if options.plotting_sim
-    plot_coverage_boxes(options,1);
-end
-warning('This code only works for coverage')
-if options.reference_type~=3
-    error('It is not possible to perform data matching');
-end
-options.testing.plotting=0;
-
-options.testing.train_data=0;% 0: for centers, 1: random points
-[testing,options]=test_coverage(options,model_name);
-
-
-% The average MSE error over 49 simulations is 0.00031.
-
-% The maximum MSE error over 49 simulations is 0.00207.
 %% 10. Falsification with Breach
 
-clear Data_all data_cex Br falsif_pb net_all phi_1 phi_3 phi_all;
+clear Data_all data_cex Br falsif_pb net_all;
 
 options.testing_breach=1;
 training_options.combining_old_and_cex=1; % 1: combine old and cex
 falsif.iterations_max=1;
-falsif.method='quasi';
+falsif.method='GNN';
 falsif.num_samples=25;
 falsif.num_corners=5;
 falsif.max_obj_eval=10;
@@ -180,31 +162,29 @@ falsif.max_obj_eval_local=10;
 falsif.seed=100;
 
 falsif.property_file='specs_watertank.stl';
-falsif.property_all=STL_ReadFile(falsif.property_file);
-falsif.property=falsif.property_all{2};%// TO-DO automatically specify the file
+%// TO-DO automatically specify the file
 falsif.breach_ref_min=8;
 falsif.breach_ref_max=12;
 falsif.stop_at_false=true;
 falsif.T=options.T_train;
-falsif.input_template='fixed';
 try
     falsif.breach_segments=options.breach_segments;
 catch
-    falsif.breach_segments=2;
+    falsif.breach_segments=3;
 end
 violated=1;
 i_f=1;
 file_name=strcat(options.SLX_NN_model,'_cex');
 options.input_choice=4;
 net_all{1}=net;
-seeds_all=falsif.seed*(1:falsif.iterations_max);
+seeds_all=falsif.seed*(1:falsif.iterations_max)
 while i_f<=falsif.iterations_max && violated
     fprintf('\n Iteration %i.\n',i_f)
-%     if i_f>1
-%         fprintf('\n Testing the NN on the training data')
-%         [data_cex,falsif_pb]= falsification_breach(options,falsif,model_name);
-%         fprintf('The number of CEX is now %i.\n',length(falsif_pb.obj_false));
-%     end
+    if i_f>1
+        fprintf('\n Testing the NN on the training data')
+        [data_cex,falsif_pb]= falsification_breach(options,falsif,model_name);
+        fprintf('The number of CEX is now %i.\n',length(falsif_pb.obj_false));
+    end
     fprintf('\n Beginning falsification with Breach.\n')
     fprintf('\n We use the model %s for falsification.\n',options.SLX_NN_model);
     if i_f==1
@@ -215,8 +195,6 @@ while i_f<=falsif.iterations_max && violated
     end
     falsif.seed=seeds_all(i_f);
     [data_cex,falsif_pb]= falsification_breach(options,falsif,model_name);
-    fprintf('The number of CEX is now %i.\n',length(falsif_pb.obj_false));
-
     fprintf('\n End falsification with Breach.\n')
     if isempty(data_cex)
         fprintf('\n Breach could not falsify the STL formula.\n')
@@ -254,9 +232,6 @@ while i_f<=falsif.iterations_max && violated
 
     construct_SLX_with_NN(options,file_name,block_name)
     fprintf('\n End Simulink construction with cex.\n')
-
-    fprintf('\n Testing the NN on the training data.\n')
-    fprintf('The number of original CEX was %i.\n',length(falsif_pb.obj_false));
 
     fprintf('\n End of Iteration %i.\n',i_f)
     if i_f<falsif.iterations_max

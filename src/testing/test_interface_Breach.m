@@ -87,8 +87,8 @@ figure;Br.PlotSignals({'In1','y_3_','u_1_'});
 %% Thao's code
 
 sim_time = 20
-invalmin = 0
-invalmax = 3
+invalmin = 7
+invalmax = 12
 
 % mdl = 'helicopter_NN_ports1';
 % Helicopter_base = BreachSimulinkSystem(mdl);

@@ -2,7 +2,10 @@ function [testing,options] = test_coverage(options,model_name)
 %test_coverage We test multiple simulations based on coverage
 %   Detailed explanation goes here
 
-if options.testing.train_data==1
+if isempty(model_name)|| nargin==1
+model_name = options.SLX_NN_model;
+end
+if options.testing.train_data==1 % test training points
     sim_cov_all=[];
     for i=1:length(options.coverage.cells)
         sim_cov_all=[sim_cov_all,options.coverage.cells{i}.random_value];
@@ -12,7 +15,10 @@ elseif options.testing.train_data==0 % test centers
 end
     
 load_system(model_name);
+options.input_choice=options.reference_type;
 
+%{ 
+%%% kept it for old models
 block_name=strcat(model_name,'/Switch1');
 set_param(block_name, 'sw', '1');
 if options.reference_type==1
@@ -25,10 +31,13 @@ elseif options.reference_type==3
     block_name=strcat(model_name,'/Switch1');
     set_param(block_name, 'sw', '0');
 end
+%}
+
+if options.save_sim
 
 % open file
 options.testing.filename=strcat('validate_testing_cover_',datestr(now,'dd-mm-yyyy_HH:MM'),'.txt');
-options.testing.filename=strcat('validate_testing_cover_','.txt');
+options.testing.filename=strcat('validate_testing_cover','.txt');
 
 fid = fopen(options.testing.filename,'wt');
 if (fid < 0)
@@ -37,12 +46,16 @@ end
 fprintf(fid,'No | x_min | x | x_max | y_min | y | y_max | x_test| y_test| mse_y | rmse_y| mae_y|\n');
 fprintf(fid,'-----------------------------------------------------------------------------------\n\n');
 warning off;
+end
 for i=1:options.no_traces
     %     warning('Add case for varying x0');
     fprintf(' Testing the NNCS -- %i iteration. \n\n', i);
     cc=0;
+    % old models
     options.testing.sim_cov=sim_cov_all(:,i)';
     options.testing.ref_Ts=options.ref_Ts;
+    options.sim_cov=options.testing.sim_cov;
+    options.ref_Ts=options.testing.ref_Ts;
     options.workspace = simset('SrcWorkspace','current');
     sim(model_name,[],options.workspace);
     testing.data.time{i}=ref.time;
@@ -53,7 +66,6 @@ for i=1:options.no_traces
     testing.data.Y_NN_test{i}=y_nn.signals.values; 
 
     %     [ref,y,u] = sim_SLX(model_name,options)
-    options.testing.plotting=0;
     if options.testing.plotting==1
         FIG = figure('rend', 'painters', 'pos', [200,200,1069,356], 'Color', 'w');
         AX = axes('NextPlot', 'add');
@@ -102,10 +114,13 @@ for i=1:options.no_traces
     testing.errors_coverage{i}.rmse.y=sqrt(testing.errors_coverage{i}.mse.y);
     
     testing.errors_coverage{i}.mae.y=sum(abs(y.signals.values(:)-y_nn.signals.values(:)))/numel(y.signals.values);
+    if options.save_sim
     fprintf(' The MAE error (y vs y_nn) in the %i box is  %.5f. \n\n',i,testing.errors_coverage{i}.mae.y)
     
     fprintf(fid,'%i | %.4f  | x | %.4f  | %.4f  | y | %0.4f  | %.4f | %.4f | %.6f | %.6f | %.6f  |\n',i, options.coverage.cells{i}.min(1),options.coverage.cells{i}.max(1),options.coverage.cells{i}.min(2),options.coverage.cells{i}.max(2),options.coverage.cells{i}.centers(1),options.coverage.cells{i}.centers(2),testing.errors_coverage{i}.mse.y,testing.errors_coverage{i}.rmse.y,testing.errors_coverage{i}.mae.y);
-    
+    % close the file
+    fclose(fid);
+    end
     %{
     fprintf(' The nominal value is %.5f. \n\n',y.signals.values(end))
     
@@ -125,8 +140,8 @@ fprintf('The average MSE error over %i simulations is %.5f.\n\n',options.no_trac
 fprintf('The maximum MSE error over %i simulations is %.5f.\n\n',options.no_traces,max(all_mse));
 
 
-% close the file
-fclose(fid);
+
 % plot_coverage_boxes(testing,options,0)
+close_system(model_name)
 end
 

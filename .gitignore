@@ -22,3 +22,6 @@ references/
 
 # MEX Binaries
 *.mex*
+
+# mat
+*.mat
