@@ -1,0 +1,16 @@
+param sim_time=10, r=0.1, dt=0.01, T=5, d=0.1, T_1=6, T_2=4,e=0.00001
+
+## comparing NN and nominal
+#phi:=   alw_[0,sim_time] (abs(y_nn[t]-y[t])<0.2)
+
+
+## parsed by Breach but misses first step change
+phi:=(In1[t+dt]-In1[t])>d) => ev_[0,2] alw_[0,3] (abs(y_nn[t]-In1[t])<e) 
+#phi:=alw(abs(In1[t+dt]-In1[t])>d) => ev_[0,2] alw_[0,3] (abs(y_nn[t]-In1[t])<e) and (alw_[0,T-d](In1[t+dt]==In1[t]))
+
+
+## unexpected behavior - potential bug (uncomment to run)
+#step:=(abs(In1[t+dt]-In1[t])>d)
+#stabilization:= ev_[0,2] alw_[0,3] (abs(y_nn[t]-In1[t])<e) and (alw_[0,T-d](In1[t+dt]==In1[t]))
+#phi:= step => stabilization
+

@@ -41,12 +41,12 @@ end
 % The models are saved in ./models/
 
 % SLX_model='models/robotarm/robotarm_PID';
-SLX_model='robotarm_PID';
+% SLX_model='robotarm_PID';
 % SLX_model='quad_1_ref';
 % SLX_model='quad_3_ref';
 % SLX_model='quad_3_ref_6_y';
 % SLX_model='helicopter';
- SLX_model='watertank_comp_design_mod';
+%  SLX_model='watertank_comp_design_mod';
  SLX_model='watertank_inport';
 load_system(SLX_model)
 % Uncomment next line if you want to open the model
@@ -165,7 +165,7 @@ options.testing.train_data=0;% 0: for centers, 1: random points
 % The average MSE error over 49 simulations is 0.00031.
 
 % The maximum MSE error over 49 simulations is 0.00207.
-%% 10. Falsification with Breach
+%% 11. Falsification with Breach
 
 clear Data_all data_cex Br falsif_pb net_all phi_1 phi_3 phi_all;
 

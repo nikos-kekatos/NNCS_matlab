@@ -10,6 +10,8 @@ options.SLX_model=SLX_model;
 
 options.reference_type=3;
 
+% Select if you want to plot one simulation trace from training
+options.plotting_sim=1;
 % added for Breach
 try
     block_name=strcat(SLX_model,'/Switch1');
@@ -151,8 +153,7 @@ options.testing.metric_method='mse';
 options.testing.metric_y=1;
 options.testing.metric_u=1;
 
-% Select if you want to plot one simulation trace from training
-options.plotting_sim=1;
+
 
 % Select if you want prepropreccing
 options.preprocessing_bool=0;
