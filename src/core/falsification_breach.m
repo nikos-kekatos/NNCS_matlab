@@ -1,4 +1,4 @@
-function [data_cex,falsif_pb] = falsification_breach(options,falsif,model_name)
+function [data_cex,REF_sig_cex_out,x_best_out,falsif_pb] = falsification_breach(options,falsif,model_name,REF_sig_cex_in,x_best_in)
 %falsification_breach We start with an STL property and aim to falsify it
 %with Breach.
 %   The STL property is written in the `specs` file. First, we need to call
@@ -25,18 +25,47 @@ Br_falsif = BreachSimulinkSystem(model_name,'all',[],var_names_list);
 warning('Only works for 1D systems')
 
 % Test with constant
-if strcmp(model_name,'watertank_inport')|| strcmp(model_name,'watertank_inport_NN')
-    Br_falsif.SetParam('In1_u0',11);
-else
-    disp('For each model, we should replace the default value for testing')
-end
-Br_falsif.Sim();
-if options.plotting_sim
-    figure;Br_falsif.PlotSignals();
-end
-Br_falsif.PrintAll();
+%% Thao temporarily commented this out
+% % if strcmp(model_name,'watertank_inport')|| strcmp(model_name,'watertank_inport_NN')
+% %     Br_falsif.SetParam('In1_u0',11);
+% % else
+% %     disp('For each model, we should replace the default value for testing')
+% % end
+% % Br_falsif.Sim();
+% % if options.plotting_sim
+% %     figure;Br_falsif.PlotSignals();
+% % end
+% % Br_falsif.PrintAll();
 
 
+%%% %Thao First check on old counter-examples to see if new NN can eliminate
+%%% them, using the stored ref signals in time series 
+% % nb_cex = size(REF_sig_cex_in,2)/2
+% % 
+% % for i = 1:nb_cex %each column of ref_cex is a ref time series
+% %       In1 = [REF_sig_cex_in(:,2*i-1) REF_sig_cex_in(:,2*i)]
+% %       In1time = In1(:,1);
+% %       %In1time = time-time(1); %sequence of time points
+% % 
+% %       sg_in = from_workspace_signal_gen({'In1'});
+% %       Br_falsif.SetInputGen({sg_in});
+% % 
+% %       Br_falsif.Sim( In1time(end) );
+% %       
+% %       rob = Br_falsif.CheckSpec(falsif.property)
+% %       if rob<0 
+% %         Br_input_gen.PlotSignals({'In1', 'u_nn'});
+% %         disp('Falsified on old ref number ');
+% %         i 
+% %         error('An old counter-example is not fixed! Exit...')
+% %       end
+% %       
+% %       if (i>=size(REF_sig_cex_in,2))
+% %          error('ALL old counter-example are! Exit NORMALLY :-) ...')
+% %       end 
+% % end
+
+      
 % sim_time = 20
 sim_time=falsif.T;
 invalmin = falsif.breach_ref_min;
@@ -56,13 +85,52 @@ for ii = 1:nbinputsig %only one input
     input_intp{end+1} = 'previous';
 end
 
+
+
+%%%
+%%%
+%%% %Thao Check on the old counter examples, using the solution of the opt 
+if (~isempty(x_best_in))
+    Br_Old_Ref = Br_falsif.copy();
+    Br_input_gen = var_cp_signal_gen(input_str, input_cp, input_intp);
+    Br_Old_Ref.SetInputGen(BreachSignalGen({Br_input_gen}));
+    input_param = {};
+    input_range = [];
+     for ii = 1:nbinputsig
+        for jj = 0:(nbctrpt-1)
+          input_param{end+1} = ['In' num2str(ii) '_u' num2str(jj)];
+    %     input_range = [input_range; invalmin invalmax];
+         if (jj<(nbctrpt-1))
+            input_param{end+1} = ['In' num2str(ii) '_dt' num2str(jj)];
+    %        input_range = [input_range; (jj+1)*sim_time/nbctrpt  (jj+1)*sim_time/nbctrpt ];
+         end
+        end
+        input_param
+     end
+    x_best_in
+    Br_Old_Ref.SetParam(input_param, x_best_in);
+    Br_Old_Ref.Sim( sim_time );
+    rob = Br_Old_Ref.CheckSpec(falsif.property)
+    if rob<0 
+      Br_input_gen.PlotSignals({'In1', 'u_nn'});
+      disp('Falsified on old ref number ');
+      error('An old counter-example is not fixed! Exit...')
+    else
+      error('ALL old counter-example are FIXED! Exit NORMALLY :-) ...')
+    end 
+end
+%% End the code for checking on the old counter examples
+%%%%
+%%%%
+
+
+
 if strcmp(falsif.input_template,'var')
     var_input_generator
 elseif strcmp(falsif.input_template,'fixed')
     fixed_input_generator
 end
 
-% phi = STL_Formula('phi', ' alw_[0,10] In1(t)<10')
 
 R = BreachRequirement(falsif.property);
 falsif_pb = FalsificationProblem(Br_falsif, R);
@@ -97,23 +165,28 @@ switch falsif.method
 end
 
 
-falsif_pb.StopAtFalse=falsif.stop_at_false;
+falsif_pb.StopAtFalse=true; %falsif.stop_at_false;
 falsif_pb.solve();
+
+%Thao
+x_best_out = falsif_pb.x_best
+
+
+
 Rlog = falsif_pb.GetLog();
-figure;BreachSamplesPlot(Rlog);
-if options.plotting_sim
-    figure;falsif_pb.BrSet_Logged.PlotSignals({'In1', 'y'});
-end
-Br_False = falsif_pb.GetFalse(); % AFC_False contains the falsifying trace
-try
-    Br_False.PlotSignals({'In1','y','y_nn'});
-end
+%figure;BreachSamplesPlot(Rlog);
+%if options.plotting_sim
+%    figure;falsif_pb.BrSet_Logged.PlotSignals({'In1', 'y'});
+%end
+Br_False = falsif_pb.GetFalse(); % Br_False contains the falsifying trace
+%try
+%    Br_False.PlotSignals({'In1','y','y_nn'});
+%end
+
 
 % we need to find out which traces violate the STL property
-
 % if the objective is negative the property is not satisfied
 falsif_idx=find(falsif_pb.obj_log<0);
-
 fprintf('\n The number of cex is %i.\n',length(falsif_idx));
 
 % falsif_idx=[5, 13, 24,41,77]
@@ -191,16 +264,27 @@ U_cex_breach_all=[];
 Y_cex_breach_all=[];
 U_NN_cex_breach_all=[];
 Y_NN_cex_breach_all=[];
+REF_sig_cex_out = []; %Thao 2*i collumns, (2*i - 1) is for time points, 2i for values 
 
 % for i=1:length(cex_traces) not correct as all traces might be logged
-for i=falsif_idx
+
+falsif_idx
+
+for i=1:falsif_idx
     REF_cex_breach_all=[REF_cex_breach_all,cex.P.traj{i}.X(index_REF,:)];
     U_cex_breach_all=[U_cex_breach_all,cex.P.traj{i}.X(index_U,:)];
     Y_cex_breach_all=[Y_cex_breach_all,cex.P.traj{i}.X(index_Y,:)];
     U_NN_cex_breach_all=[U_NN_cex_breach_all,cex.P.traj{i}.X(index_U_NN,:)];
     Y_NN_cex_breach_all=[Y_NN_cex_breach_all,cex.P.traj{i}.X(index_Y_NN,:)];
+    
+    %Thao
+    REF_sig = [ cex.P.traj{i}.time' cex.P.traj{i}.X(index_REF,:)' ]
+    size(REF_sig)
+    REF_sig_cex_out =[ REF_sig_cex_out  REF_sig ];
 end
 
+falsif_idx
+input('Press ENTER to continue');
 
 %{
 % For generation/training
@@ -267,6 +351,5 @@ data_cex.Y_NN=Y_NN_cex_breach_all';
             
         end
         Br_falsif.SetParamRanges(input_param, input_range);
-
     end
 end
