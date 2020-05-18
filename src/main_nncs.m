@@ -103,7 +103,7 @@ training_options.loss='msereg';
 % training_options.loss='wmse';
  training_options.div='dividerand';
 % training_options.div='dividetrain';
-training_options.error=1e-6;
+training_options.error=1e-5;
 training_options.max_fail=10; % Validation performance has increased more than max_fail times since the last time it decreased (when using validation).
 training_options.regularization=0; %0-1
 training_options.param_ratio=0.5;
@@ -169,6 +169,10 @@ options.testing.train_data=0;% 0: for centers, 1: random points
 
 clear Data_all data_cex Br falsif_pb net_all phi_1 phi_3 phi_all;
 
+ %%% ------------------------------------------ %%
+ %%% ----- 11-A: Falsification with Breach ---- %%
+ %%% ------------------------------------------ %%
+
 options.testing_breach=1;
 training_options.combining_old_and_cex=1; % 1: combine old and cex
 falsif.iterations_max=1;
@@ -219,10 +223,16 @@ while i_f<=falsif.iterations_max && violated
 
     fprintf('\n End falsification with Breach.\n')
     if isempty(data_cex)
+        violated=0;
         fprintf('\n Breach could not falsify the STL formula.\n')
         break;
     end
 %     [data_cex_cluster]=cluster_and_sample(data_cex,falsif_pb,options)
+
+    %%% ------------------------------------ %%
+    %%% ----- 11-B: Retraining with CEX ---- %%
+    %%% ------------------------------------ %%
+    
     fprintf('\n Beginning retraining with cex.\n')
     training_options.retraining=1; % the structure of the NN remains the same.
     training_options.retraining_method=2; %1: start from scratch with all data,
@@ -240,13 +250,16 @@ while i_f<=falsif.iterations_max && violated
     elseif i_f>1
        Data_all{i_f,1}=get_new_training_data( Data_all{i_f-1,1},Data_all{i_f-1,2},training_options);
        Data_all{i_f,2}=data_cex;
-    end
+    end   
     
-    
-%     [net_cex,data]=nn_retraining(net,data,training_options,options,[],data_cex);
+    % [net_cex,data]=nn_retraining(net,data,training_options,options,[],data_cex);
     [net_all{i_f+1},~]=nn_retraining(net_all{i_f},Data_all{i_f,1},training_options,options,[],Data_all{i_f,2});
-    
     fprintf('\n End retraining with cex.\n')
+    
+     %%% ------------------------------------------ %%
+     %%% ------ 11-C: Simulink Construction  ------ %%
+     %%% ------------------------------------------ %%
+
     fprintf('\n Beginning Simulink construction with cex.\n')
     [options]=create_NN_diagram(options,net_all{i_f+1})
 %     block_name=strcat('NN_cex_',num2str(i_f));
@@ -254,6 +267,10 @@ while i_f<=falsif.iterations_max && violated
 
     construct_SLX_with_NN(options,file_name,block_name)
     fprintf('\n End Simulink construction with cex.\n')
+
+    %%% ----------------------------------------------- %%
+    %%% ------ 11-D: Testing if CEX disappeared   ----- %%
+    %%% ----------------------------------------------- %%
 
     fprintf('\n Testing the NN on the training data.\n')
     fprintf('The number of original CEX was %i.\n',length(falsif_pb.obj_false));

@@ -1,7 +1,10 @@
 # macOS
 .DS_Store
+
+#Temp
 slprj/
 *.m~
+*.stl~
 
 # Simulink 
 *.autosave

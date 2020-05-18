@@ -35,8 +35,12 @@ load_system(Simulink_model);
 %% STL formula
 
 STL_formula_file='specs_stabilization.stl';
-phi=STL_ReadFile(STL_formula_file);
-
+phi_all=STL_ReadFile(STL_formula_file);
+try
+    phi=phi_all{3};
+catch
+    phi=phi_all{1};
+end
 %% Setting up Falsification Problem
 
 % Creating  Breach System
@@ -90,9 +94,16 @@ falsif_pb = FalsificationProblem(Br_falsif, R);
 
 %% Try quasi-random
 
+choice='quasi';
 falsif_pb.max_obj_eval = 100; % 1000
-falsif_pb.setup_global_nelder_mead('num_corners',5,...
-            'num_quasi_rand_samples',15, 'local_max_obj_eval',10) %0,  1000,100
+
+if strcmp(choice,'GNN')
+    falsif_pb.setup_global_nelder_mead('num_corners',5,...
+            'num_quasi_rand_samples',15, 'local_max_obj_eval',100) %0,  1000,100
+elseif strcmp(choice,'quasi')
+    falsif_pb.setup_random('rand_seed',100,'num_rand_samples',25) % 100
+end
+
 falsif_pb.StopAtFalse=false;
 falsif_pb.solve();
 
@@ -104,5 +115,8 @@ figure;falsif_pb.BrSet_Logged.PlotSignals({'In1', 'y'});
 Br_False = falsif_pb.GetFalse(); 
 try
     Br_False.PlotSignals({'In1','y','y_nn'});
-    figure;Br_falsif.PlotRobustSat(phi{1})
+    figure;Br_False.PlotRobustSat(phi)
 end
+%% Evaluation
+figure;falsif_pb.BrSet_Logged.PlotRobustSat(phi)
+falsif_pb.BrSet_Logged.CheckSpec(phi)
