@@ -9,7 +9,7 @@ In this folder, we have added the files to evaluate an STL stabilization formula
 - [Installation](#Installation)
 - [Contents](#Contents)
 - [Usage](#Usage)
-- [Brief Explanation](#What is it about?)
+- [Explanation](#Explanation)
 
 Download
 ---
@@ -49,7 +49,7 @@ Usage
 Simply navigate to the `src/testing/STL_stabilization` and run the file
 ``STL_stabilization_property.m`` from the command window or the button of the interface.
 
-What is it about?
+Explanation
 ---
 
 We start with a Simulink model and a specification and we create a Breach system. Then, we run GNN falsification to check if the property is satisfied or not.
