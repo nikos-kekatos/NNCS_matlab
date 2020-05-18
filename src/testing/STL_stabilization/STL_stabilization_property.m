@@ -54,7 +54,7 @@ invalmax = 12;
 Br_falsif.SetTime(sim_time);
 
 nbinputsig = 1;
-nbctrpt = 2;
+nbctrpt = 3;
 
 input_str = {};
 input_cp = [];
@@ -95,7 +95,7 @@ falsif_pb = FalsificationProblem(Br_falsif, R);
 %% Try quasi-random
 
 choice='quasi';
-falsif_pb.max_obj_eval = 100; % 1000
+falsif_pb.max_obj_eval = 10; % 1000
 
 if strcmp(choice,'GNN')
     falsif_pb.setup_global_nelder_mead('num_corners',5,...
