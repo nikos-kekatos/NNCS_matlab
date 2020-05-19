@@ -1,4 +1,4 @@
-function [data,options] = run_simulations_nncs(model,options)
+function [data,options] = trace_generation_nncs(model,options)
 %run_simulations calls the Simulink model and runs multiple simulations
 %   The Simulink model with the nominal controller is called. Different
 %   initial conditions and configuration parameters are defined via the

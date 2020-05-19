@@ -10,17 +10,40 @@ end
 if isempty(options.keepData_factor)
     m=1;
 end
-if m==1
+if isfield(options,'deleteData_factor')
+    k=options.deleteData_factor;
+else
+    k=0;
+end
+if isempty(options.deleteData_factor)
+    k=0;
+end
+data.REF_trim=data.REF;
+data.Y_trim=data.Y;
+data.U_trim=data.U;
+if k~=0
+    no_points=length(data.REF);
+    % we delete the points that correspond to every $k$
+    index_to_be_deleted=0:k:no_points;
+    index_to_be_deleted=index_to_be_deleted(2:end)';
     data.REF_trim=data.REF;
     data.Y_trim=data.Y;
     data.U_trim=data.U;
-else
-    data.REF_trim=data.REF(1:m:end,:);
-    data.Y_trim=data.Y(1:m:end,:);
-    data.U_trim=data.U(1:m:end,:);
+    data.REF_trim(index_to_be_deleted)=[];
+    data.Y_trim(index_to_be_deleted)=[];
+    data.U_trim(index_to_be_deleted)=[];
     fprintf('Original number of points per variable: %i.\n\n',length(data.REF));
     fprintf('Trimmed number of points per variable: %i.\n\n',length(data.REF_trim));
 end
+
+if m~=1
+    data.REF_trim=data.REF_trim(1:m:end,:);
+    data.Y_trim=data.Y_trim(1:m:end,:);
+    data.U_trim=data.U_trim(1:m:end,:);
+    fprintf('Original number of points per variable: %i.\n\n',length(data.REF));
+    fprintf('Trimmed number of points per variable: %i.\n\n',length(data.REF_trim));
+end
+
 if options.plotting_sim
     nn=1:1000;
     figure;

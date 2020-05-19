@@ -67,7 +67,7 @@ for ii = 1:nbinputsig
         input_range = [input_range; invalmin invalmax];
         if (jj<(nbctrpt-1))
             input_param{end+1} = ['In' num2str(ii) '_dt' num2str(jj)];
-            input_range = [input_range; jj*sim_time/nbctrpt  (jj*sim_time/nbctrpt + eps_time) ];
+            input_range = [input_range; (jj+1)*sim_time/nbctrpt  ((jj+1)*sim_time/nbctrpt + eps_time*0) ];
         end
     end
     

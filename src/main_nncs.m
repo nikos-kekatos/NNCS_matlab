@@ -63,7 +63,6 @@ options.error_sd=0%0.001;
 % Breach options
 % options.no_traces=30;
 % options.breach_segments=2;
-
 [data,options]=trace_generation_nncs(SLX_model,options);
 
 %% 4b. Load previous saved traces
@@ -74,9 +73,10 @@ if options.load==1
 dataset{1}='array_sim_constant_ref_25_traces_25x1_time_10_18-04-2020_19:22.mat';
     [data,options]= load_data(dataset,options);
 end
-%% 5a. Data Selection (per Thao's suggestion)
+%% 5a. Data Selection 
 options.trimming=0;
-options.keepData_factor=5;% we keep one out of every 5 data
+options.keepData_factor=1;% we keep one out of every 5 data
+options.deleteData_factor=9; % we delete one every 3 data points
 if options.trimming
 [data]=trim_data(data,options);
 end
@@ -98,7 +98,7 @@ training_options.use_previous_y=3;      % default=3
 training_options.neurons=[30 30];
 % training_options.neurons=[50 ];
 training_options.input_normalization=0;
-training_options.loss='msereg';
+training_options.loss='mse';
 % training_options.loss='custom_v1';
 % training_options.loss='wmse';
  training_options.div='dividerand';
@@ -109,16 +109,44 @@ training_options.regularization=0; %0-1
 training_options.param_ratio=0.5;
 training_options.algo= 'trainlm'%'trainlm'; % trainscg % trainrp
 %add option for saved mat files
-while true
+training_options.iter_max_fail=2;
+iter=1;reached=0;
+while true && iter<=training_options.iter_max_fail
+    fprintf('\n Iteration %i.\n',iter);
     [net,data,tr]=nn_training(data,training_options,options);
-    if tr.best_perf<training_options.error*100
+    net_all{iter}=net;
+    tr_all{iter}=tr;
+    if tr_all{iter}.best_perf<training_options.error*10 && tr_all{iter}.best_vperf<training_options.error*100
+        reached=1;
         break;
+    else
+        if iter<training_options.iter_max_fail
+            iter=iter+1;
+        else
+            break;
+        end
     end
 end
-
-
+fprintf('\n The requested training error was %f.\n',training_options.error);
+if reached
+    fprintf('The obtained training error is %f reached after %i random initializations.\n',tr_all{iter}.best_perf,iter);
+    fprintf('The validation error is %f.\n',tr_all{iter}.best_vperf);
+    net=net_all{iter};
+    tr=tr_all{iter};
+else
+    fprintf('\n We ran %i training attempts with random initializations.\n',iter);
+    for ii=1:iter
+        training_perf(ii)=tr_all{ii}.best_perf;
+    end
+    iter_best=find(training_perf==min(training_perf));
+    fprintf('\n The smallest training error was %f.\n',tr_all{iter_best}.best_vperf);
+    fprintf('\n The smallest validation error was %f.\n',tr_all{iter_best}.best_vperf);
+    net=net_all{iter_best};
+    tr=tr_all{iter_best};
+end
+    
 if options.plotting_sim
-    plotperform(tr)
+    figure;plotperform(tr)
 end
 %{
 % Test the Network
@@ -141,10 +169,11 @@ plot_NN_sim(data,options)
 %% 9. Analyse NNCS in Simulink
 model_name=[];
 % model_name='watertank_comp_design_mod_NN';
+options.ref_Ts=5;
 options.input_choice=1;
 options.sim_ref=8;
-options.ref_min=7;
-options.ref_max=12;
+options.ref_min=8.5;
+options.ref_max=11.5;
 options.sim_cov=[9;11];
 run_simulation_nncs(options,model_name)
 
@@ -178,17 +207,19 @@ training_options.combining_old_and_cex=1; % 1: combine old and cex
 falsif.iterations_max=1;
 falsif.method='quasi';
 falsif.num_samples=25;
-falsif.num_corners=5;
-falsif.max_obj_eval=10;
-falsif.max_obj_eval_local=10;
+falsif.num_corners=25;
+falsif.max_obj_eval=20;
+falsif.max_obj_eval_local=20;
 falsif.seed=100;
+falsif.num_inputs=1;
 
 falsif.property_file='specs_watertank.stl';
 falsif.property_all=STL_ReadFile(falsif.property_file);
 falsif.property=falsif.property_all{2};%// TO-DO automatically specify the file
+falsif.property_cex=falsif.property_all{3};
 falsif.breach_ref_min=8;
 falsif.breach_ref_max=12;
-falsif.stop_at_false=true;
+falsif.stop_at_false=false;
 falsif.T=options.T_train;
 falsif.input_template='fixed';
 try
@@ -196,13 +227,13 @@ try
 catch
     falsif.breach_segments=2;
 end
-violated=1;
+stop=0;
 i_f=1;
 file_name=strcat(options.SLX_NN_model,'_cex');
 options.input_choice=4;
 net_all{1}=net;
 seeds_all=falsif.seed*(1:falsif.iterations_max);
-while i_f<=falsif.iterations_max && violated
+while i_f<=falsif.iterations_max && ~stop
     fprintf('\n Iteration %i.\n',i_f)
 %     if i_f>1
 %         fprintf('\n Testing the NN on the training data')
@@ -218,14 +249,22 @@ while i_f<=falsif.iterations_max && violated
         model_name=file_name;
     end
     falsif.seed=seeds_all(i_f);
+    falsif.iteration=i_f; % choose property
     [data_cex,falsif_pb]= falsification_breach(options,falsif,model_name);
     fprintf('The number of CEX is now %i.\n',length(falsif_pb.obj_false));
 
     fprintf('\n End falsification with Breach.\n')
-    if isempty(data_cex)
-        violated=0;
+    
+    if any(structfun(@isempty,data_cex))
         fprintf('\n Breach could not falsify the STL formula.\n')
-        break;
+        fprintf('\n Trying with a different method (GNN) and more objective evaluations.\n')
+        falsif.method='GNM';
+%         falsif.max_obj_eval=falsif.max_obj_eval*2;
+        [data_cex,falsif_pb]= falsification_breach(options,falsif,model_name);        
+        if any(structfun(@isempty,data_cex))
+            stop=1;
+             break;
+        end
     end
 %     [data_cex_cluster]=cluster_and_sample(data_cex,falsif_pb,options)
 
@@ -233,29 +272,36 @@ while i_f<=falsif.iterations_max && violated
     %%% ----- 11-B: Retraining with CEX ---- %%
     %%% ------------------------------------ %%
     
-    fprintf('\n Beginning retraining with cex.\n')
-    training_options.retraining=1; % the structure of the NN remains the same.
-    training_options.retraining_method=2; %1: start from scratch with all data,
-    % 2: keep old net and use all data,  3: keep old net and use only new data
-    % 4: blend/mix old and new data,  5: weighted MSE
-    training_options.loss='msereg';
-    training_options.error=1e-6;
-    training_options.max_fail=10;
-    % net.performParam.ratio=0.5;
-    % Data_all contains the data from all cases (training, cex) and
-    % iterations.
-    if i_f==1
-        Data_all{i_f,1}=data;
-        Data_all{i_f,2}=data_cex;
-    elseif i_f>1
-       Data_all{i_f,1}=get_new_training_data( Data_all{i_f-1,1},Data_all{i_f-1,2},training_options);
-       Data_all{i_f,2}=data_cex;
-    end   
-    
-    % [net_cex,data]=nn_retraining(net,data,training_options,options,[],data_cex);
-    [net_all{i_f+1},~]=nn_retraining(net_all{i_f},Data_all{i_f,1},training_options,options,[],Data_all{i_f,2});
-    fprintf('\n End retraining with cex.\n')
-    
+    if stop~=1
+        for tm = [2 3 1] % or we choose the preference/order
+           
+            fprintf('\n Beginning retraining with cex.\n')
+            training_options.retraining=1; % the structure of the NN remains the same.
+            training_options.retraining_method=tm; %1: start from scratch with all data,
+            % 2: keep old net and use all data,  3: keep old net and use only new data
+            % 4: blend/mix old and new data,  5: weighted MSE
+            training_options.loss='mse';
+            training_options.error=1e-6;
+            training_options.max_fail=10;
+            % net.performParam.ratio=0.5;
+            % Data_all contains the data from all cases (training, cex) and
+            % iterations.
+            if i_f==1
+                Data_all{i_f,1}=data;
+                Data_all{i_f,2}=data_cex;
+            elseif i_f>1
+                Data_all{i_f,1}=get_new_training_data( Data_all{i_f-1,1},Data_all{i_f-1,2},training_options);
+                Data_all{i_f,2}=data_cex;
+            end
+            
+            % [net_cex,data]=nn_retraining(net,data,training_options,options,[],data_cex);
+            [net_all{i_f+1},~,tr]=nn_retraining(net_all{i_f},Data_all{i_f,1},training_options,options,[],Data_all{i_f,2});
+            if tr.best_perf <= training_options.error*100
+                fprintf('\n Desired MSE value reached.\n')
+                break;
+            end
+            fprintf('\n End retraining with cex.\n')
+        end
      %%% ------------------------------------------ %%
      %%% ------ 11-C: Simulink Construction  ------ %%
      %%% ------------------------------------------ %%
@@ -274,7 +320,12 @@ while i_f<=falsif.iterations_max && violated
 
     fprintf('\n Testing the NN on the training data.\n')
     fprintf('The number of original CEX was %i.\n',length(falsif_pb.obj_false));
+    
+    robustness_checks=check_cex_elimination(falsif_pb,falsif,data_cex,file_name);
+%     fprintf(' \n The original robustness values were %s.\n',num2str(robustness_checks{1}));
+    fprintf(' \n The new robustness values are %s.\n',num2str(robustness_checks));
 
+    end
     fprintf('\n End of Iteration %i.\n',i_f)
     if i_f<falsif.iterations_max
         i_f=i_f+1;
@@ -292,11 +343,14 @@ model_name=[];
 model_name='watertank_inport_NN_cex';
 options.input_choice=3;
 options.sim_ref=8;
-options.ref_min=7;
-options.ref_max=12;
-options.sim_cov=[9;11];
+options.ref_min=8.5;
+options.ref_max=11.5;
+options.sim_cov=[12;8];   
+options.sim_cov=[10.6830;8.7123];
+
 run_simulation_nncs(options,model_name,1) %3rd input is true for counterexamples
 
+%{
 %% Test multiple reference traces
 plot_coverage_boxes(options,0)
 
@@ -390,4 +444,4 @@ plot_cex_traces_all;
 %% 10. Evaluate Simulink NN
 % same results with 7
  compare_NN_vs_nominal(data,options);
-
+%}

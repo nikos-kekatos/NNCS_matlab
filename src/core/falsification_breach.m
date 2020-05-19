@@ -12,14 +12,16 @@ function [data_cex,falsif_pb] = falsification_breach(options,falsif,model_name)
 %   finish with simulating, we need to find out which are the traces with
 %   the worst robustness and choose them for use in the retraining loop.
 
-falsif.property
+% falsif.property
 
 options.input_choice=4;
-if strcmp(model_name,'watertank_inport')|| strcmp(model_name,'watertank_inport_NN')|| strcmp(model_name,'watertank_inport_NN_cex')
+if strcmp(model_name,'watertank_inport')|| strcmp(model_name,'watertank_inport_NN')
     var_names_list={'In1','u','y','u_nn','y_nn'};
     %     no_REF=1;
     %     no_U=1;
     %     no_Y=1;
+elseif  strcmp(model_name,'watertank_inport_NN_cex')
+    var_names_list={'In1','u','y','u_nn','y_nn','u_nn_cex_1','y_nn_cex_1'};
 end
 Br_falsif = BreachSimulinkSystem(model_name,'all',[],var_names_list);
 warning('Only works for 1D systems')
@@ -44,7 +46,7 @@ invalmax = falsif.breach_ref_max;
 Br_falsif.SetTime(sim_time);
 
 % First, plot coverage measures for the case where we don't snap to grid
-nbinputsig = 1
+nbinputsig = falsif.num_inputs
 nbctrpt = falsif.breach_segments;
 
 input_str = {};
@@ -63,8 +65,13 @@ elseif strcmp(falsif.input_template,'fixed')
 end
 
 % phi = STL_Formula('phi', ' alw_[0,10] In1(t)<10')
-
-R = BreachRequirement(falsif.property);
+if falsif.iteration==1
+    property=falsif.property;
+else
+    property=falsif.property_cex;
+end
+property
+R = BreachRequirement(property);
 falsif_pb = FalsificationProblem(Br_falsif, R);
 
 % method = 'quasi'
@@ -114,23 +121,23 @@ end
 % if the objective is negative the property is not satisfied
 falsif_idx=find(falsif_pb.obj_log<0);
 
-fprintf('\n The number of cex is %i.\n',length(falsif_idx));
 
 % falsif_idx=[5, 13, 24,41,77]
 
 cex=falsif_pb.BrSet_Logged;
 cex_traces=cex.P.traj;
-no_cex_1=falsif_pb.nb_obj_eval
-no_cex_2=length(cex_traces)
-no_cex_3=length(cex.P.traj_ref)
-isequal(no_cex_1,no_cex_2,no_cex_3)
+no_cex_1=falsif_pb.nb_obj_eval;
+no_cex_2=length(cex_traces);
+no_cex_3=length(cex.P.traj_ref);
+isequal(no_cex_1,no_cex_2,no_cex_3);
+fprintf('\n The number of CEX is %i.\n',length(falsif_idx));
 
 fprintf('The total number of traces is %i.\n\n',no_cex_2);
 fprintf('Each trace includes 1 control output(s), 1 state variable(s) and 1 reference(s).\n')
 % In1 is sufficient for the input/reference. We can ignore the rest,
 % {'In1_u0'}, {'In1_dt0'}, {'In1_u1'}, {'In1_dt1'}, {'In1_u2'}
 
-fprintf(' Using `cex.P.ParamList` gives the list of parameters and the order.\n')
+% fprintf(' Using `cex.P.ParamList` gives the list of parameters and the order.\n')
 
 
 % need to have variables for no_ref, no_u, no_y. Probably add them in the

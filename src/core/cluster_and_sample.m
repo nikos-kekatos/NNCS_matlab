@@ -10,9 +10,10 @@ function[data_cex_cluster]=cluster_and_sample(data_cex,falsif_pb,options)
 %   vi) perform sampling on the bloated clustering space.
 %
 
-load('40_falsified_traces.mat')
+% load('40_falsified_traces.mat')
 
 %1. Keep only references and replace signals by points.
+%{
 falsif_idx=find(falsif_pb.obj_log<0);
 no_cex=length(falsif_idx);
 no_points_per_trace=length(data_cex.REF)/no_cex;
@@ -25,8 +26,12 @@ end
 %K-means does not specify the number of clusters. So, we need to choose
 %beforehand or iterate with different values.
 cex_ref_points_array=cell2mat(cex_ref_points)'
-no_clusters=floor(no_cex/2);
+%}
+falsif_rob_values=falsif_pb.obj_false;
+no_cex=length(falsif_rob_values);
+cex_ref_points_array=falsif_pb.X_false(1:2:end,:)'; %ignore timing
 
+no_clusters=floor(no_cex/3);
 iteration=1;
 
 
@@ -34,7 +39,7 @@ fprintf(' This is the %i iteration/loop with a number of %i clusters.\n\n',itera
 % Evaluate the optimal number of clusters using the silhouette
 % clustering evaluation criterion.
 
-E = evalclusters(cex_ref_points_array,'kmeans','silhouette','klist',[1:5])
+E = evalclusters(cex_ref_points_array,'kmeans','silhouette','klist',[1:no_clusters])
 figure;
 plot(E);
 
@@ -43,9 +48,15 @@ figure;gscatter(cex_ref_points_array(:,1),cex_ref_points_array(:,2),E.OptimalY,'
 figure;plot(cex_ref_points_array(:,1),cex_ref_points_array(:,2),'k*','MarkerSize',5);
 
 [idx,C]=kmeans(cex_ref_points_array,optimal_no_clusters);
-end
+
     nn_cluster=[];no_idx=[];
-    for j=1:options.no_clusters
+    for j=1:optimal_no_clusters
+        
+        cex_cluster_all{j}=cex_ref_points_array(idx==j,:)
+        cex_cluster_tol{j}=uniquetol(cex_cluster_all,2e-2,'ByRows',true)
+        fprintf('In cluster %i, there are %i total CEX and %i different ones (tol=%f).\n',j, sum(idx==j),length(cex_cluster_tol));
+    end   
+        %{
         diff=ALL((idx==j))-C(j,:);
         no_idx=[no_idx;length(find(idx==j))];
         fprintf('The total number of different points/samples in cluster %i is %i.\n\n',j,length(find(idx==j)));
@@ -71,6 +82,6 @@ end
         iteration=iteration+1;
     end
 end
-
+%}
 end
 
