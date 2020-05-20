@@ -1,4 +1,4 @@
-function [net,data,tr] = nn_training(data,training_options,options)
+function [net,tr,data] = nn_training(data,training_options,options)
 %nn_training This function is used for the NN training.
 %   Detailed explanation goes here
 
@@ -101,8 +101,8 @@ net.performFcn=training_options.loss;
 % net.performFcn='custom_v1';
 net.trainFcn=training_options.algo;
 net.trainParam.max_fail = training_options.max_fail;
-net.performParam.ratio=training_options.param_ratio;
-net.performParam.regularization = training_options.regularization;   %needed for crossentropy
+net.performParam.ratio=0.5;
+net.performParam.regularization = 0.1;   %needed for crossentropy
 net.performParam.normalization = 'none';%'standard'; %needed for crossentropy
 
 % net.trainParam.epochs = 100;

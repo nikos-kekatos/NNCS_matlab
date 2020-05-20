@@ -6,8 +6,8 @@ load_system(options.SLX_model);
 model_path = get_param(bdroot, 'FileName');
 folder_path=fileparts(model_path); % goes up one directory
 original_path=pwd;
-%cd(folder_path)
-% options.SLX_NN_model=strcat(options.SLX_model,'_NN');
+cd(folder_path)
+options.SLX_NN_model=strcat(options.SLX_model,'_NN');
 gensim(net,'InputMode','none','OutputMode','none')
 % save_system('untitled','nn_gensim','ErrorIfShadowed',true)
 options.NN_model='nn_gensim';

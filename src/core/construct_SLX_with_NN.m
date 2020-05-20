@@ -34,7 +34,7 @@ new_system(temp_filename);
 load_system(temp_filename);
 Simulink.SubSystem.copyContentsToBlockDiagram(strcat(NN_model,'/Feed-Forward Neural Network'),temp_filename)
 
-Simulink.BlockDiagram.copyContentsToSubsystem...
+Simulink.BlockDiagram.copyContentsToSubSystem...
     (temp_filename, strcat(options.SLX_NN_model,'/',default_block_name))
 close_system(temp_filename,0)
 close_system(NN_model,0)

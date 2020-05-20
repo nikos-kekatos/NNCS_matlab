@@ -24,7 +24,7 @@ if options.plotting_sim
     ylabel ('u')
     title('Random Simulation Trace')
     % we need to delete last element from all Y_new, U_new and REF_new
-end    
+    
     if mod(options.T_train,options.ref_Ts)==0
         fprintf('Last point of all traces will be deleted.\n');
         
@@ -121,7 +121,7 @@ end
                 ic=ic+1;
             end
         end      
-        save(destination_name,'REF','U','Y');
+   %     save(destination_name,'REF','U','Y');
         fprintf('The training data are saved as an array named %s.\n\n',char(options.sim_name));
         fprintf('The training data are saved as an array in %s.\n\n',destination_folder{ic});
     end

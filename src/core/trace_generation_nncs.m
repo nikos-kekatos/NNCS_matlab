@@ -100,9 +100,10 @@ if options.reference_type~=4
         destination_folder={
             %            strcat('modules/outputs/robotarm/'),...
             %            strcat('outputs/robotarm/'),...
-            strcat('../outputs/',[folder],'/'),...
-            strcat('../../outputs/',[folder],'/'),...
-            strcat('../../../outputs/',[folder],'/')};
+            strcat('outputs\',[folder],'\'),...
+            strcat('\outputs\',[folder],'\'),...
+            strcat('..\..\outputs\',[folder],'\'),...
+            strcat('..\..\..\outputs\',[folder],'\')};
         ic=1;
         while ic<=length(destination_folder)
             if exist(destination_folder{ic},'dir')
@@ -112,13 +113,14 @@ if options.reference_type~=4
                 ic=ic+1;
             end
         end
-        save(destination_name,'REF_struct','U_struct','Y_struct');
+ %       save(destination_name,'REF_struct','U_struct','Y_struct');
     end
     
     [REF,Y,U]=from_traces_to_training_data(REF_struct,Y_struct,U_struct,options);
     if options.save_sim~=0
-        fprintf('The simulation data are saved as a structure named %s.\n\n',char(options.sim_name));
-        fprintf('The simulation data are saved as a structure in %s.\n\n',destination_folder{ic});
+        bli = 0
+        %fprintf('The simulation data are saved as a structure named %s.\n\n',char(options.sim_name));
+        %fprintf('The simulation data are saved as a structure in %s.\n\n',destination_folder{ic});
     end
     data.REF=REF;
     data.U=U;
@@ -134,6 +136,6 @@ elseif options.reference_type==4
 end
 
 % remove slprj
-rmdir('slprj','s');
+% rmdir('slprj','s');
 
 end

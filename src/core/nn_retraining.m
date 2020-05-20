@@ -1,4 +1,4 @@
-function [net_cex,data] = nn_retraining(net,data,training_options,options,testing,data_cex)
+function [net_cex,tr,data] = nn_retraining(net,data,training_options,options,testing,data_cex)
 %nn_training This is for NN retraining.
 %   Similar setting with NN training but more options.
 
