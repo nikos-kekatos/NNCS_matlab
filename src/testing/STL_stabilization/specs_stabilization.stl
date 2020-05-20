@@ -4,33 +4,51 @@ param sim_time=10, r=0.1, dt=0.01, T=20, d=0.1, T_1=6, T_2=4,e=0.00001
 ## First Group of Tests
 #-----------------------
 
-# Test 1
-# robustness postive and negative and zero
-#pred_1:=In1[t]>10
-#pred_2:=y[t]>10
-#phi:=(pred_1) => (pred_2) 
+#simulation skipped for invalid inputs (they should not) 
+phi:= alw In1[t]>0 #Input should be from 8 to 12
 
-# Test 2
-# robustness always 0
-
-#phi:=(In1[t]>10)=>(y[t]>10) 
-
+#simulation skipped for invalid inputs (possible) 
+#phi:= In1[t]>10 #Input should be from 8 to 12
 
 #----------------------
 ## Second Group of Tests
+#-----------------------
+# adding temporal operators resolves any issues
+# in older experiments, the lack of temporal operators was generating contradictory results
+
+# Test 1
+#pred_1:=In1[t]>10
+#pred_2:=y[t]>10
+#phi:= (pred_1) => (pred_2) 
+#phi:= (pred_1) => ev alw (pred_2) 
+
+# Test 2
+#phi:=(In1[t]>10)=>  (y[t]>10) 
+#phi:=(In1[t]>10)=> ev alw (y[t]>10) 
+
+
+#----------------------
+## Third Group of Tests
 
 #-----------------------
-## parsed by Breach but misses first step change
-phi:= ((In1[t+dt]-In1[t]>d) or ([t]==0)) => alw_[0,5] (abs(y_nn[t]-In1[t])<e) 
 
-#phi:=abs(In1[t+dt]-In1[t]>d) => ev_[0,2] alw_[0,3] (abs(y_nn[t]-In1[t])<e) 
-#phi:=(abs(In1[t+dt]-In1[t])>d) => ev_[0,2] alw_[0,3] (abs(y_nn[t]-In1[t])<e) and (alw_[0,T-d](In1[t+dt]==In1[t]))
+
+# misses first setpoint
+#phi:=abs(In1[t+dt]-In1[t])>d => ev_[0,2] alw_[0,3] (abs(y_nn[t]-In1[t])<e) 
+#phi:=(abs(In1[t+dt]-In1[t])>d) => ev_[dt,2] alw_[0,3] (abs(y_nn[t]-In1[t])<e) and (alw_[dt,T-dt](In1[t+dt]==In1[t]))
+
+
+# captures first setpoint 
+#phi:= (abs(In1[t+dt]-In1[t])>d or ([t]==0)) => ev_[0,2] alw_[0,3] (abs(y_nn[t]-In1[t])<e) 
+#phi:=(abs(In1[t+dt]-In1[t])>d) => ev_[dt,2] alw_[0,3] (abs(y_nn[t]-In1[t])<e) and (alw_[dt,T-dt](In1[t+dt]==In1[t]))
+
+
 
 
 ## unexpected behavior - potential bug (uncomment to run)
+## no longer produces an error
+
 #step:=(abs(In1[t+dt]-In1[t])>d)
 #stabilization:= ev_[0,2] alw_[0,3] (abs(y_nn[t]-In1[t])<e) and (alw_[0,T-d](In1[t+dt]==In1[t]))
 #phi:= step => stabilization
 
-## comparing NN and nominal
-#phi:=   alw_[0,sim_time] (abs(y_nn[t]-y[t])<0.2)

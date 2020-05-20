@@ -1,5 +1,5 @@
-%% This script is written to evaluate how to write a stabilization control
-%% objective in the presence of an input step change.
+%% This script is written to evaluate how to write a suitable STL property,
+%% e.g. a stabilization objective in the presence of an input step change.
 %
 %
 % Inputs: none
@@ -17,7 +17,7 @@
 
 %% Initialization (skip if you do not need it)
 
-clear;close all; clc;
+%clear;close all; clc;
 
 %% Simulink model
 
@@ -30,7 +30,7 @@ load_system(Simulink_model);
 % uncomment the following command if you want to open and see the Simulink
 % model
 
-% open_system
+% open_system(Simulink_model) 
 
 %% STL formula
 
@@ -54,7 +54,7 @@ invalmax = 12;
 Br_falsif.SetTime(sim_time);
 
 nbinputsig = 1;
-nbctrpt = 3;
+nbctrpt = 2;
 
 input_str = {};
 input_cp = [];
@@ -92,9 +92,9 @@ R = BreachRequirement(phi);
 falsif_pb = FalsificationProblem(Br_falsif, R);
 
 
-%% Try quasi-random
+%% Solve the falsification problem
 
-choice='quasi';
+choice='GNN';
 falsif_pb.max_obj_eval = 10; % 1000
 
 if strcmp(choice,'GNN')
@@ -120,3 +120,6 @@ end
 %% Evaluation
 figure;falsif_pb.BrSet_Logged.PlotRobustSat(phi)
 falsif_pb.BrSet_Logged.CheckSpec(phi)
+
+%% Diagnostics
+Br_False.PlotDiagnostics

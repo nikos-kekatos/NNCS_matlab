@@ -79,7 +79,9 @@ if options.reference_type==3
     options.coverage.ref_min=8;
     options.coverage.ref_max=12;
     options.coverage.delta_resolution=0.5; %0.1
-    options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution-1;
+%     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution-1;
+    options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution;
+
     warning('TO-DO: need to generalize by using ceil or floor')
     if mod(options.coverage.no_cells_per_dim,1)~=0
         warning('TO-DO: either have non uniform cells or reduce the minimum and maximum values or increase the resolution');
@@ -91,7 +93,8 @@ if options.reference_type==3
     fprintf('The number of cells per dimension equals %i.\n\n',options.coverage.no_cells_per_dim);
     fprintf('The number of cells in total equals %i.\n\n',options.coverage.no_cells_total);
     % need to get centers and cell ranges
-    options.coverage.cells_values=options.coverage.ref_min+options.coverage.delta_resolution:options.coverage.delta_resolution:options.coverage.ref_max-options.coverage.delta_resolution;
+%     options.coverage.cells_values=options.coverage.ref_min+options.coverage.delta_resolution:options.coverage.delta_resolution:options.coverage.ref_max-options.coverage.delta_resolution;
+    options.coverage.cells_values=(options.coverage.ref_min+options.coverage.delta_resolution/2):options.coverage.delta_resolution:(options.coverage.ref_max-options.coverage.delta_resolution/2);
     if options.coverage.m==2
         options.coverage.cells_centers=combvec(options.coverage.cells_values,options.coverage.cells_values);
     elseif options.coverage.m==3

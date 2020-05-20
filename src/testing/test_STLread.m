@@ -1,6 +1,6 @@
 function test_STLread
 
-        phi_all=STL_ReadFile('specs_watertank.stl');
+        phi_all=STL_ReadFile('specs_simple.stl');
 
 call_STL
 

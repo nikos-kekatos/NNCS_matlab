@@ -346,7 +346,8 @@ options.sim_ref=8;
 options.ref_min=8.5;
 options.ref_max=11.5;
 options.sim_cov=[12;8];   
-options.sim_cov=[10.6830;8.7123];
+options.sim_cov=[10.1736;11.9];
+
 
 run_simulation_nncs(options,model_name,1) %3rd input is true for counterexamples
 
