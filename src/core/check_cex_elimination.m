@@ -1,4 +1,4 @@
-function [robustness_check] = check_cex_elimination(falsif_pb,falsif,data_cex,model_name)
+function [robustness_check] = check_cex_elimination(falsif_pb,falsif,data_cex,model_name,idx_cluster)
 %check_cex_elimination Extract CEX and check in new Simulink model
 %   This should work for single and multiple CEX.
 
@@ -10,17 +10,30 @@ if strcmp(model_name,'watertank_inport_NN_cex')
     %     no_Y=1;
 end
 
+%0. if used clustering, we need to update the falsif_index.
 %1. From falsif_pb find all traces with rob<0.
-falsif_idx=find(falsif_pb.obj_log<0);
+condition=length(idx_cluster)==length(falsif_pb.obj_false);
+if condition
+    fprintf('\nThe number of CEX before and after clustering is the same.\n')
+    falsif_idx=find(falsif_pb.obj_log<0);
+    falsif_idx=find(falsif_pb.obj_false<0);
+else
+    falsif_idx=idx_cluster;
+end
 
 %2. In falsif_pb.X_false all input parameters are stored.
-inputs_all=falsif_pb.X_log;
-inputs_cex=falsif_pb.X_false;
+if condition
+    inputs_all=falsif_pb.X_log;
+    inputs_cex=falsif_pb.X_false;
+else
+    inputs_all=falsif_pb.X_log(:,falsif_idx);
+    inputs_cex=falsif_pb.X_false(:,falsif_idx);
+end
 no_cex=length(falsif_idx);
-no_cex=length(inputs_cex);
+no_cex=length(inputs_cex)
 
 %3. Create Breach object
-Br_check = BreachSimulinkSystem(model_name,'all',[],var_names_list);
+Br_check = BreachSimulinkSystem(model_name,{},[],var_names_list);
 
 nbinputsig = falsif.num_inputs;
 nbctrpt = falsif.breach_segments;

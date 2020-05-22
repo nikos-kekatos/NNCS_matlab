@@ -1,4 +1,4 @@
-function [data_cex,falsif_pb] = falsification_breach(options,falsif,model_name)
+function [data_cex,falsif_pb,rob_nominal] = falsification_breach(options,falsif,model_name,check_nominal)
 %falsification_breach We start with an STL property and aim to falsify it
 %with Breach.
 %   The STL property is written in the `specs` file. First, we need to call
@@ -14,6 +14,9 @@ function [data_cex,falsif_pb] = falsification_breach(options,falsif,model_name)
 
 % falsif.property
 
+if nargin<4
+    check_nominal=0;
+end
 options.input_choice=4;
 if strcmp(model_name,'watertank_inport')|| strcmp(model_name,'watertank_inport_NN')
     var_names_list={'In1','u','y','u_nn','y_nn'};
@@ -23,7 +26,7 @@ if strcmp(model_name,'watertank_inport')|| strcmp(model_name,'watertank_inport_N
 elseif  strcmp(model_name,'watertank_inport_NN_cex')
     var_names_list={'In1','u','y','u_nn','y_nn','u_nn_cex_1','y_nn_cex_1'};
 end
-Br_falsif = BreachSimulinkSystem(model_name,'all',[],var_names_list);
+Br_falsif = BreachSimulinkSystem(model_name,{},[],var_names_list);
 warning('Only works for 1D systems')
 
 % Test with constant
@@ -71,6 +74,7 @@ else
     property=falsif.property_cex;
 end
 property
+
 R = BreachRequirement(property);
 falsif_pb = FalsificationProblem(Br_falsif, R);
 
@@ -100,7 +104,14 @@ switch falsif.method
         falsif_pb.max_obj_eval = falsif.max_obj_eval;
         falsif_pb.setup_global_nelder_mead('num_corners',falsif.num_corners,...
             'num_quasi_rand_samples',falsif.num_samples, 'local_max_obj_eval',falsif.max_obj_eval_local) %0,  1000,100
-        
+    case 'CMA'
+        %% Try CMA-ES
+        falsif_pb.max_obj_eval = falsif.max_obj_eval;
+        falsif_pb.setup_solver('cmaes');
+        falsif_pb.solver_options.LBounds %50
+        % upper bound must be greater than lower bound
+        %falsif_pb3 = FalsificationProblem(AFC_Falsify, req,{'Pedal_Angle_pulse_period', 'Pedal_Angle_pulse_amp'}, [10 20; 10 60]);
+
 end
 
 
@@ -109,7 +120,7 @@ falsif_pb.solve();
 Rlog = falsif_pb.GetLog();
 figure;BreachSamplesPlot(Rlog);
 if options.plotting_sim
-    figure;falsif_pb.BrSet_Logged.PlotSignals({'In1', 'y'});
+    figure;falsif_pb.BrSet_Logged.PlotSignals({'In1', 'y','y_nn'});
 end
 Br_False = falsif_pb.GetFalse(); % AFC_False contains the falsifying trace
 try
@@ -143,6 +154,16 @@ fprintf('Each trace includes 1 control output(s), 1 state variable(s) and 1 refe
 % need to have variables for no_ref, no_u, no_y. Probably add them in the
 % options.
 
+% we evaluate the STL property on the nominal controller
+if check_nominal
+    Br_check_nom=Br_falsif.copy();
+    inputs_tested=falsif_pb.X_log;
+    Br_check_nom.SetParam(input_param, inputs_tested);
+    Br_check_nom.Sim(sim_time);
+    % robustness_check{1} = Br_check.CheckSpec(falsif.property);
+    % robustness_check{2}=Br_check.CheckSpec(falsif.property_cex);
+    rob_nominal=Br_check_nom.CheckSpec(falsif.property_nom);
+end  
 try
     no_REF=size(data.REF,2);
     no_U=size(data.U,2);
