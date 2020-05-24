@@ -1,4 +1,4 @@
-function[data_cex_cluster,idx_cluster]=cluster_and_sample(data_cex,falsif_pb,options,cluster_all)
+function[data_cex_cluster,idx_cluster]=cluster_and_sample(data_cex,falsif_pb,falsif,options,cluster_all)
 %cluster_and_sample Clustering the CEX from Breach and sampling from a
 %neighborhood around them
 %   The steps followed involve i) use of counterexamples from Breach,
@@ -28,20 +28,25 @@ end
 cex_ref_points_array=cell2mat(cex_ref_points)'
 %}
 
-if nargin<4
+if nargin<5
     cluster_all=0;
-end
-if cluster_all==1
-    data_cex_cluster=data_cex;
-    return;
 end
 falsif_rob_values=falsif_pb.obj_false;
 no_cex=length(falsif_rob_values);
-cex_ref_points_array=falsif_pb.X_false(1:2:end,:)'; %ignore timing
+if cluster_all==1
+    data_cex_cluster=data_cex;
+    idx_cluster=1:no_cex;
+    return;
+end
+if strcmp(falsif.method,'CMA')
+    cex_ref_points_array=falsif_pb.X_false'; %timing is ignored already
+else
+    cex_ref_points_array=falsif_pb.X_false(1:2:end,:)'; %ignore timing
+end
 
-if no_cex<10
+if no_cex<20
     no_clusters=floor(no_cex/2)+1;
-elseif no_cex>10 && no_cex<100
+elseif no_cex>=20 && no_cex<100
     no_clusters=floor(no_cex/3);
 else
     no_clusters=floor(no_cex/4);
@@ -97,7 +102,12 @@ for ii=1:optimal_no_clusters
         rob_kept=[rob_kept;robustness_points_clusters{ii}]
     else
         fprintf('\n We will keep 3 points out of %i in cluster %i.\n',length(robustness_points_clusters{ii}),ii);
-        [min_values,ix]=mink(robustness_points_clusters{ii},3);
+        try 
+            [min_values,ix]=mink(robustness_points_clusters{ii},3);
+        catch
+            temp=sort(robustness_points_clusters{ii});
+            min_values=temp(1:3);
+        end
         rob_kept=[rob_kept;min_values];
     end
     
@@ -124,7 +134,7 @@ end
 data_cex_cluster.REF=data_cex.REF(index_final,:);
 data_cex_cluster.U=data_cex.U(index_final,:);
 data_cex_cluster.Y=data_cex.Y(index_final,:);
-idx_cluster=sort(idx_kept_new);
+idx_cluster=sort(idx_kept);
 %{
         diff=ALL((idx==j))-C(j,:);
         no_idx=[no_idx;length(find(idx==j))];

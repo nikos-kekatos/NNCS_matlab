@@ -11,7 +11,10 @@ options.SLX_model=SLX_model;
 options.reference_type=3;
 
 % Select if you want to plot one simulation trace from training
-options.plotting_sim=1;
+options.plotting_sim=0;
+
+options.test_dataMatching=0;
+options.specs_file='specs_watertank.stl';
 % added for Breach
 try
     block_name=strcat(SLX_model,'/Switch1');

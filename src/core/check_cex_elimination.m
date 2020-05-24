@@ -1,4 +1,4 @@
-function [robustness_check] = check_cex_elimination(falsif_pb,falsif,data_cex,model_name,idx_cluster)
+function [robustness_check,inputs_cex] = check_cex_elimination(falsif_pb,falsif,data_cex,model_name,idx_cluster)
 %check_cex_elimination Extract CEX and check in new Simulink model
 %   This should work for single and multiple CEX.
 
@@ -15,7 +15,7 @@ end
 condition=length(idx_cluster)==length(falsif_pb.obj_false);
 if condition
     fprintf('\nThe number of CEX before and after clustering is the same.\n')
-    falsif_idx=find(falsif_pb.obj_log<0);
+%     falsif_idx=find(falsif_pb.obj_log<0);
     falsif_idx=find(falsif_pb.obj_false<0);
 else
     falsif_idx=idx_cluster;
@@ -30,7 +30,7 @@ else
     inputs_cex=falsif_pb.X_false(:,falsif_idx);
 end
 no_cex=length(falsif_idx);
-no_cex=length(inputs_cex)
+no_cex=size(inputs_cex,2)
 
 %3. Create Breach object
 Br_check = BreachSimulinkSystem(model_name,{},[],var_names_list);
@@ -62,7 +62,9 @@ for ii = 1:nbinputsig
     end
     
     input_param
-    
+    if strcmp(falsif.method,'CMA')
+        input_param=input_param(1:2:end)
+    end
 end
 
 %4. Specify inputs/old cexs and check their robustness
