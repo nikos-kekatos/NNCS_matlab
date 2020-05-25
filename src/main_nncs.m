@@ -39,19 +39,22 @@ delete(findall(0)); % close Simulink scopes
 end
 %% 2. Iput: specify Simulink model
 % The models are saved in ./models/
-
 % SLX_model='models/robotarm/robotarm_PID','robotarm_PID','quad_1_ref','quad_3_ref',
 %'quad_3_ref_6_y','helicopter','watertank_comp_design_mod';
+
 % SLX_model='watertank_inport';
-SLX_model='quadcopter';
+% SLX_model='quadcopter';
+SLX_model='robotarm'
 load_system(SLX_model)
 % Uncomment next line if you want to open the model
 % open(SLX_model)
 
 %% 3. Input: specify configuration parameters
 % run('configuration_1.m'),('config_quad_1_ref.m')
+
 %  run('config_1_watertank.m')
-run('config_quadcopter.m')
+% run('config_quadcopter.m')
+run('config_robotarm.m')
 %% 4a. Run simulations -- Generate training data
 options.error_mean=0%0.0001;
 options.error_sd=0%0.001;
@@ -86,10 +89,10 @@ end
 %% 6. Train NN Controller
 %the assignments could go a function/file
 training_options.retraining=0;
-training_options.use_error_dyn=0;       % watertank=1
-training_options.use_previous_u=0;      % waterank=2
-training_options.use_previous_ref=0;    % waterank=3
-training_options.use_previous_y=0;      % waterank=3
+training_options.use_error_dyn=0;       % watertank=1    %robotarm=0    %quadcopter=0
+training_options.use_previous_u=2;      % waterank=2     %robotarm=2    %quadcopter=0
+training_options.use_previous_ref=3;    % waterank=3     %robotarm=3    %quadcopter=0
+training_options.use_previous_y=3;      % waterank=3     %robotarm=3    %quadcopter=0
 % training_options.neurons=[20 10 10];
 training_options.neurons=[30 30];
 % training_options.neurons=[50 ];
@@ -166,13 +169,13 @@ plot_NN_sim(data,options)
 model_name=[];
 % model_name='watertank_comp_design_mod_NN';
 options.ref_Ts=5;
-options.input_choice=2;
-options.sim_ref=0.5;          % watertank 8
-options.ref_min=-1;        % watertank 8.5
-options.ref_max=3;       % watertank 11.5
-options.sim_cov=[2.5;0.5];     % watertank [9;11]
+options.input_choice=3;
+options.sim_ref=0.4;          % watertank 8  % quadcopter 0.5
+options.ref_min=-0.5;        % watertank 8.5   % quadcopter -1
+options.ref_max=0.5;       % watertank 11.5   % quadcopter 3
+options.sim_cov=[0.4;-0.2];     % watertank [9;11] %quadcopter [2.5;0.5]
 options.u_index_plot=1;
-options.y_index_plot=3;
+options.y_index_plot=1;     % watertank, robotarm 1 % quadcopter 3  
 options.ref_index_plot=1;
 
 run_simulation_nncs(options,model_name)
@@ -223,15 +226,15 @@ falsif.property_file=options.specs_file;
 falsif.property=falsif.property_all{2};%// TO-DO automatically specify the file
 falsif.property_cex=falsif.property_all{3};
 falsif.property_nom=falsif.property_all{4}
-falsif.breach_ref_min=-1;            %watertank 8 
-falsif.breach_ref_max=3;           % watertank 12
+falsif.breach_ref_min=-0.5;            %watertank 8 % quadcopter -1 %robotarm -0.5
+falsif.breach_ref_max=0.5;           % watertank 12 % quadcopter 3  % robotarm 0.5
 falsif.stop_at_false=false;
 falsif.T=options.T_train;
 falsif.input_template='fixed';
 try
     falsif.breach_segments=options.breach_segments;
 catch
-    falsif.breach_segments=2;
+    falsif.breach_segments=4;
     options.breach_segments=falsif.breach_segments;
 end
 stop=0;
@@ -282,16 +285,18 @@ while i_f<=falsif.iterations_max && ~stop
              break;
         else
             falsif.method='quasi';
+            falsif_pb{i_f}=falsif_pb_zero;
         end
     end
     %%% ------------------------------------ %%
     %%% ----- 11-B: Clustering  CEX     ---- %%
     %%% ------------------------------------ %%
- 
+ %%
     cluster_all=0;
     [data_cex_cluster,idx_cluster]=cluster_and_sample(data_cex,falsif_pb{i_f},falsif,options,cluster_all);
     data_backup=data_cex;
     data_cex=data_cex_cluster;
+    %%
     %%% ------------------------------------ %%
     %%% ----- 11-C: Retraining with CEX ---- %%
     %%% ------------------------------------ %%
