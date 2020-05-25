@@ -8,6 +8,8 @@ if strcmp(model_name,'watertank_inport_NN_cex')
     %     no_REF=1;
     %     no_U=1;
     %     no_Y=1;
+else
+    var_names_list={};
 end
 
 %0. if used clustering, we need to update the falsif_index.

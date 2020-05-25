@@ -132,6 +132,9 @@ elseif options.reference_type==4
         delete([options.SLX_model,'_breach.slxc']);
     end
 end
+options.num_REF=size(data.REF,2);
+options.num_Y=size(data.Y,2);
+options.num_U=size(data.U,2);
 
 % remove slprj
 rmdir('slprj','s');

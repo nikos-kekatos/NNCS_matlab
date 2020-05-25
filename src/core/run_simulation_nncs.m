@@ -9,6 +9,21 @@ end
 if nargin<=2
     plot_cex=0;
 end
+if isempty(options.ref_index_plot)
+    ref_idx=1;
+else
+    ref_idx=options.ref_index_plot;
+end
+if isempty(options.y_index_plot)
+    y_idx=1;
+else
+    y_idx=options.y_index_plot;
+end
+if isempty(options.u_index_plot)
+    u_idx=1;
+else
+    u_idx=options.u_index_plot;
+end
 % Previously, this part was done manually. The user had to copy the block
 % created in the previous step with 'gensim' and insert it in the SLX_model
 % with the NN.
@@ -66,7 +81,7 @@ grid(AX);
 set(AX, 'FontSize', 12);
 xlabel(AX, '$t$', 'Interpreter', 'latex', 'FontSize', 20);
 ylabel(AX, '$\ y(k)$', 'Interpreter', 'latex', 'FontSize', 20);
-plot(ref.time(1:end-1),ref.signals.values(1:end-1),'r',y.time(1:end),y.signals.values(1:end),'g--',y_nn.time(1:end-1),y_nn.signals.values(1:end-1),'b-.','Linewidth',0.75);
+plot(ref.time(1:end-1),ref.signals.values(1:end-1,ref_idx),'r',y.time(1:end),y.signals.values(1:end,y_idx),'g--',y_nn.time(1:end-1),y_nn.signals.values(1:end-1,y_idx),'b-.','Linewidth',0.75);
 % xlabel('time (s)')
 % ylabel('plant output')
 legend('reference','nominal','NN','FontSize',14)
@@ -81,7 +96,7 @@ grid(AX);
 set(AX, 'FontSize', 12);
 xlabel(AX, '$t$', 'Interpreter', 'latex', 'FontSize', 20);
 ylabel(AX, '$\ u(k)$', 'Interpreter', 'latex', 'FontSize', 20);
-plot(u.time(1:end),[u.signals.values(1:end-1);u.signals.values(end-1)],'g--',u_nn.time(1:end-1),u_nn.signals.values(1:end-1),'b-.','Linewidth',0.75);
+plot(u.time(1:end),[u.signals.values(1:end-1,u_idx);u.signals.values(end-1,u_idx)],'g--',u_nn.time(1:end-1,u_idx),u_nn.signals.values(1:end-1,u_idx),'b-.','Linewidth',0.75);
 % xlabel('time (s)')
 % ylabel('plant output')
 legend('nominal-PID','NN','FontSize',14)
@@ -106,7 +121,7 @@ grid(AX);
 set(AX, 'FontSize', 12);
 xlabel(AX, '$t$', 'Interpreter', 'latex', 'FontSize', 20);
 ylabel(AX, '$\ y(k)$', 'Interpreter', 'latex', 'FontSize', 20);
-plot(ref.time(1:end-1),ref.signals.values(1:end-1),'r',y_nn.time,y_nn.signals.values,'b-.',y_nn_cex_1.time,y_nn_cex_1.signals.values,'m.-.','Linewidth',0.75);
+plot(ref.time(1:end-1),ref.signals.values(1:end-1,ref_idx),'r',y_nn.time,y_nn.signals.values(:,y_idx),'b-.',y_nn_cex_1.time,y_nn_cex_1.signals.values(:,y_idx),'m.-.','Linewidth',0.75);
 % xlabel('time (s)')
 % ylabel('plant output')
 % legend('reference',' NN original','NN with cex','FontSize',14)
@@ -122,7 +137,7 @@ grid(AX);
 set(AX, 'FontSize', 12);
 xlabel(AX, '$t$', 'Interpreter', 'latex', 'FontSize', 20);
 ylabel(AX, '$\ y(k)$', 'Interpreter', 'latex', 'FontSize', 20);
-plot(ref.time(1:end-1),ref.signals.values(1:end-1),'r',y.time,y.signals.values,'g--',y_nn.time,y_nn.signals.values,'b-.',y_nn_cex_1.time,y_nn_cex_1.signals.values,'m.-.','Linewidth',0.75);
+plot(ref.time(1:end-1),ref.signals.values(1:end-1,ref_idx),'r',y.time,y.signals.values(:,y_idx),'g--',y_nn.time,y_nn.signals.values(:,y_idx),'b-.',y_nn_cex_1.time,y_nn_cex_1.signals.values(:,y_idx),'m.-.','Linewidth',0.75);
 % xlabel('time (s)')
 % ylabel('plant output')
 legend('reference', 'PID', 'NN original','NN with cex','FontSize',14)

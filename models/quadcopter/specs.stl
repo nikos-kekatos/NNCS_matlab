@@ -1,3 +1,4 @@
+
 phi:=   alw_[0,20] (abs(y_3_[t]-1.2*In1[t])<2)
 param sim_time=20
 #phi_2:=   alw_[0,sim_time] (abs(y_nn_3_[t]-y_3_[t])<0.1)

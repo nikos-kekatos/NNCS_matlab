@@ -13,18 +13,24 @@ function [data_cex,falsif_pb,rob_nominal] = falsification_breach(options,falsif,
 %   the worst robustness and choose them for use in the retraining loop.
 
 % falsif.property
-
+warning('off','all')
 if nargin<4
     check_nominal=0;
 end
 options.input_choice=4;
 if strcmp(model_name,'watertank_inport')|| strcmp(model_name,'watertank_inport_NN')
     var_names_list={'In1','u','y','u_nn','y_nn'};
+    model_type=1;
     %     no_REF=1;
     %     no_U=1;
     %     no_Y=1;
 elseif  strcmp(model_name,'watertank_inport_NN_cex')
     var_names_list={'In1','u','y','u_nn','y_nn','u_nn_cex_1','y_nn_cex_1'};
+    model_type=1;
+elseif strcmp(model_name,'quadcopter')|| strcmp(model_name,'quadcopter_NN')
+    var_names_list={'In1','u_1_','y_3_','u_nn_1_','y_nn_3_','u_nn_cex_1_1_','y_nn_cex_1_3_'};
+    var_names_list={};
+    model_type=2;
 end
 Br_falsif = BreachSimulinkSystem(model_name,{},[],var_names_list);
 warning('Only works for 1D systems')
@@ -32,6 +38,8 @@ warning('Only works for 1D systems')
 % Test with constant
 if strcmp(model_name,'watertank_inport')|| strcmp(model_name,'watertank_inport_NN')
     Br_falsif.SetParam('In1_u0',11);
+elseif strcmp(model_name,'quadcopter')|| strcmp(model_name,'quadcopter_NN')
+    Br_falsif.SetParam('In1_u0',1);
 else
     disp('For each model, we should replace the default value for testing')
 end
@@ -124,7 +132,11 @@ falsif_pb.solve();
 Rlog = falsif_pb.GetLog();
 figure;BreachSamplesPlot(Rlog);
 if options.plotting_sim
-    figure;falsif_pb.BrSet_Logged.PlotSignals({'In1', 'y','y_nn'});
+    if model_type==1
+        figure;falsif_pb.BrSet_Logged.PlotSignals({'In1', 'y','y_nn'});
+    elseif model_type==2
+        figure;falsif_pb.BrSet_Logged.PlotSignals({'In1', 'y_3_','y_nn_3_)'});
+    end
 end
 Br_False = falsif_pb.GetFalse(); % AFC_False contains the falsifying trace
 try
@@ -173,9 +185,9 @@ try
     no_U=size(data.U,2);
     no_Y=size(data.Y,2);
 catch
-    no_REF=1;
-    no_U=1;
-    no_Y=1;
+    no_REF=options.num_REF;
+    no_U=options.num_U;
+    no_Y=options.num_Y;
 end
 %then we need to find indexes for REF
 index_REF=[];
@@ -248,12 +260,11 @@ data_cex.Y=Y_cex_breach_all';
 data_cex.U_NN=U_NN_cex_breach_all';
 data_cex.Y_NN=Y_NN_cex_breach_all';
 try
-new_pts = falsif_pb.X_log; % the points that were explored by Breach */
-Br_False.AddPoints(new_pts);
-Br_falsif.AddPoints(new_pts);
-current_coverage_value = Br_False.ComputeLogCellOccupancyCoverage
-current_coverage_value = Br_falsif.ComputeLogCellOccupancyCoverage
-
+    new_pts = falsif_pb.X_log; % the points that were explored by Breach */
+    Br_False.AddPoints(new_pts);
+    Br_falsif.AddPoints(new_pts);
+    current_coverage_value = Br_False.ComputeLogCellOccupancyCoverage
+    current_coverage_value = Br_falsif.ComputeLogCellOccupancyCoverage
 end
 
 

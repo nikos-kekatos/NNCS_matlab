@@ -38,9 +38,11 @@ if cluster_all==1
     idx_cluster=1:no_cex;
     return;
 end
-if strcmp(falsif.method,'CMA')
-    cex_ref_points_array=falsif_pb.X_false'; %timing is ignored already
-else
+if falsif.breach_segments==1 || strcmp(falsif.method,'CMA')
+        cex_ref_points_array=falsif_pb.X_false'; %timing is ignored already
+end
+
+if falsif.breach_segments>1 && ~strcmp(falsif.method,'CMA')
     cex_ref_points_array=falsif_pb.X_false(1:2:end,:)'; %ignore timing
 end
 
@@ -64,21 +66,37 @@ figure;
 plot(E);
 
 optimal_no_clusters=E.OptimalK;
-figure;gscatter(cex_ref_points_array(:,1),cex_ref_points_array(:,2),E.OptimalY,'rbgymck','xods*v><ph')
-if options.plotting_sim
-figure;plot(cex_ref_points_array(:,1),cex_ref_points_array(:,2),'k*','MarkerSize',5);
+if falsif.breach_segments==2
+    figure;gscatter(cex_ref_points_array(:,1),cex_ref_points_array(:,2),E.OptimalY,'rbgymck','xods*v><ph')
+    if options.plotting_sim
+        figure;plot(cex_ref_points_array(:,1),cex_ref_points_array(:,2),'k*','MarkerSize',5);
+    end
+elseif falsif.breach_segments==1
+    figure;gscatter(cex_ref_points_array(:,1),cex_ref_points_array(:,1),E.OptimalY,'rbgymck','xods*v><ph')
+else
+    warning('It is not possible to plot more than 2 dimensions');
 end
 % replicates needed to avoid local minima
 [idx,C]=kmeans(cex_ref_points_array,optimal_no_clusters,'replicates',8);
-figure
-gscatter(cex_ref_points_array(:,1),cex_ref_points_array(:,2),idx,'rbgymck','xods*v><ph')
-hold on
-plot(C(:,1),C(:,2),'k+')
-
+if falsif.breach_segments==2
+    figure
+    gscatter(cex_ref_points_array(:,1),cex_ref_points_array(:,2),idx,'rbgymck','xods*v><ph')
+    hold on
+    plot(C(:,1),C(:,2),'k+')
+elseif falsif.breach_segments==1
+    figure
+    gscatter(cex_ref_points_array(:,1),cex_ref_points_array(:,1),idx,'rbgymck','xods*v><ph')
+    hold on
+    plot(C(:,1),C(:,1),'k+')
+else
+    warning('It is not possible to plot more than 2 dimensions');
+end
 %grid resolution as tolerance
 
+try
 cex_tolerance(options.coverage.delta_resolution)
 disp(' ')
+end
 %user-defined tolerance
 cex_tolerance(0.1)
 

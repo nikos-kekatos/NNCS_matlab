@@ -40,22 +40,18 @@ end
 %% 2. Iput: specify Simulink model
 % The models are saved in ./models/
 
-% SLX_model='models/robotarm/robotarm_PID';
-% SLX_model='robotarm_PID';
-% SLX_model='quad_1_ref';
-% SLX_model='quad_3_ref';
-% SLX_model='quad_3_ref_6_y';
-% SLX_model='helicopter';
-%  SLX_model='watertank_comp_design_mod';
- SLX_model='watertank_inport';
+% SLX_model='models/robotarm/robotarm_PID','robotarm_PID','quad_1_ref','quad_3_ref',
+%'quad_3_ref_6_y','helicopter','watertank_comp_design_mod';
+% SLX_model='watertank_inport';
+SLX_model='quadcopter';
 load_system(SLX_model)
 % Uncomment next line if you want to open the model
 % open(SLX_model)
 
 %% 3. Input: specify configuration parameters
-% run('configuration_1.m')
-% run('config_quad_1_ref.m')
- run('config_1_watertank.m')
+% run('configuration_1.m'),('config_quad_1_ref.m')
+%  run('config_1_watertank.m')
+run('config_quadcopter.m')
 %% 4a. Run simulations -- Generate training data
 options.error_mean=0%0.0001;
 options.error_sd=0%0.001;
@@ -90,10 +86,10 @@ end
 %% 6. Train NN Controller
 %the assignments could go a function/file
 training_options.retraining=0;
-training_options.use_error_dyn=1;
-training_options.use_previous_u=2;      % default=2
-training_options.use_previous_ref=3;    % default=3
-training_options.use_previous_y=3;      % default=3
+training_options.use_error_dyn=0;       % watertank=1
+training_options.use_previous_u=0;      % waterank=2
+training_options.use_previous_ref=0;    % waterank=3
+training_options.use_previous_y=0;      % waterank=3
 % training_options.neurons=[20 10 10];
 training_options.neurons=[30 30];
 % training_options.neurons=[50 ];
@@ -170,28 +166,33 @@ plot_NN_sim(data,options)
 model_name=[];
 % model_name='watertank_comp_design_mod_NN';
 options.ref_Ts=5;
-options.input_choice=1;
-options.sim_ref=8;
-options.ref_min=8.5;
-options.ref_max=11.5;
-options.sim_cov=[9;11];
+options.input_choice=2;
+options.sim_ref=0.5;          % watertank 8
+options.ref_min=-1;        % watertank 8.5
+options.ref_max=3;       % watertank 11.5
+options.sim_cov=[2.5;0.5];     % watertank [9;11]
+options.u_index_plot=1;
+options.y_index_plot=3;
+options.ref_index_plot=1;
+
 run_simulation_nncs(options,model_name)
 
 %% 10. Data matching (analysis w/ training data)
-if options.plotting_sim
-    plot_coverage_boxes(options,1);
-end
+
 warning('This code only works for coverage')
+
 if options.reference_type~=3
-    error('It is not possible to perform data matching');
+    warning('It is not possible to perform data matching');
+else
+    if options.plotting_sim
+        plot_coverage_boxes(options,1);
+    end    
+    options.testing.plotting=0;    
+    options.testing.train_data=0;% 0: for centers, 1: random points
+    if options.test_dataMatching
+        [testing,options]=test_coverage(options,model_name);
+    end
 end
-options.testing.plotting=0;
-
-options.testing.train_data=0;% 0: for centers, 1: random points
-if options.test_dataMatching
-[testing,options]=test_coverage(options,model_name);
-end
-
 % The average MSE error over 49 simulations is 0.00031.
 
 % The maximum MSE error over 49 simulations is 0.00207.
@@ -222,8 +223,8 @@ falsif.property_file=options.specs_file;
 falsif.property=falsif.property_all{2};%// TO-DO automatically specify the file
 falsif.property_cex=falsif.property_all{3};
 falsif.property_nom=falsif.property_all{4}
-falsif.breach_ref_min=8;
-falsif.breach_ref_max=12;
+falsif.breach_ref_min=-1;            %watertank 8 
+falsif.breach_ref_max=3;           % watertank 12
 falsif.stop_at_false=false;
 falsif.T=options.T_train;
 falsif.input_template='fixed';
@@ -231,6 +232,7 @@ try
     falsif.breach_segments=options.breach_segments;
 catch
     falsif.breach_segments=2;
+    options.breach_segments=falsif.breach_segments;
 end
 stop=0;
 i_f=1;
@@ -255,7 +257,7 @@ while i_f<=falsif.iterations_max && ~stop
     end
     falsif.seed=seeds_all(i_f);
     falsif.iteration=i_f; % choose property
-    check_nominal=0;
+    check_nominal=1;
     [data_cex,falsif_pb_temp,rob_nominal]= falsification_breach(options,falsif,model_name,check_nominal);
     robustness_checks_false{i_f,1}=falsif_pb_temp.obj_false;
     robustness_checks_all{i_f,1}=falsif_pb_temp.obj_log;
@@ -371,13 +373,13 @@ end
 %% 12. Evaluating retrained SLX model
 
 model_name=[];
-model_name='watertank_inport_NN_cex';
+% model_name='watertank_inport_NN_cex';
+model_name='quadcopter_NN_cex'
 options.input_choice=3;
-options.sim_ref=8;
-options.ref_min=8.5;
-options.ref_max=11.5;
-options.sim_cov=[12;8];   
-options.sim_cov=[10.1736;11.9];
+options.sim_ref=8;               %watertank 8
+options.ref_min=8.5;                %watertank 8.5
+options.ref_max=11.5;               %watertank 11.5 
+options.sim_cov=[0.5;2];             %watertank [12;8]
 
 
 run_simulation_nncs(options,model_name,1) %3rd input is true for counterexamples
