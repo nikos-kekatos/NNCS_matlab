@@ -41,11 +41,19 @@ for i=1:num_cex
     %options.ref_max=11.5;
     %options.sim_cov=[12;8];
     if options.breach_segments==2
-        options.sim_cov=[inputs_cex(1,i);inputs_cex(2,i)];
+        if size(inputs_cex,1)==2
+            options.sim_cov=[inputs_cex(1,i);inputs_cex(2,i)];
+        elseif size(inputs_cex,1)==3
+            options.sim_cov=[inputs_cex(1,i);inputs_cex(3,i)];
+        end
     elseif options.breach_segments==1
         options.sim_cov=[inputs_cex(1,i)];
     else
-        warning('Need to fix the code for more than 2 pieces')
+        if size(inputs_cex,1)>options.breach_segments %then time steps exist
+            options.sim_cov=[inputs_cex(1:2:end,i)];
+        else % no time steps
+            options.sim_cov=[inputs_cex(1:end,i)];
+        end
     end
     options.workspace = simset('SrcWorkspace','current');
     sim(model_name,[],options.workspace);

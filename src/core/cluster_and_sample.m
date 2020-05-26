@@ -117,7 +117,7 @@ for ii=1:optimal_no_clusters
         fprintf('\n We will keep all points in cluster %i.\n',ii);
         %         points_kept=[points_kept;points_clusters{ii}];
         %         index_kept=[index_kept];
-        rob_kept=[rob_kept;robustness_points_clusters{ii}]
+        rob_kept=[rob_kept;robustness_points_clusters{ii}];
     else
         fprintf('\n We will keep 3 points out of %i in cluster %i.\n',length(robustness_points_clusters{ii}),ii);
         try 
@@ -132,7 +132,7 @@ for ii=1:optimal_no_clusters
 end
 fprintf('We will keep %i CEX out of total %i.\n',length(rob_kept),no_cex);
 
-[tf,idx_kept]=ismember(rob_kept,falsif_rob_values)
+[tf,idx_kept]=ismember(rob_kept,falsif_rob_values);
 
 % We will keep the idx_kept. However, what we have is the entire data_cex
 % As such, we need to split the data_cex into pieces and keep the
@@ -142,7 +142,7 @@ fprintf('We will keep %i CEX out of total %i.\n',length(rob_kept),no_cex);
 idx_kept_new=[];
 no_points=length(data_cex.REF)/no_cex
 for i=1:length(idx_kept)
-    idx_kept_new=[idx_kept_new;(idx_kept(i)-1)*no_points+1, idx_kept(i)*no_points]
+    idx_kept_new=[idx_kept_new;(idx_kept(i)-1)*no_points+1, idx_kept(i)*no_points];
 end
 indices_temp=sort(idx_kept_new,1)
 index_final=[];
