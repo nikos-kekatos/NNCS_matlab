@@ -34,6 +34,9 @@ elseif strcmp(model_name,'quadcopter')|| strcmp(model_name,'quadcopter_NN')
 elseif strcmp(model_name,'robotarm')||strcmp(model_name,'robotarm_NN') ||strcmp(model_name,'robotarm_NN_cex')
     var_names_list={};
     model_type=3;
+elseif strcmp(model_name,'tank_reactor')||strcmp(model_name,'tank_reactor_NN') ||strcmp(model_name,'robotarm_NN_cex')
+    var_names_list={};
+    model_type=4;
 end
 Br_falsif = BreachSimulinkSystem(model_name,{},[],var_names_list);
 warning('Only works for 1D systems')

@@ -41,7 +41,7 @@ end
 % The models are saved in ./models/
 % SLX_model='models/robotarm/robotarm_PID','robotarm_PID','quad_1_ref','quad_3_ref',
 %'quad_3_ref_6_y','helicopter','watertank_comp_design_mod';
-model=1; % 1: watertank, 2: robotarm, 3: quadcopter 
+model=3; % 1: watertank, 2: robotarm, 3: quadcopter 
 
 if model==1
     SLX_model='watertank_inport_NN_cex';
@@ -49,6 +49,8 @@ elseif model==2
     SLX_model='robotarm'
 elseif model==3
     SLX_model='quadcopter';
+elseif model==4
+    SLX_model='tank_reactor';
 end
 load_system(SLX_model)
 % Uncomment next line if you want to open the model
@@ -63,10 +65,12 @@ elseif model==2
     run('config_robotarm.m')
 elseif model==3
     run('config_quadcopter.m')
+elseif model==4
+    run('config_tank.m')
 end
 %% 4a. Run simulations -- Generate training data
 options.error_mean=0%0.0001;
-options.error_sd=0%0.001;
+options.error_sd=0.001%0.001;
 
 % Breach options
 % options.no_traces=30;
@@ -82,9 +86,9 @@ dataset{1}='array_sim_constant_ref_25_traces_25x1_time_10_18-04-2020_19:22.mat';
     [data,options]= load_data(dataset,options);
 end
 %% 5a. Data Selection 
-options.trimming=1;
-options.keepData_factor=1;% we keep one out of every 5 data
-options.deleteData_factor=9; % we delete one every 3 data points
+options.trimming=0;
+options.keepData_factor=50;% we keep one out of every 5 data
+options.deleteData_factor=0; % we delete one every 3 data points
 if options.trimming
 [data]=trim_data(data,options);
 end
@@ -113,6 +117,11 @@ elseif model==3
     training_options.use_previous_u=0;      % waterank=2     %robotarm=2    %quadcopter=0
     training_options.use_previous_ref=0;    % waterank=3     %robotarm=3    %quadcopter=0
     training_options.use_previous_y=0;
+elseif model==4
+    training_options.use_error_dyn=1;       % watertank=1    %robotarm=0    %quadcopter=0
+    training_options.use_previous_u=2;      % waterank=2     %robotarm=2    %quadcopter=0
+    training_options.use_previous_ref=3;    % waterank=3     %robotarm=3    %quadcopter=0
+    training_options.use_previous_y=3;
 end
 training_options.neurons=[30 30];
 % training_options.neurons=[50 ];
@@ -188,31 +197,45 @@ plot_NN_sim(data,options)
 %% 9. Analyse NNCS in Simulink
 model_name=[];
 % model_name='watertank_comp_design_mod_NN';
-options.ref_Ts=5;
 options.input_choice=3;
+% model=2;
 if model==1
-    options.sim_ref=11;          % watertank 8  % quadcopter 0.5  % robotarm 0.4
-    options.ref_min=8.5;        % watertank 8.5   % quadcopter -1 % robotarm -0.5
-    options.ref_max=11.5;       % watertank 11.5   % quadcopter 3   % robotarm 0.5
-    options.sim_cov=[9;11];     % watertank [9;11] %quadcopter [2.5;0.5]
+    options.ref_Ts=5;
+    options.sim_ref=11;          % watertank 
+    options.ref_min=8.5;        
+    options.ref_max=11.5;       
+    options.sim_cov=[9;11];     
     options.u_index_plot=1;
-    options.y_index_plot=1;     % watertank, robotarm 1 % quadcopter 3
+    options.y_index_plot=1;     
     options.ref_index_plot=1;
 elseif model==2
-    options.sim_ref=0.4;          % watertank 8  % quadcopter 0.5  % robotarm 0.4
-    options.ref_min=-0.5;        % watertank 8.5   % quadcopter -1 % robotarm -0.5
-    options.ref_max=0.5;       % watertank 11.5   % quadcopter 3   % robotarm 0.5
-    options.sim_cov=[0.3;0.1];     % watertank [9;11] %quadcopter [2.5;0.5]
+    options.ref_Ts=5;
+    options.sim_ref=0.4;          % robotarm
+    options.ref_min=-0.5;        
+    options.ref_max=0.5;       
+    options.sim_cov=[0.3;0.1;-0.5;0.5];    
     options.u_index_plot=1;
-    options.y_index_plot=1;     % watertank, robotarm 1 % quadcopter 3
+    options.y_index_plot=1;     
     options.ref_index_plot=1;
+    options.error_mean=0%0.0001;
+    options.error_sd=0%0.001;
 elseif model==3
-    options.sim_ref=0.5;          % watertank 8  % quadcopter 0.5  % robotarm 0.4
-    options.ref_min=-1;        % watertank 8.5   % quadcopter -1 % robotarm -0.5
-    options.ref_max=3;       % watertank 11.5   % quadcopter 3   % robotarm 0.5
-    options.sim_cov=[2.5;0.5];     % watertank [9;11] %quadcopter [2.5;0.5]
+    options.ref_Ts=4;options.T_train=40;
+    options.sim_ref=0.5;          %quadcopter
+    options.ref_min=-1;        
+    options.ref_max=3;       
+    options.sim_cov=[0.5;2.75;-1;0.8;0.5;2.75;-1;0.8; 0.8;2.1];     
     options.u_index_plot=1;
-    options.y_index_plot=3;     % watertank, robotarm 1 % quadcopter 3
+    options.y_index_plot=3;     
+    options.ref_index_plot=1;
+elseif model==4
+    options.ref_Ts=10;             %tank_reactor
+    options.sim_ref=3;          
+    options.ref_min=2;        
+    options.ref_max=5;       
+    options.sim_cov=[2;5];     
+    options.u_index_plot=1;
+    options.y_index_plot=1;     
     options.ref_index_plot=1;
 end
 run_simulation_nncs(options,model_name)
@@ -249,11 +272,11 @@ clear data_cex_cluster tr tr_all condition cluster_all check_nominal model_name
 
 options.testing_breach=1;
 training_options.combining_old_and_cex=1; % 1: combine old and cex
-falsif.iterations_max=1;
+falsif.iterations_max=2;
 falsif.method='quasi';
-falsif.num_samples=100;
+falsif.num_samples=25;
 falsif.num_corners=25;
-falsif.max_obj_eval=100;
+falsif.max_obj_eval=25;
 falsif.max_obj_eval_local=20;
 falsif.seed=100;
 falsif.num_inputs=1;
@@ -272,6 +295,9 @@ elseif model==2
 elseif model==3
     falsif.breach_ref_min=-1;            %watertank 8 % quadcopter -1 %robotarm -0.5
     falsif.breach_ref_max=3;
+elseif model==4
+    falsif.breach_ref_min=2;            %watertank 8 % quadcopter -1 %robotarm -0.5
+    falsif.breach_ref_max=5;
 end
 falsif.stop_at_false=false;
 falsif.T=options.T_train;
@@ -343,7 +369,7 @@ while i_f<=falsif.iterations_max && ~stop
     %%% ----- 11-B: Clustering  CEX     ---- %%
     %%% ------------------------------------ %%
  %%
-    cluster_all=1;
+    cluster_all=0;
     [data_cex_cluster,idx_cluster]=cluster_and_sample(data_cex,falsif_pb{i_f},falsif,options,cluster_all);
     data_backup=data_cex;
     data_cex=data_cex_cluster;
@@ -406,7 +432,7 @@ while i_f<=falsif.iterations_max && ~stop
 %     fprintf(' \n The original robustness values were %s.\n',num2str(robustness_checks{1}));
     fprintf(' \n The new robustness values are %s.\n',num2str(robustness_check_temp));
     robustness_checks_false{i_f,2}=robustness_check_temp
-    fprintf(' \n The original CEX were %i, CEX after cluster, %i and the new CEX are %i.\n',numel(find(robustness_checks_false{1}<0)),size(idx_cluster,2),numel(find(robustness_checks_false{2}<0)));
+    fprintf(' \n The original CEX were %i, CEX after cluster, %i and the new CEX are %i.\n',numel(find(robustness_checks_false{1}<0)),numel(idx_cluster),numel(find(robustness_checks_false{2}<0)));
 
     %%% ----------------------------------------------- %%
     %%% ------       11-F: Plotting CEX     ----------- %%
@@ -450,7 +476,7 @@ elseif model==3
     options.sim_ref=0.4;               % quadcopter
     options.ref_min=1;
     options.ref_max=2.5;
-    options.sim_cov=[0.5;2];
+    options.sim_cov=[2.5;-1.5];
 
 end
 

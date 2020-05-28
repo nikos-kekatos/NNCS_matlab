@@ -49,6 +49,9 @@ model_name='watertank_comp_design_mod_NN';
 % options.sim_cov=0;
 % options.sim_ref=2.93;
 % options.testing.ref_Ts=5;
+if options.model==4
+    load PIDGainSchedExample
+end 
 options.workspace = simset('SrcWorkspace','current');
 sim(model_name,[],options.workspace);
 %{
@@ -106,9 +109,9 @@ fprintf(' The nominal value is %.5f. \n\n',y.signals.values(end))
 
 fprintf(' The NN value is %.5f. \n\n',y_nn.signals.values(end))
 
-ss_abs=abs(y_nn.signals.values(end)-y.signals.values(end));
+ss_abs=abs(y_nn.signals.values(end,y_idx)-y.signals.values(end,y_idx));
 fprintf(' The absolute ss error is %.5f. \n\n',ss_abs)
-ss_rel=(y_nn.signals.values(end)-y.signals.values(end))/y.signals.values(end)*100;
+ss_rel=(y_nn.signals.values(end,y_idx)-y.signals.values(end,y_idx))/y.signals.values(end,y_idx)*100;
 fprintf(' The relative ss error is %.5f%%. \n\n',ss_rel)
 
 elseif plot_cex==1

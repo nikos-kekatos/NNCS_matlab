@@ -77,11 +77,11 @@ end
 % Coverage- time varying refereces
 options.testing.train_data=0; %0 for testing centers, 1 for testing training data
 if options.reference_type==3
-    options.coverage.m=2;
+    options.coverage.m=4;
     options.ref_Ts=5;
     options.coverage.ref_min=-0.5;
     options.coverage.ref_max=0.5;
-    options.coverage.delta_resolution=0.125; %0.1
+    options.coverage.delta_resolution=1/3; %0.1
 %     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution-1;
     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution;
 
@@ -102,10 +102,12 @@ if options.reference_type==3
         options.coverage.cells_centers=combvec(options.coverage.cells_values,options.coverage.cells_values);
     elseif options.coverage.m==3
         options.coverage.cells_centers=combvec(options.coverage.cells_values,options.coverage.cells_values,options.coverage.cells_values);
+    elseif options.coverage.m==4
+        options.coverage.cells_centers=combvec(options.coverage.cells_values,options.coverage.cells_values,options.coverage.cells_values,options.coverage.cells_values);
     else
-        warning('Need to generalize');
+        error('Need to generalize');
     end
-    no_cells=length(options.coverage.cells_centers);
+    no_cells=numel(options.coverage.cells_centers)/options.coverage.m;
     for i=1:no_cells
         options.coverage.cells{i}.centers=options.coverage.cells_centers(:,i);
         options.coverage.cells{i}.min=options.coverage.cells_centers(:,i)-options.coverage.delta_resolution/2*ones(options.coverage.m,1);
@@ -117,6 +119,8 @@ if options.reference_type==3
         options.coverage.cells{i}.random_value=(options.coverage.cells{i}.max-options.coverage.cells{i}.min).*rand(options.coverage.m,1)+options.coverage.cells{i}.min;
         
     end
+    options.coverage.points='c' % r:random, c:centers
+
     % options: choose coverage as value from 0 - 1
     options.coverage.cell_occupancy=1;
     options.coverage.no_traces_ref=options.coverage.cell_occupancy*options.coverage.no_cells_total;

@@ -20,7 +20,11 @@ elseif options.reference_type==2 % time-varying
 elseif options.reference_type==3 % coverage
     sim_cov_ref=[];
     for i_cov=1:options.coverage.no_traces_ref
-        sim_cov_ref=[sim_cov_ref,options.coverage.cells{i_cov}.random_value];
+        if options.coverage.points=='r'
+            sim_cov_ref=[sim_cov_ref,options.coverage.cells{i_cov}.random_value];
+        elseif options.coverage.points=='c'
+            sim_cov_ref=[sim_cov_ref,options.coverage.cells{i_cov}.centers];
+        end
     end
     simin_all_coverage=combvec(sim_cov_ref,options.simin_x0);    
 end

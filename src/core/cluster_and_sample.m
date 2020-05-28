@@ -61,18 +61,18 @@ fprintf(' This is the %i iteration/loop with a number of %i clusters.\n\n',itera
 % Evaluate the optimal number of clusters using the silhouette
 % clustering evaluation criterion.
 
-E = evalclusters(cex_ref_points_array,'kmeans','silhouette','klist',[1:no_clusters])
+E = evalclusters(cex_ref_points_array,'kmeans','silhouette','klist',[1:no_clusters]);
 figure;
 plot(E);
 
 optimal_no_clusters=E.OptimalK;
 if falsif.breach_segments==2
-    figure;gscatter(cex_ref_points_array(:,1),cex_ref_points_array(:,2),E.OptimalY,'rbgymck','xods*v><ph')
+    figure;gscatter(cex_ref_points_array(:,1),cex_ref_points_array(:,2),E.OptimalY,'rbgymck','xods*v><ph');
     if options.plotting_sim
         figure;plot(cex_ref_points_array(:,1),cex_ref_points_array(:,2),'k*','MarkerSize',5);
     end
 elseif falsif.breach_segments==1
-    figure;gscatter(cex_ref_points_array(:,1),cex_ref_points_array(:,1),E.OptimalY,'rbgymck','xods*v><ph')
+    figure;gscatter(cex_ref_points_array(:,1),cex_ref_points_array(:,1),E.OptimalY,'rbgymck','xods*v><ph');
 else
     warning('It is not possible to plot more than 2 dimensions');
 end
@@ -80,25 +80,25 @@ end
 [idx,C]=kmeans(cex_ref_points_array,optimal_no_clusters,'replicates',8);
 if falsif.breach_segments==2
     figure
-    gscatter(cex_ref_points_array(:,1),cex_ref_points_array(:,2),idx,'rbgymck','xods*v><ph')
+    gscatter(cex_ref_points_array(:,1),cex_ref_points_array(:,2),idx,'rbgymck','xods*v><ph');
     hold on
-    plot(C(:,1),C(:,2),'k+')
+    plot(C(:,1),C(:,2),'k+');
 elseif falsif.breach_segments==1
     figure
-    gscatter(cex_ref_points_array(:,1),cex_ref_points_array(:,1),idx,'rbgymck','xods*v><ph')
+    gscatter(cex_ref_points_array(:,1),cex_ref_points_array(:,1),idx,'rbgymck','xods*v><ph');
     hold on
-    plot(C(:,1),C(:,1),'k+')
+    plot(C(:,1),C(:,1),'k+');
 else
     warning('It is not possible to plot more than 2 dimensions');
 end
 %grid resolution as tolerance
 
 try
-cex_tolerance(options.coverage.delta_resolution)
+cex_tolerance(options.coverage.delta_resolution);
 disp(' ')
 end
 %user-defined tolerance
-cex_tolerance(0.1)
+cex_tolerance(0.1);
 
 % In each cluster, keep the samples with the smaller robustness
 
@@ -106,8 +106,8 @@ cex_tolerance(0.1)
 % falsif_rob_values_sorted=falsif_rob_values(idx);
 %find corresponding indices
 for ii=1:optimal_no_clusters
-    points_clusters{ii}=cex_ref_points_array(idx==ii,:)
-    robustness_points_clusters{ii}=falsif_rob_values(idx==ii)'
+    points_clusters{ii}=cex_ref_points_array(idx==ii,:);
+    robustness_points_clusters{ii}=falsif_rob_values(idx==ii)';
 end
 
 %keep 3 in each cluster with minimum robustness

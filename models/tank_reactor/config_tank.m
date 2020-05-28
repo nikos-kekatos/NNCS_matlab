@@ -2,8 +2,11 @@
 % we store all the specifications in a structure named options.
 % clear options
 
+options.model=4;
+load PIDGainSchedExample
+
 % Time horizon of simulation in Simulink
-options.T_train=10; % for constant choose 5s
+options.T_train=30; % for constant choose 5s
 options.SLX_model=SLX_model;
 % Choose reference type: (1) for constant, (2) for time varying and (3) for
 % coverage and (4) for Breach
@@ -11,10 +14,10 @@ options.SLX_model=SLX_model;
 options.reference_type=3;
 
 % Select if you want to plot one simulation trace from training
-options.plotting_sim=0;
+options.plotting_sim=1;
 
 options.test_dataMatching=0;
-options.specs_file='specs_watertank.stl';
+options.specs_file='specs_tank.stl';
 % added for Breach
 try
     block_name=strcat(SLX_model,'/Switch1');
@@ -45,8 +48,8 @@ end
 % end of Breach additions
 % CONSTANT references (Specify the values here)
 if options.reference_type==1
-    options.simin_ref=8:0.5:12;
-    options.simin_ref=linspace(-0.5,0.5,51)
+    options.simin_ref=0:0.125:3;%0.125/2
+%     options.simin_ref=linspace(-0.5,0.5,51)
     % options.simin_ref=[-0.5;-0.35;-0.3;-0.2;0;0.1;0.15;0.2;0.3;0.4;0.45;0.5];
     options.no_ref=numel(options.simin_ref);
 elseif options.reference_type==2
@@ -77,11 +80,11 @@ end
 % Coverage- time varying refereces
 options.testing.train_data=0; %0 for testing centers, 1 for testing training data
 if options.reference_type==3
-    options.coverage.m=2;
-    options.ref_Ts=5;
-    options.coverage.ref_min=8;
-    options.coverage.ref_max=12;
-    options.coverage.delta_resolution=0.5; %0.1
+    options.coverage.m=3;
+    options.ref_Ts=10;
+    options.coverage.ref_min=1.5;
+    options.coverage.ref_max=5;
+    options.coverage.delta_resolution=1; %0.1
 %     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution-1;
     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution;
 
@@ -119,7 +122,7 @@ if options.reference_type==3
         options.coverage.cells{i}.random_value=(options.coverage.cells{i}.max-options.coverage.cells{i}.min).*rand(options.coverage.m,1)+options.coverage.cells{i}.min;
         
     end
-    options.coverage.points='c' % r:random, c:centers
+    options.coverage.points='c' % default random
     % options: choose coverage as value from 0 - 1
     options.coverage.cell_occupancy=1;
     options.coverage.no_traces_ref=options.coverage.cell_occupancy*options.coverage.no_cells_total;
@@ -128,7 +131,9 @@ if options.reference_type==3
     fprintf('The number of different reference traces (coverage-based) is %i.\n\n',options.coverage.no_traces_ref);
     flag=1;
     if options.plotting_sim
-        plot_coverage_boxes(options,flag);
+        if options.coverage.m<=2
+            plot_coverage_boxes(options,flag);
+        end
     end
 end
 % Choose number of initial conditions for x_0, to be used in simulations
@@ -136,8 +141,8 @@ options.no_x0=1;
 options.no_x0_repeated=1; %1 if all different
 
 % Minimum and maximum value of x0
-x0_min=-0.2;
-x0_max=0.2;
+x0_min=-0.4;
+x0_max=0.4;
 
 % Default x_0 (needed only if x_0 remains constant)
 if options.no_x0==0 || options.no_x0==1

@@ -181,7 +181,7 @@ if training_options.retraining_method==1 % retrain with all from scratch
     [net_cex,tr] = train(net, in, out);
     p = [in];
     uu = sim(net_cex,p);
-    perf = perform(net_cex,in,out)
+%    perf = perform(net_cex,in,out)
 elseif training_options.retraining_method==2  % 2: keep old net and use all data...
     net.divideFcn=training_options.div;
     net.trainParam.goal=training_options.error;
