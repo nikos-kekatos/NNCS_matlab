@@ -31,6 +31,18 @@ if training_options.use_error_dyn
             in=[REF_array-Y_array [0;REF_array(1:end-1)-Y_array(1:end-1)] [0;0;REF_array(1:end-2)-Y_array(1:end-2)]...
                 [0;0;0;REF_array(1:end-3)-Y_array(1:end-3)] [0;U_array(1:end-1)] [0;0;U_array(1:end-2)]...
                 ]';
+            if training_options.replace_by_zeros==1
+                no_points=size(in,2)/options.coverage.no_traces_ref;
+                in(2,1:no_points:end)=0;
+                in(3,1:no_points:end)=0;
+                in(3,2:no_points:end)=0;
+                in(4,1:no_points:end)=0;
+                in(4,2:no_points:end)=0;
+                in(4,3:no_points:end)=0;
+                in(5,1:no_points:end)=0;
+                in(6,1:no_points:end)=0;
+                in(6,2:no_points:end)=0;
+            end
         else
             in=[REF_array-Y_array [0;REF_array(1:end-1)-Y_array(1:end-1)] [0;0;REF_array(1:end-2)-Y_array(1:end-2)]...
                 [0;0;0;REF_array(1:end-3)-Y_array(1:end-3)]]';
@@ -42,10 +54,10 @@ else
     if training_options.use_previous_y
         if training_options.use_previous_ref
             if training_options.use_previous_u
-%                 in_REF=[[REF_array] [zeros(1,no_REF_array);REF_array(1:end-1,:)] [zeros(2,no_REF_array);REF_array(1:end-2,:)] [zeros(3,no_REF_array);REF_array(1:end-3,:)]];
-%                 in_Y=[[Y_array] [zeros(1,no_Y_array);Y_array(1:end-1,:)] [zeros(2,no_Y_array);Y_array(1:end-2,:)] [zeros(3,no_Y_array);Y_array(1:end-3,:)]];
-%                 in_U=[[zeros(1,no_U_array);U_array(1:end-1,:)] [zeros(2,no_U_array);U_array(1:end-2,:)]];
-%                 in=[in_REF in_Y in_U]';
+                %                 in_REF=[[REF_array] [zeros(1,no_REF_array);REF_array(1:end-1,:)] [zeros(2,no_REF_array);REF_array(1:end-2,:)] [zeros(3,no_REF_array);REF_array(1:end-3,:)]];
+                %                 in_Y=[[Y_array] [zeros(1,no_Y_array);Y_array(1:end-1,:)] [zeros(2,no_Y_array);Y_array(1:end-2,:)] [zeros(3,no_Y_array);Y_array(1:end-3,:)]];
+                %                 in_U=[[zeros(1,no_U_array);U_array(1:end-1,:)] [zeros(2,no_U_array);U_array(1:end-2,:)]];
+                %                 in=[in_REF in_Y in_U]';
                 in=[[REF_array] [zeros(1,no_REF_array);REF_array(1:end-1,:)] [zeros(2,no_REF_array);REF_array(1:end-2,:)] [zeros(3,no_REF_array);REF_array(1:end-3,:)]...
                     [Y_array] [zeros(1,no_Y_array);Y_array(1:end-1,:)] [zeros(2,no_Y_array);Y_array(1:end-2,:)] [zeros(3,no_Y_array);Y_array(1:end-3,:)]...
                     [zeros(1,no_U_array);U_array(1:end-1,:)] [zeros(2,no_U_array);U_array(1:end-2,:)]...
@@ -81,6 +93,8 @@ end
 
 % Output
 out=U_array';
+
+% [in,out]=replace_zeros(in,out,training_options,options);
 
 % Input normalization
 if training_options.input_normalization==1

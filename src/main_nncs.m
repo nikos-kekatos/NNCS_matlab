@@ -140,6 +140,7 @@ training_options.algo= 'trainlm'%'trainlm'; % trainscg % trainrp
 %add option for saved mat files
 training_options.iter_max_fail=2;
 iter=1;reached=0;
+training_options.replace_by_zeros=0;
 while true && iter<=training_options.iter_max_fail
     fprintf('\n Iteration %i.\n',iter);
     [net,data,tr]=nn_training(data,training_options,options);
@@ -204,11 +205,11 @@ options.input_choice=3;
 options.error_mean=0;%0.0001;
 options.error_sd=0;%0.001;
 if model==1
-    options.ref_Ts=5;
+    options.ref_Ts=5;options.T_train=10;
     options.sim_ref=11;          % watertank 
     options.ref_min=8.5;        
     options.ref_max=11.5;       
-    options.sim_cov=[9;11];     
+    options.sim_cov=[8.5;11;8;12;9;8];     
     options.u_index_plot=1;
     options.y_index_plot=1;     
     options.ref_index_plot=1;
@@ -264,7 +265,7 @@ end
 % The maximum MSE error over 49 simulations is 0.00207.
 %% 11. Falsification with Breach
 
- delete(fullfile(which(strcat(options.SLX_model,'_breach.slx'))))
+%  delete(fullfile(which(strcat(options.SLX_model,'_breach.slx'))))
 get_param(Simulink.allBlockDiagrams(),'Name')
 bdclose all;
 clear Data_all data_cex Br falsif_pb net_all phi_1 phi_3 phi_4  phi_5 phi_all
@@ -458,7 +459,7 @@ while i_f<=falsif.iterations_max && ~stop
     %%% ------       11-F: Plotting CEX     ----------- %%
     %%% ----------------------------------------------- %%
     %
-    num_cex=[];options.plotting_sim=1;
+    num_cex=5;options.plotting_sim=1;
     run_and_plot_cex_nncs(options,file_name,inputs_cex,num_cex); %4th input number of counterexamples
     
     end

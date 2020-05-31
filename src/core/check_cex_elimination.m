@@ -3,7 +3,7 @@ function [robustness_check,robustness_check_all,inputs_cex,inputs_all,options] =
 %   This should work for single and multiple CEX.
 
 close_system(strcat(options.SLX_model,'_breach'),0)
-delete(fullfile(which(strcat(options.SLX_model,'_breach.slx'))))
+% delete(fullfile(which(strcat(options.SLX_model,'_breach.slx'))))
 options.input_choice=4;
 if strcmp(file_name,'watertank_inport_NN_cex')
     var_names_list={'In1','u','y','u_nn','y_nn','u_nn_cex_1','y_nn_cex_1'};
@@ -38,7 +38,8 @@ no_cex=length(falsif_idx);
 no_cex=size(inputs_cex,2);
 
 %3. Create Breach object
-Br_check = BreachSimulinkSystem(file_name,'all',[],var_names_list);
+% Br_check = BreachSimulinkSystem(file_name,'all',[],var_names_list);
+Br_check = BreachSimulinkSystem(file_name,'all');
 
 nbinputsig = falsif.num_inputs;
 nbctrpt = falsif.breach_segments;
@@ -75,7 +76,8 @@ end
 %4. Specify inputs/old cexs and check their robustness
 
 Br_check.SetParam(input_param, inputs_cex);
-Br_check.Sim(sim_time-options.dt);
+% Br_check.Sim(sim_time-options.dt);
+Br_check.Sim(sim_time);
 % robustness_check{1} = Br_check.CheckSpec(falsif.property);
 % robustness_check{2}=Br_check.CheckSpec(falsif.property_cex);
 robustness_check=Br_check.CheckSpec(falsif.property_cex);
@@ -83,7 +85,8 @@ robustness_check=Br_check.CheckSpec(falsif.property_cex);
 inputs_all=falsif_pb.X_log;
 if ~isequal(inputs_all,inputs_cex)
 Br_check_all.SetParam(input_param, inputs_all);
-Br_check_all.Sim(sim_time-options.dt);
+% Br_check_all.Sim(sim_time-options.dt);
+Br_check_all.Sim(sim_time);
 % robustness_check{1} = Br_check.CheckSpec(falsif.property);
 % robustness_check{2}=Br_check.CheckSpec(falsif.property_cex);
 new_rob_all_cex=Br_check_all.CheckSpec(falsif.property_cex);
@@ -92,13 +95,13 @@ new_rob_all_nom=Br_check_all.CheckSpec(falsif.property_nom);
 fprintf('The retrained has %i CEX out of %i.\n\n',numel(new_rob_all_cex<0),numel(new_rob_all_cex));
 fprintf('The last NN has %i CEX out of %i.\n\n',numel(new_rob_all_nn<0),numel(new_rob_all_nn));
 fprintf('The nominal  has %i CEX out of %i.\n\n',numel(new_rob_all_nom<0),numel(new_rob_all_nom));
-
+robustness_check_all=new_rob_all_cex;
 else
     robustness_check_all=robustness_check;
 end
 close_system(strcat(options.SLX_model,'_breach'),0);
-delete(fullfile(which(strcat(options.SLX_model,'_breach.slx'))))
-delete(fullfile(which(strcat(options.SLX_model,'_breach.slxc'))))
+% delete(fullfile(which(strcat(options.SLX_model,'_breach.slx'))))
+% delete(fullfile(which(strcat(options.SLX_model,'_breach.slxc'))))
 
 end
 

@@ -44,6 +44,7 @@ elseif strcmp(model_name,'tank_reactor')||strcmp(model_name,'tank_reactor_NN') |
 end
 % Br_falsif = BreachSimulinkSystem(model_name,'all',[],var_names_list);
 Br_falsif = BreachSimulinkSystem(model_name,'all');
+% Br_falsif = BreachSimulinkSystem(model_name);
 
 warning('Only works for 1D systems')
 
@@ -285,8 +286,8 @@ try
     current_coverage_value = Br_falsif.ComputeLogCellOccupancyCoverage
 end
 close_system(strcat(options.SLX_model,'_breach'),0)
-delete(fullfile(which(strcat(options.SLX_model,'_breach.slx'))))
-delete(fullfile(which(strcat(options.SLX_model,'_breach.slxc'))))
+% delete(fullfile(which(strcat(options.SLX_model,'_breach.slx'))))
+% delete(fullfile(which(strcat(options.SLX_model,'_breach.slxc'))))
 
     function var_input_generator
         Br_input_gen = var_cp_signal_gen(input_str, input_cp, input_intp);
