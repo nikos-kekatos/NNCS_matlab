@@ -92,9 +92,9 @@ Br_check_all.Sim(sim_time);
 new_rob_all_cex=Br_check_all.CheckSpec(falsif.property_cex);
 new_rob_all_nn=Br_check_all.CheckSpec(falsif.property);
 new_rob_all_nom=Br_check_all.CheckSpec(falsif.property_nom);
-fprintf('The retrained has %i CEX out of %i.\n\n',numel(new_rob_all_cex<0),numel(new_rob_all_cex));
-fprintf('The last NN has %i CEX out of %i.\n\n',numel(new_rob_all_nn<0),numel(new_rob_all_nn));
-fprintf('The nominal  has %i CEX out of %i.\n\n',numel(new_rob_all_nom<0),numel(new_rob_all_nom));
+fprintf('The retrained has %i CEX out of %i.\n\n',numel(find(new_rob_all_cex<0)),numel(new_rob_all_cex));
+fprintf('The last NN has %i CEX out of %i.\n\n',numel(find(new_rob_all_nn<0)),numel(new_rob_all_nn));
+fprintf('The nominal  has %i CEX out of %i.\n\n',numel(find(new_rob_all_nom<0)),numel(new_rob_all_nom));
 robustness_check_all=new_rob_all_cex;
 else
     robustness_check_all=robustness_check;
