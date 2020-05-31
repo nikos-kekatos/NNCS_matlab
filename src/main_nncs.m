@@ -41,7 +41,7 @@ end
 % The models are saved in ./models/
 % SLX_model='models/robotarm/robotarm_PID','robotarm_PID','quad_1_ref','quad_3_ref',
 %'quad_3_ref_6_y','helicopter','watertank_comp_design_mod';
-model=3; % 1: watertank, 2: robotarm, 3: quadcopter 
+model=1; % 1: watertank, 2: robotarm, 3: quadcopter 
 
 if model==1
     SLX_model='watertank_inport_NN_cex';
@@ -55,7 +55,7 @@ end
 load_system(SLX_model)
 % Uncomment next line if you want to open the model
 % open(SLX_model)
-
+options.model=model;
 %% 3. Input: specify configuration parameters
 % run('configuration_1.m'),('config_quad_1_ref.m')
 
@@ -70,11 +70,12 @@ elseif model==4
 end
 %% 4a. Run simulations -- Generate training data
 options.error_mean=0%0.0001;
-options.error_sd=0.001%0.001;
+options.error_sd=0%0.001;
 
 % Breach options
 % options.no_traces=30;
 % options.breach_segments=2;
+options.coverage.points='r';
 [data,options]=trace_generation_nncs(SLX_model,options);
 
 %% 4b. Load previous saved traces
@@ -132,7 +133,7 @@ training_options.loss='mse';
  training_options.div='dividerand';
 % training_options.div='dividetrain';
 training_options.error=1e-5;
-training_options.max_fail=10; % Validation performance has increased more than max_fail times since the last time it decreased (when using validation).
+training_options.max_fail=50; % Validation performance has increased more than max_fail times since the last time it decreased (when using validation).
 training_options.regularization=0; %0-1
 training_options.param_ratio=0.5;
 training_options.algo= 'trainlm'%'trainlm'; % trainscg % trainrp
@@ -184,21 +185,24 @@ performance = perform(net,targets,outputs);
 %}
 
 %% 7. Evaluate NN
-plot_NN_sim(data,options)
+options.plotting_sim=1
+plot_NN_sim(data,options);
 
 %% 8a. Create Simulink block for NN
 
 % gensim(net)
-[options]=create_NN_diagram(options,net)
+[options]=create_NN_diagram(options,net);
 
 %% 8b. Integrate NN block in the Simulink model 
-[options]=construct_SLX_with_NN(options,options.SLX_model);
+construct_SLX_with_NN(options,options.SLX_model);
 
 %% 9. Analyse NNCS in Simulink
 model_name=[];
 % model_name='watertank_comp_design_mod_NN';
 options.input_choice=3;
 % model=2;
+options.error_mean=0;%0.0001;
+options.error_sd=0;%0.001;
 if model==1
     options.ref_Ts=5;
     options.sim_ref=11;          % watertank 
@@ -217,8 +221,7 @@ elseif model==2
     options.u_index_plot=1;
     options.y_index_plot=1;     
     options.ref_index_plot=1;
-    options.error_mean=0%0.0001;
-    options.error_sd=0%0.001;
+
 elseif model==3
     options.ref_Ts=4;options.T_train=40;
     options.sim_ref=0.5;          %quadcopter
@@ -238,7 +241,7 @@ elseif model==4
     options.y_index_plot=1;     
     options.ref_index_plot=1;
 end
-run_simulation_nncs(options,model_name)
+run_simulation_nncs(options,model_name);
 
 %% 10. Data matching (analysis w/ training data)
 
@@ -261,11 +264,15 @@ end
 % The maximum MSE error over 49 simulations is 0.00207.
 %% 11. Falsification with Breach
 
+ delete(fullfile(which(strcat(options.SLX_model,'_breach.slx'))))
+get_param(Simulink.allBlockDiagrams(),'Name')
+bdclose all;
 clear Data_all data_cex Br falsif_pb net_all phi_1 phi_3 phi_4  phi_5 phi_all
 clear robustness_checks_all robustness_checks_false falsif falsif_pb_temp file_name
 clear rob_nominal robustness_check_temp block_name falsif_idx data_cex
 clear data_cex_cluster tr tr_all condition cluster_all check_nominal model_name
-
+clear data_backup i_f ii In1_dt0 In1_u0 In1_u1 inputs_cex iter iter_best num_cex
+clear reached seeds_all stop t__ tm training_perf tspan u__ idx_cluster falsif_pb_zero
  %%% ------------------------------------------ %%
  %%% ----- 11-A: Falsification with Breach ---- %%
  %%% ------------------------------------------ %%
@@ -285,7 +292,7 @@ falsif.property_file=options.specs_file;
 [~,falsif.property_all]=STL_ReadFile(falsif.property_file);
 falsif.property=falsif.property_all{2};%// TO-DO automatically specify the file
 falsif.property_cex=falsif.property_all{3};
-falsif.property_nom=falsif.property_all{4}
+falsif.property_nom=falsif.property_all{4};
 if model==1
     falsif.breach_ref_min=8;            %watertank 8 % quadcopter -1 %robotarm -0.5
 falsif.breach_ref_max=12;           % watertank 12 % quadcopter 3  % robotarm 0.5
@@ -312,7 +319,7 @@ stop=0;
 i_f=1;
 
 % file_name=strcat(options.SLX_NN_model,'_cex');
-file_name=strcat(options.SLX_NN_model);
+file_name=strcat(options.SLX_model);
 
 options.input_choice=4;
 net_all{1}=net;
@@ -325,101 +332,110 @@ while i_f<=falsif.iterations_max && ~stop
 %         fprintf('The number of CEX is now %i.\n',length(falsif_pb.obj_false));
 %     end
     fprintf('\n Beginning falsification with Breach.\n')
-    fprintf('\n We use the model %s for falsification.\n',options.SLX_NN_model);
-    if i_f==1
-        model_name=options.SLX_NN_model;
-    else
-        disp('Use model with cex -- currently overwrite the same model. Todo: Add duplicates')
-        model_name=file_name;
-    end
+    fprintf('\n We use the model %s for falsification.\n',options.SLX_model);
+    %     if i_f==1
+    %         model_name=options.SLX_NN_model;
+    %     else
+    %         disp('Use model with cex -- currently overwrite the same model. Todo: Add duplicates')
+    %         model_name=file_name;
+    %     end
     falsif.seed=seeds_all(i_f);
     falsif.iteration=i_f; % choose property
     check_nominal=1;
-    [data_cex,falsif_pb_temp,rob_nominal]= falsification_breach(options,falsif,model_name,check_nominal);
+    [data_cex,falsif_pb_temp,rob_nominal]= falsification_breach(options,falsif,file_name,check_nominal);
     robustness_checks_false{i_f,1}=falsif_pb_temp.obj_false;
     robustness_checks_all{i_f,1}=falsif_pb_temp.obj_log;
-    fprintf('\n The NN produces %i falsifying traces out of %i total traces.\n',length(find(falsif_pb_temp.obj_false<0)),length(falsif_pb_temp.obj_log));
-    fprintf('\n The nominal produces %i falsifying traces out of %i total traces.\n',length(find(rob_nominal<0)),length(falsif_pb_temp.obj_log));
+    fprintf('\n\n The NN produces %i falsifying traces out of %i total traces.\n',length(find(falsif_pb_temp.obj_false<0)),length(falsif_pb_temp.obj_log));
+    fprintf('\n\n The nominal produces %i falsifying traces out of %i total traces.\n',length(find(rob_nominal<0)),length(falsif_pb_temp.obj_log));
     if check_nominal
         robustness_checks_all{i_f,2}=rob_nominal;
     end
     falsif_pb{i_f}=falsif_pb_temp;
-    fprintf('The number of CEX is now %i.\n',length(falsif_pb{i_f}.obj_false));
-
-    fprintf('\n End falsification with Breach.\n')
+%     fprintf('The number of CEX is now %i.\n',length(falsif_pb{i_f}.obj_false));
     
     if any(structfun(@isempty,data_cex))
         fprintf('\n Breach could not falsify the STL formula.\n')
         fprintf('\n Trying with a different method (GNN) and more objective evaluations.\n')
         falsif.method='GNM';
 %         falsif.max_obj_eval=falsif.max_obj_eval*2;
-        [data_cex,falsif_pb_zero]= falsification_breach(options,falsif,model_name);        
+        [data_cex,falsif_pb_zero]= falsification_breach(options,falsif,file_name);        
         if any(structfun(@isempty,data_cex))
             stop=1;
              break;
         else
             falsif.method='quasi';
             falsif_pb{i_f}=falsif_pb_zero;
+            robustness_checks_false{i_f,1}=falsif_pb{i_f}.obj_false;
         end
     end
     try
-        figure;falsif_pb{1}.BrSet_Logged.PlotRobustSat(phi_3)
+        figure;falsif_pb{i_f}.BrSet_Logged.PlotRobustSat(phi_3)
     end
+
+
+        fprintf('\n End falsification with Breach.\n')
+        disp('-----------------------------------')
     %%% ------------------------------------ %%
     %%% ----- 11-B: Clustering  CEX     ---- %%
     %%% ------------------------------------ %%
- %%
-    cluster_all=0;
+ %
+    cluster_all=1;
     [data_cex_cluster,idx_cluster]=cluster_and_sample(data_cex,falsif_pb{i_f},falsif,options,cluster_all);
+    
+    if i_f==1
+        Data_all{i_f,1}=data;
+        Data_all{i_f,2}=data_cex;
+    elseif i_f>1
+        Data_all{i_f,1}=get_new_training_data( Data_all{i_f-1,1},Data_all{i_f-1,2},training_options);
+        Data_all{i_f,2}=data_cex;
+    end
+    Data_all{i_f,3}=data_cex_cluster;
     data_backup=data_cex;
     data_cex=data_cex_cluster;
-    %%
+    %
     %%% ------------------------------------ %%
     %%% ----- 11-C: Retraining with CEX ---- %%
     %%% ------------------------------------ %%
-    
+    %
     if stop~=1
         for tm = 1%[2 3 1] % or we choose the preference/order
            
-            fprintf('\n Beginning retraining with cex.\n')
+            fprintf('\nBeginning retraining with cex.\n')
             training_options.retraining=1; % the structure of the NN remains the same.
             training_options.retraining_method=tm; %1: start from scratch with all data,
             % 2: keep old net and use all data,  3: keep old net and use only new data
             % 4: blend/mix old and new data,  5: weighted MSE
             training_options.loss='mse';
             training_options.error=1e-6;
-            training_options.max_fail=10;
+            training_options.max_fail=50;
             % net.performParam.ratio=0.5;
             % Data_all contains the data from all cases (training, cex) and
             % iterations.
-            if i_f==1
-                Data_all{i_f,1}=data;
-                Data_all{i_f,2}=data_cex;
-            elseif i_f>1
-                Data_all{i_f,1}=get_new_training_data( Data_all{i_f-1,1},Data_all{i_f-1,2},training_options);
-                Data_all{i_f,2}=data_cex;
-            end
             
+            training_options.neurons=[30 30 30]
             % [net_cex,data]=nn_retraining(net,data,training_options,options,[],data_cex);
             [net_all{i_f+1},~,tr]=nn_retraining(net_all{i_f},Data_all{i_f,1},training_options,options,[],Data_all{i_f,2});
             if tr.best_perf <= training_options.error*100
-                fprintf('\n Desired MSE value reached.\n');
-                fprintf('\n End retraining with cex.\n')                           
+                fprintf('\nDesired MSE value reached.\n');
+                fprintf('\nEnd retraining with cex.\n')                           
                 break;
             end
             fprintf('\n End retraining with cex.\n')
         end
+                disp('-----------------------------------')
+
      %%% ------------------------------------------ %%
      %%% ------ 11-D: Simulink Construction  ------ %%
      %%% ------------------------------------------ %%
 %
     fprintf('\n Beginning Simulink construction with cex.\n')
-    [options]=create_NN_diagram(options,net_all{i_f+1})
+    [options]=create_NN_diagram(options,net_all{i_f+1});
 %     block_name=strcat('NN_cex_',num2str(i_f));
     block_name=strcat('NN_cex_',num2str(1));
 
-    construct_SLX_with_NN(options,file_name,block_name)
+    construct_SLX_with_NN(options,file_name,block_name);
     fprintf('\n End Simulink construction with cex.\n')
+        disp('-----------------------------------')
 
     %%% ----------------------------------------------- %%
     %%% ------ 11-E: Testing if CEX disappeared   ----- %%
@@ -427,22 +443,26 @@ while i_f<=falsif.iterations_max && ~stop
 
     fprintf('\n Testing the NN on the training data.\n')
     fprintf('The number of original CEX was %i.\n',length(falsif_pb{i_f}.obj_false));
-    %
-    [robustness_check_temp,inputs_cex]=check_cex_elimination(falsif_pb{i_f},falsif,data_cex,file_name,idx_cluster);
+    [rob_temp_false,rob_temp_all,inputs_cex,inputs_all,options]=check_cex_elimination(falsif_pb{i_f},falsif,data_cex,file_name,idx_cluster,options);
 %     fprintf(' \n The original robustness values were %s.\n',num2str(robustness_checks{1}));
-    fprintf(' \n The new robustness values are %s.\n',num2str(robustness_check_temp));
-    robustness_checks_false{i_f,2}=robustness_check_temp
-    fprintf(' \n The original CEX were %i, CEX after cluster, %i and the new CEX are %i.\n',numel(find(robustness_checks_false{1}<0)),numel(idx_cluster),numel(find(robustness_checks_false{2}<0)));
-
+    fprintf(' \n The new robustness values are %s.\n',num2str(rob_temp_false));
+    robustness_checks_false{i_f,2}=rob_temp_false
+    robustness_checks_all{i_f,3}=rob_temp_all
+    fprintf(' \n The original CEX were %i, CEX after cluster, %i and with the new CEX are %i.\n',numel(find(robustness_checks_false{i_f,1}<0)),numel(idx_cluster),numel(find(robustness_checks_all{i_f,3}<0)));
+    fprintf('\n We have %i CEX after clustering and after retraining we have %i.\n\n',numel(idx_cluster),numel(find(robustness_checks_false{i_f,2}<0)));
+    
+   if  isequal(falsif_pb_temp.X_log,inputs_all)
+       disp(' We have tested the same inputs with CheckSpec.')
+   end
     %%% ----------------------------------------------- %%
     %%% ------       11-F: Plotting CEX     ----------- %%
     %%% ----------------------------------------------- %%
     %
-    num_cex=[];
-    run_and_plot_cex_nncs(options,file_name,inputs_cex,num_cex) %4th input number of counterexamples
+    num_cex=[];options.plotting_sim=1;
+    run_and_plot_cex_nncs(options,file_name,inputs_cex,num_cex); %4th input number of counterexamples
     
     end
-    %%
+    %
     fprintf('\n End of Iteration %i.\n',i_f)
     if i_f<falsif.iterations_max
         i_f=i_f+1;
@@ -454,17 +474,72 @@ while i_f<=falsif.iterations_max && ~stop
     
 end
 
-%% 12. Evaluating retrained SLX model
+%% 12a. Checking CEX against SLX
+fprintf('\n\n------------\n\n');
+fprintf('\nHere we check if there are any problems with the way we store the data.\n');
+fprintf('The number of resulting CEX is %i.\n',numel(idx_cluster));
+
+data_test=data_cex_cluster;
+% data_test=Data_all{2,2};
+% data_test=data_backup;
+no_points=1000;
+no_cex=size(data_test.REF,1)/no_points;REF=[];
+for i=1:no_cex
+%     figure;plot(linspace(0,10,no_points),data_test.REF(1+(i-1)*no_points:i*no_points),'r',linspace(0,10,no_points),data_test.Y(1+(i-1)*no_points:i*no_points),'b-.')
+%     title(sprintf('CEX %i.',i))
+%     legend('ref','breach/data\_cex')
+    ref_falsif=unique(data_test.REF(1+(i-1)*no_points:i*no_points),'stable');
+    REF=[REF,ref_falsif];
+end
+REF
+options.input_choice=3;
+options.sim_ref=8;
+if numel(ref_falsif)==2
+    options.ref_Ts=options.T_train/2;
+elseif numel(ref_falsif)==1
+    options.ref_Ts=options.T_train;
+else
+    error('Checking can be done for signals with 2 pieces')
+end
+for i=1:no_cex
+    options.sim_cov=REF(:,i);
+    options.workspace = simset('SrcWorkspace','current');
+    sim(SLX_model,[],options.workspace);
+%     figure; plot(ref.time(1:(end-1)),ref.signals.values(1:(end-1)),'r',y.time(1:(end-1)),y.signals.values(1:(end-1)),'b-.')
+%     title(sprintf('CEX %i.',i))
+%     legend('ref','SLX')
+
+    figure;plot(ref.time(1:(end-1)),ref.signals.values(1:(end-1)),'r',y.time(1:(end-1)),y.signals.values(1:(end-1)),'b-.',linspace(0,10,no_points),data_test.Y(1+(i-1)*no_points:i*no_points),'m-.')
+    legend('ref','SLX sim','breach')
+    title(sprintf('CEX %i.',i))
+end
+%%
+disp('-----------')
+disp('     The last counterexamples:')
+REF
+disp('      The previous counterexamples:')
+REF_previous_temp=unique(Data_all{1,2}.REF,'stable');
+REF_previous=reshape(REF_previous_temp,[2,numel(REF_previous_temp)/2])
+plot_coverage_boxes(options,1)
+hold on
+plot(REF_previous(1,:),REF_previous(2,:),'ms')
+plot(REF(1,:),REF(2,:),'bx')
+
+%% 12b. Evaluating retrained SLX model
 
 model_name=[];
 options.input_choice=3;
 
 if model==1
     model_name='watertank_inport_NN_cex';    
+    options.ref_Ts=5;  
+    options.T_train=10;
     options.sim_ref=8;               %watertank 8
     options.ref_min=8.5;                %watertank 8.5
     options.ref_max=11.5;               %watertank 11.5
-    options.sim_cov=[11;9];             %watertank [12;8]    
+    options.sim_cov=[8.7;11.8];             %watertank [12;8]   
+%     options.sim_cov=[10.125;10.08];
+options.sim_cov=[inputs_all(1,3),inputs_all(3,3)];
 elseif model==2
     model_name='robotarm_NN_cex';
     options.sim_ref=0.4;               % robotarm
@@ -477,9 +552,16 @@ elseif model==3
     options.ref_min=1;
     options.ref_max=2.5;
     options.sim_cov=[2.5;-1.5];
-
+elseif model==4
+    options.ref_Ts=10;             %tank_reactor
+    options.sim_ref=3;          
+    options.ref_min=2;        
+    options.ref_max=5;       
+    options.sim_cov=[2;5];     
+    options.u_index_plot=1;
+    options.y_index_plot=1;     
+    options.ref_index_plot=1;
 end
-
 
 run_simulation_nncs(options,model_name,1) %3rd input is true for counterexamples
 

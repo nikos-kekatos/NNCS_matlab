@@ -95,6 +95,10 @@ elseif training_options.retraining_method==5 %weighted
     REF_test=[REF_original;REF_cex];
     U_test=[U_original;U_cex];
     Y_test=[Y_original;Y_cex];
+elseif training_options.retraining_method==6 %weighted
+    REF_test=[REF_original;REF_cex];
+    U_test=[U_original;U_cex];
+    Y_test=[Y_original;Y_cex];
 end
 
 if training_options.retraining_method~=4
@@ -171,20 +175,23 @@ disp('')
 disp('Re-training started')
 
 if training_options.retraining_method==1 % retrain with all from scratch
-    net=feedforwardnet(training_options.neurons);
-    net = configure(net,in,out);
+    net_cex=feedforwardnet(training_options.neurons);
+    net_cex = configure(net_cex,in,out);
     % net.performFcn='custom_v1';
-    net = init(net);
-    net.divideFcn=training_options.div;
+    net_cex = init(net_cex);
+    net_cex.divideFcn=training_options.div;
+    net_cex.trainParam.max_fail=training_options.max_fail;
+    net_cex.trainParam.goal=training_options.error;
     %     net.trainFcn='trainrp';
     %     net.trainParam.epochs=15000;
-    [net_cex,tr] = train(net, in, out);
+    [net_cex,tr] = train(net_cex, in, out);
     p = [in];
     uu = sim(net_cex,p);
 %    perf = perform(net_cex,in,out)
 elseif training_options.retraining_method==2  % 2: keep old net and use all data...
     net.divideFcn=training_options.div;
     net.trainParam.goal=training_options.error;
+    net.trainParam.max_fail=training_options.max_fail;
     [net_cex,tr] = train(net, in, out);
     p = [in];
     uu = sim(net_cex,p);
@@ -193,6 +200,7 @@ elseif training_options.retraining_method==2  % 2: keep old net and use all data
     
 elseif training_options.retraining_method==3  % 3: keep old net and use only new data
     net.divideFcn=training_options.div;
+    net.trainParam.max_fail=training_options.max_fail;
     [net_cex,tr] = train(net, in, out);
     p = [in];
     uu = sim(net_cex,p);
@@ -218,14 +226,14 @@ elseif training_options.retraining_method==5
     net_cex = init(net_cex);
     net_cex.divideFcn=training_options.div;
     net_cex.trainFcn='trainrp'%'trainlm'; % trainscg % trainrp
-    net_cex.trainParam.max_fail=training_optins.max_fail;
-    net_cex.trainParam.goal=training_optins.error;
+    net_cex.trainParam.max_fail=training_options.max_fail;
+    net_cex.trainParam.goal=training_options.error;
     
     global w;
     size_n=length((REF_test));
     w=zeros(size_n,1);
     w(1:length(REF_original))=0.1;
-    w(1:length(REF_cex))=950;
+    w(1:length(REF_cex))=9;
     net_cex.trainParam.epochs=15000;
     
     [net_cex,tr] = train(net_cex, in, out);
@@ -239,7 +247,7 @@ elseif training_options.retraining_method==6     % 4: blend/mix old and new dati
     net.divideFcn=training_options.div;
     net.performFcn='wmse';
     net.trainFcn='trainrp'%'trainlm'; % trainscg % trainrp
-    
+    net.trainParam.max_fail=training_options.max_fail;
     global w;
     size_n=length((REF_test));
     w=zeros(size_n,1);

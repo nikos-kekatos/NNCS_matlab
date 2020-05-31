@@ -110,7 +110,10 @@ net.trainParam.goal = training_options.error; %1e-6;
 % net.trainFcn= trainrp %trainlm %'traingdx' 'trainscg' 'crossentropy'
 % net.divideFcn='divideint'
 net.divideFcn=training_options.div;
-
+net.initFcn='initlay';
+net.layers{1}.initFcn='initnw';
+net.layers{2}.initFcn='initnw';
+net.layers{3}.initFcn='initnw';
 net = init(net);
 [net,tr] = train(net, in, out);
 weights = getwb(net);

@@ -33,7 +33,7 @@ if nargin<5
 end
 falsif_rob_values=falsif_pb.obj_false;
 no_cex=length(falsif_rob_values);
-if cluster_all==1
+if cluster_all==1 ||no_cex==1
     data_cex_cluster=data_cex;
     idx_cluster=1:no_cex;
     return;
@@ -140,14 +140,15 @@ fprintf('We will keep %i CEX out of total %i.\n',length(rob_kept),no_cex);
 
 % Need to match idx_kept to the array
 idx_kept_new=[];
-no_points=length(data_cex.REF)/no_cex
+no_points=length(data_cex.REF)/no_cex;
 for i=1:length(idx_kept)
     idx_kept_new=[idx_kept_new;(idx_kept(i)-1)*no_points+1, idx_kept(i)*no_points];
 end
-indices_temp=sort(idx_kept_new,1)
+indices_temp=sort(idx_kept_new,1);
+indices_temp=idx_kept_new;
 index_final=[];
-for i=1:length(idx_kept_new)
-    index_final=[index_final,indices_temp(:,1):indices_temp(:,2)];
+for i=1:size(idx_kept_new,1)
+    index_final=[index_final,indices_temp(i,1):indices_temp(i,2)];
 end
 data_cex_cluster.REF=data_cex.REF(index_final,:);
 data_cex_cluster.U=data_cex.U(index_final,:);

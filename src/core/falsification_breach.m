@@ -11,7 +11,10 @@ function [data_cex,falsif_pb,rob_nominal] = falsification_breach(options,falsif,
 %   method, the number of traces and the falsification method. Once, we
 %   finish with simulating, we need to find out which are the traces with
 %   the worst robustness and choose them for use in the retraining loop.
-
+persistent input_param
+% InitBreach
+get_param(Simulink.allBlockDiagrams(),'Name')
+bdclose all
 % falsif.property
 warning('off','all')
 if nargin<4
@@ -26,6 +29,7 @@ if strcmp(model_name,'watertank_inport')|| strcmp(model_name,'watertank_inport_N
     %     no_Y=1;
 elseif  strcmp(model_name,'watertank_inport_NN_cex')
     var_names_list={'In1','u','y','u_nn','y_nn','u_nn_cex_1','y_nn_cex_1'};
+    var_names_list={};
     model_type=1;
 elseif strcmp(model_name,'quadcopter')|| strcmp(model_name,'quadcopter_NN')
     var_names_list={'In1','u_1_','y_3_','u_nn_1_','y_nn_3_','u_nn_cex_1_1_','y_nn_cex_1_3_'};
@@ -38,10 +42,13 @@ elseif strcmp(model_name,'tank_reactor')||strcmp(model_name,'tank_reactor_NN') |
     var_names_list={};
     model_type=4;
 end
-Br_falsif = BreachSimulinkSystem(model_name,{},[],var_names_list);
+% Br_falsif = BreachSimulinkSystem(model_name,'all',[],var_names_list);
+Br_falsif = BreachSimulinkSystem(model_name,'all');
+
 warning('Only works for 1D systems')
 
 % Test with constant
+%{
 if strcmp(model_name,'watertank_inport')|| strcmp(model_name,'watertank_inport_NN')
     Br_falsif.SetParam('In1_u0',11);
 elseif strcmp(model_name,'quadcopter')|| strcmp(model_name,'quadcopter_NN')
@@ -54,7 +61,7 @@ if options.plotting_sim
     figure;Br_falsif.PlotSignals();
 end
 Br_falsif.PrintAll();
-
+%}
 
 % sim_time = 20
 sim_time=falsif.T;
@@ -63,7 +70,7 @@ invalmax = falsif.breach_ref_max;
 Br_falsif.SetTime(sim_time);
 
 % First, plot coverage measures for the case where we don't snap to grid
-nbinputsig = falsif.num_inputs
+nbinputsig = falsif.num_inputs;
 nbctrpt = falsif.breach_segments;
 
 input_str = {};
@@ -91,7 +98,7 @@ property
 
 R = BreachRequirement(property);
 falsif_pb = FalsificationProblem(Br_falsif, R);
-falsif_pb.use_parallel=0
+% falsif_pb.use_parallel=0
 
 % method = 'quasi'
 % method = input('Which method?');
@@ -112,7 +119,7 @@ switch falsif.method
     case 'quasi'
         %% Try quasi-random
         falsif_pb.max_obj_eval = falsif.max_obj_eval; % 1000
-        falsif_pb.setup_random('rand_seed',falsif.seed,'num_rand_samples',falsif.num_samples) % 100
+        falsif_pb.setup_random('rand_seed',falsif.seed,'num_rand_samples',falsif.num_samples); % 100
         
     case 'GNM'
         %% Try GNM
@@ -163,10 +170,12 @@ no_cex_1=falsif_pb.nb_obj_eval;
 no_cex_2=length(cex_traces);
 no_cex_3=length(cex.P.traj_ref);
 isequal(no_cex_1,no_cex_2,no_cex_3);
-fprintf('\n The number of CEX is %i.\n',length(falsif_idx));
-
+%{
+fprintf('\n\n Using Breach, the number of CEX is %i.\n\n',length(falsif_idx));
 fprintf('The total number of traces is %i.\n\n',no_cex_2);
-fprintf('Each trace includes 1 control output(s), 1 state variable(s) and 1 reference(s).\n')
+%}
+
+%fprintf('Each trace includes 1 control output(s), 1 state variable(s) and 1 reference(s).\n')
 % In1 is sufficient for the input/reference. We can ignore the rest,
 % {'In1_u0'}, {'In1_dt0'}, {'In1_u1'}, {'In1_dt1'}, {'In1_u2'}
 
@@ -244,12 +253,13 @@ Y_NN_cex_breach_all=[];
 
 % for i=1:length(cex_traces) not correct as all traces might be logged
 for i=falsif_idx
-    REF_cex_breach_all=[REF_cex_breach_all,cex.P.traj{i}.X(index_REF,:)];
-    U_cex_breach_all=[U_cex_breach_all,cex.P.traj{i}.X(index_U,:)];
-    Y_cex_breach_all=[Y_cex_breach_all,cex.P.traj{i}.X(index_Y,:)];
-    U_NN_cex_breach_all=[U_NN_cex_breach_all,cex.P.traj{i}.X(index_U_NN,:)];
-    Y_NN_cex_breach_all=[Y_NN_cex_breach_all,cex.P.traj{i}.X(index_Y_NN,:)];
+    REF_cex_breach_all=[REF_cex_breach_all,cex.P.traj{i}.X(index_REF,1:(end-1))];
+    U_cex_breach_all=[U_cex_breach_all,cex.P.traj{i}.X(index_U,1:(end-1))];
+    Y_cex_breach_all=[Y_cex_breach_all,cex.P.traj{i}.X(index_Y,1:(end-1))];
+    U_NN_cex_breach_all=[U_NN_cex_breach_all,cex.P.traj{i}.X(index_U_NN,1:(end-1))];
+    Y_NN_cex_breach_all=[Y_NN_cex_breach_all,cex.P.traj{i}.X(index_Y_NN,1:(end-1))];
 end
+
 
 
 %{
@@ -265,6 +275,8 @@ data_cex.U=U_cex_breach_all';
 data_cex.Y=Y_cex_breach_all';
 data_cex.U_NN=U_NN_cex_breach_all';
 data_cex.Y_NN=Y_NN_cex_breach_all';
+close_system(strcat(options.SLX_model,'_breach'),0)
+
 try
     new_pts = falsif_pb.X_log; % the points that were explored by Breach */
     Br_False.AddPoints(new_pts);
@@ -272,7 +284,9 @@ try
     current_coverage_value = Br_False.ComputeLogCellOccupancyCoverage
     current_coverage_value = Br_falsif.ComputeLogCellOccupancyCoverage
 end
-
+close_system(strcat(options.SLX_model,'_breach'),0)
+delete(fullfile(which(strcat(options.SLX_model,'_breach.slx'))))
+delete(fullfile(which(strcat(options.SLX_model,'_breach.slxc'))))
 
     function var_input_generator
         Br_input_gen = var_cp_signal_gen(input_str, input_cp, input_intp);
@@ -293,8 +307,8 @@ end
                 end
             end
             
-            input_param
-            input_range
+            input_param;
+            input_range;
             
         end
         % input_range(2,1)=0.1;
@@ -318,8 +332,8 @@ end
                         end
             end
             
-            input_param
-            input_range
+            input_param;
+            input_range;
             if strcmp(falsif.method,'CMA')
                 input_param=input_param(1:2:end)
                 input_range=input_range(1:2:end,:)
@@ -328,4 +342,5 @@ end
         Br_falsif.SetParamRanges(input_param, input_range);
 
     end
+
 end

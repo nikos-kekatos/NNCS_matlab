@@ -23,7 +23,7 @@ else
 end
 
 if isempty(model_name)
-    model_name = options.SLX_NN_model;
+    model_name = options.SLX_model;
 end
 
 
@@ -94,7 +94,7 @@ for i=1:num_cex
     
 end
 completed=1;
-
+close_system(options.SLX_model,0)
 
 end
 

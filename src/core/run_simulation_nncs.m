@@ -3,7 +3,7 @@ function  run_simulation_nncs(options,model_name,plot_cex)
 %   Detailed explanation goes here
 
 if isempty(model_name)|| nargin==1
-model_name = options.SLX_NN_model;
+model_name = options.SLX_model;
 end
 
 if nargin<=2
@@ -145,4 +145,6 @@ plot(ref.time(1:end-1),ref.signals.values(1:end-1,ref_idx),'r',y.time,y.signals.
 % ylabel('plant output')
 legend('reference', 'PID', 'NN original','NN with cex','FontSize',14)
 title('Simulating NNCS -- PID vs original NN vs refined NN','FontSize',18,'FontWeight','bold');
+end
+close_system(options.SLX_model,1)
 end

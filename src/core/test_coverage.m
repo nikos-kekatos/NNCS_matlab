@@ -3,7 +3,9 @@ function [testing,options] = test_coverage(options,model_name)
 %   Detailed explanation goes here
 
 if isempty(model_name)|| nargin==1
-model_name = options.SLX_NN_model;
+% model_name = options.SLX_NN_model;
+model_name = options.SLX_model;
+
 end
 if options.testing.train_data==1 % test training points
     sim_cov_all=[];
