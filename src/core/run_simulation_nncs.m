@@ -1,4 +1,4 @@
-function  run_simulation_nncs(options,model_name,plot_cex)
+function  [ref,y,u]=run_simulation_nncs(options,model_name,plot_cex)
 %UNTITLED5 Summary of this function goes here
 %   Detailed explanation goes here
 

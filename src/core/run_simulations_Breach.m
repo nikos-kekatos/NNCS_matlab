@@ -10,6 +10,8 @@ if strcmp(options.SLX_model,'watertank_inport')|| strcmp(options.SLX_model,'wate
     %     no_REF=1;
     %     no_U=1;
     %     no_Y=1;
+else
+    var_names_list={};
 end
 Br = BreachSimulinkSystem(options.SLX_model,'all',[],var_names_list);
 warning('Only works for 1D systems')
@@ -41,13 +43,17 @@ Br.SetTime(sim_time);
 
 % First, plot coverage measures for the case where we don't snap to grid
 Br_sys = Br.copy();
-nbinputsig = 1
+if options.model==5
+    nbinputsig = 3
+else
+    nbinputsig = 1
+end
 nbctrpt = options.breach_segments;
 
 input_str = {};
 input_cp = [];
 input_intp = {};
-for ii = 1:1 %only one input
+for ii = 1:nbinputsig %only one input
     input_str{end+1} = ['In' num2str(ii)];
     input_cp = [input_cp nbctrpt];
     input_intp{end+1} = 'previous';
@@ -64,7 +70,7 @@ input_range = [];
 for ii = 1:nbinputsig
     for jj = 0:(nbctrpt-1)
         input_param{end+1} = ['In' num2str(ii) '_u' num2str(jj)];
-        input_range = [input_range; invalmin invalmax];
+        input_range = [input_range; invalmin(ii) invalmax(ii)];
         if (jj<(nbctrpt-1))
             input_param{end+1} = ['In' num2str(ii) '_dt' num2str(jj)];
             input_range = [input_range; (jj+1)*sim_time/nbctrpt  ((jj+1)*sim_time/nbctrpt + eps_time*0) ];

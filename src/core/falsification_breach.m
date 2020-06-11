@@ -195,6 +195,9 @@ if check_nominal
     % robustness_check{1} = Br_check.CheckSpec(falsif.property);
     % robustness_check{2}=Br_check.CheckSpec(falsif.property_cex);
     rob_nominal=Br_check_nom.CheckSpec(falsif.property_nom);
+    if ~exist('rob_nominal','var')
+        rob_nominal=[];
+    end
 end  
 try
     no_REF=size(data.REF,2);

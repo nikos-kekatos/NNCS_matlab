@@ -106,6 +106,7 @@ end
             folder= 'robotarm';
             folder='quadcopter';
 %             folder='watertank';
+            folder='tank'
         destination_folder={
 %            strcat('modules/outputs/robotarm/'),...
 %            strcat('outputs/robotarm/'),...

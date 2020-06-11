@@ -25,12 +25,26 @@ end
 no_REF_array=size(REF_array,2);
 no_U_array=size(U_array,2);
 no_Y_array=size(Y_array,2);
+
+
+% Output
+out=U_array';
+
 if training_options.use_error_dyn
     if training_options.use_previous_y
         if training_options.use_previous_u
             in=[REF_array-Y_array [0;REF_array(1:end-1)-Y_array(1:end-1)] [0;0;REF_array(1:end-2)-Y_array(1:end-2)]...
                 [0;0;0;REF_array(1:end-3)-Y_array(1:end-3)] [0;U_array(1:end-1)] [0;0;U_array(1:end-2)]...
                 ]';
+            if options.model==4
+                if options.extra_y
+                in=[in; Y_array'];             
+                disp('Added y(k) as a separate input')
+                end
+                if options.extra_ref
+                    in=[in;REF_array'];
+                end
+            end
             if training_options.replace_by_zeros==1
                 no_points=size(in,2)/options.coverage.no_traces_ref;
                 in(2,1:no_points:end)=0;
@@ -42,6 +56,20 @@ if training_options.use_error_dyn
                 in(5,1:no_points:end)=0;
                 in(6,1:no_points:end)=0;
                 in(6,2:no_points:end)=0;
+            elseif training_options.replace_by_zeros==2
+                no_points=size(in,2)/options.coverage.no_traces_ref;                
+                index=1:no_points:(size(in,2)-no_points);
+                for jj=index
+                in(2,jj)=in(1,jj);
+                in(3,jj)=in(1,jj);
+                in(3,jj+1)=in(1,jj);
+                in(4,jj)=in(1,jj);
+                in(4,jj+2)=in(1,jj);
+                in(4,3+jj)=in(1,jj);
+                in(5,jj)=out(1,jj);
+                in(6,jj)=out(1,jj);
+                in(6,jj+1)=out(1,jj);
+                end
             end
         else
             in=[REF_array-Y_array [0;REF_array(1:end-1)-Y_array(1:end-1)] [0;0;REF_array(1:end-2)-Y_array(1:end-2)]...
@@ -91,9 +119,7 @@ else
     end
 end
 
-% Output
-out=U_array';
-
+    
 % [in,out]=replace_zeros(in,out,training_options,options);
 
 % Input normalization
@@ -125,9 +151,9 @@ net.trainParam.goal = training_options.error; %1e-6;
 % net.divideFcn='divideint'
 net.divideFcn=training_options.div;
 net.initFcn='initlay';
-net.layers{1}.initFcn='initnw';
-net.layers{2}.initFcn='initnw';
-net.layers{3}.initFcn='initnw';
+%net.layers{1}.initFcn='initnw';
+%net.layers{2}.initFcn='initnw';
+%net.layers{3}.initFcn='initnw';
 net = init(net);
 [net,tr] = train(net, in, out);
 weights = getwb(net);

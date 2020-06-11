@@ -114,6 +114,15 @@ if training_options.retraining_method~=4
                 in=[REF_test-Y_test [0;REF_test(1:end-1)-Y_test(1:end-1)] [0;0;REF_test(1:end-2)-Y_test(1:end-2)]...
                     [0;0;0;REF_test(1:end-3)-Y_test(1:end-3)] [0;U_test(1:end-1)] [0;0;U_test(1:end-2)]...
                     ]';
+                if options.model==4
+                if options.extra_y
+                in=[in; Y_test'];             
+                disp('Added y(k) as a separate input')
+                end
+                if options.extra_ref
+                    in=[in;REF_test'];
+                end
+            end
             else
                 in=[REF_test-Y_test [0;REF_test(1:end-1)-Y_test(1:end-1)] [0;0;REF_test(1:end-2)-Y_test(1:end-2)]...
                     [0;0;0;REF_test(1:end-3)-Y_test(1:end-3)]]';

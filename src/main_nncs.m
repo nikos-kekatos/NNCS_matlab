@@ -20,7 +20,7 @@
 %
 % Author:       Nikos Kekatos
 % Written:      9-February-2020
-% Last update:  ---
+% Last update:  10-June-2020
 % Last revision:---
 
 
@@ -41,7 +41,7 @@ end
 % The models are saved in ./models/
 % SLX_model='models/robotarm/robotarm_PID','robotarm_PID','quad_1_ref','quad_3_ref',
 %'quad_3_ref_6_y','helicopter','watertank_comp_design_mod';
-model=1; % 1: watertank, 2: robotarm, 3: quadcopter
+model=4; % 1: watertank, 2: robotarm, 3: quadcopter
 
 if model==1
     SLX_model='watertank_inport_NN_cex';
@@ -58,7 +58,7 @@ load_system(SLX_model)
 options.model=model;
 %% 3. Input: specify configuration parameters
 % run('configuration_1.m'),('config_quad_1_ref.m')
-
+timer_trace_gen=tic;
 if model==1
     run('config_1_watertank.m')
 elseif model==2
@@ -71,13 +71,13 @@ end
 %% 4a. Run simulations -- Generate training data
 options.error_mean=0%0.0001;
 options.error_sd=0%0.001;
-
+options.save_sim=1;
 % Breach options
 % options.no_traces=30;
 % options.breach_segments=2;
 options.coverage.points='r';
 [data,options]=trace_generation_nncs(SLX_model,options);
-
+timer.trace_gen=toc(timer_trace_gen)
 %% 4b. Load previous saved traces
 if options.load==1
     % specify dataset from outputs/ folder
@@ -102,6 +102,7 @@ if options.preprocessing_bool==1
 end
 %% 6. Train NN Controller
 %the assignments could go a function/file
+timer_train=tic;
 training_options.retraining=0;
 if model==1
     training_options.use_error_dyn=1;       % watertank=1    %robotarm=0    %quadcopter=0
@@ -123,6 +124,8 @@ elseif model==4
     training_options.use_previous_u=2;      % waterank=2     %robotarm=2    %quadcopter=0
     training_options.use_previous_ref=3;    % waterank=3     %robotarm=3    %quadcopter=0
     training_options.use_previous_y=3;
+    options.extra_y=1;
+    options.extra_ref=0;
 end
 training_options.neurons=[30 30];
 % training_options.neurons=[50 ];
@@ -130,15 +133,15 @@ training_options.input_normalization=0;
 training_options.loss='mse';
 % training_options.loss='custom_v1';
 % training_options.loss='wmse';
-training_options.div='dividerand';
-% training_options.div='dividetrain';
+% training_options.div='dividerand';
+training_options.div='dividetrain';
 training_options.error=1e-5;
 training_options.max_fail=50; % Validation performance has increased more than max_fail times since the last time it decreased (when using validation).
 training_options.regularization=0; %0-1
 training_options.param_ratio=0.5;
 training_options.algo= 'trainlm'%'trainlm'; % trainscg % trainrp
 %add option for saved mat files
-training_options.iter_max_fail=2;
+training_options.iter_max_fail=1;
 iter=1;reached=0;
 training_options.replace_by_zeros=0;
 while true && iter<=training_options.iter_max_fail
@@ -174,7 +177,7 @@ else
     net=net_all{iter_best};
     tr=tr_all{iter_best};
 end
-
+timer.train=toc(timer_train)
 if options.plotting_sim
     figure;plotperform(tr)
 end
@@ -234,15 +237,15 @@ elseif model==3
     options.ref_index_plot=1;
 elseif model==4
     options.ref_Ts=10;             %tank_reactor
-    options.sim_ref=3;
+    options.sim_ref=8.5;
     options.ref_min=2;
-    options.ref_max=5;
-    options.sim_cov=[2;5];
+    options.ref_max=2.5;
+    options.sim_cov=[9;8];
     options.u_index_plot=1;
     options.y_index_plot=1;
     options.ref_index_plot=1;
 end
-run_simulation_nncs(options,model_name);
+[ref,y,u]=run_simulation_nncs(options,model_name,0);
 
 %% 10. Data matching (analysis w/ training data)
 
@@ -274,6 +277,7 @@ clear rob_nominal robustness_check_temp block_name falsif_idx data_cex
 clear data_cex_cluster tr tr_all condition cluster_all check_nominal model_name
 clear data_backup i_f ii In1_dt0 In1_u0 In1_u1 inputs_cex iter iter_best num_cex
 clear reached seeds_all stop t__ tm training_perf tspan u__ idx_cluster falsif_pb_zero
+clear timer
 %%% ------------------------------------------ %%
 %%% ----- 11-A: Falsification with Breach ---- %%
 %%% ------------------------------------------ %%
@@ -282,14 +286,15 @@ options.testing_breach=1;
 training_options.combining_old_and_cex=1; % 1: combine old and cex
 falsif.iterations_max=3;
 falsif.method='quasi';
-falsif.num_samples=25;
+falsif.num_samples=100;
 falsif.num_corners=25;
-falsif.max_obj_eval=25;
+falsif.max_obj_eval=100;
 falsif.max_obj_eval_local=20;
 falsif.seed=100;
 falsif.num_inputs=1;
 
 falsif.property_file=options.specs_file;
+% falsif.property_file='specs_robotarm_overshoot.stl';
 [~,falsif.property_all]=STL_ReadFile(falsif.property_file);
 falsif.property=falsif.property_all{2};%// TO-DO automatically specify the file
 falsif.property_cex=falsif.property_all{3};
@@ -304,8 +309,8 @@ elseif model==3
     falsif.breach_ref_min=-1;            %watertank 8 % quadcopter -1 %robotarm -0.5
     falsif.breach_ref_max=3;
 elseif model==4
-    falsif.breach_ref_min=2;            %watertank 8 % quadcopter -1 %robotarm -0.5
-    falsif.breach_ref_max=5;
+    falsif.breach_ref_min=8;            %watertank 8 % quadcopter -1 %robotarm -0.5
+    falsif.breach_ref_max=9;
 end
 falsif.stop_at_false=false;
 falsif.T=options.T_train;
@@ -326,6 +331,7 @@ options.input_choice=4;
 net_all{1}=net;
 seeds_all=falsif.seed*(1:falsif.iterations_max);
 while i_f<=falsif.iterations_max && ~stop
+    timer_falsif=tic;
     fprintf('\n Iteration %i.\n',i_f)
     %     if i_f>1
     %         fprintf('\n Testing the NN on the training data')
@@ -357,13 +363,21 @@ while i_f<=falsif.iterations_max && ~stop
         fprintf('\n Trying with a different method (GNN) and more objective evaluations.\n')
         falsif.method='GNM';
         %         falsif.max_obj_eval=falsif.max_obj_eval*2;
-        [data_cex,falsif_pb_zero]= falsification_breach(options,falsif,file_name);
+        [data_cex,falsif_pb_zero,rob_nominal]= falsification_breach(options,falsif,file_name,check_nominal);
+        if check_nominal
+            robustness_checks_all{i_f,2}=rob_nominal;
+        end
         if any(structfun(@isempty,data_cex))
             stop=1;
+            fprintf('\n\n The NN produces %i falsifying traces out of %i total traces.\n',length(find(falsif_pb_temp.obj_false<0)),length(falsif_pb_temp.obj_log));
+            fprintf('\n\n The nominal produces %i falsifying traces out of %i total traces.\n',length(find(rob_nominal<0)),length(falsif_pb_temp.obj_log));
+             falsif_temp=toc(timer_falsif);
+            timer.falsif{i_f}=falsif_temp
             break;
         else
             falsif.method='quasi';
             falsif_pb{i_f}=falsif_pb_zero;
+            robustness_checks_all{i_f,1}=falsif_pb{i_f}.obj_log;
             robustness_checks_false{i_f,1}=falsif_pb{i_f}.obj_false;
         end
     end
@@ -372,8 +386,8 @@ while i_f<=falsif.iterations_max && ~stop
     end
     fprintf('\n\n The NN produces %i falsifying traces out of %i total traces.\n',length(find(falsif_pb_temp.obj_false<0)),length(falsif_pb_temp.obj_log));
     fprintf('\n\n The nominal produces %i falsifying traces out of %i total traces.\n',length(find(rob_nominal<0)),length(falsif_pb_temp.obj_log));
-    
-    
+    falsif_temp=toc(timer_falsif);
+    timer.falsif{i_f}=falsif_temp
     
     fprintf('\n End falsification with Breach.\n')
     disp('-----------------------------------')
@@ -381,19 +395,21 @@ while i_f<=falsif.iterations_max && ~stop
     %%% ----- 11-B: Clustering  CEX     ---- %%
     %%% ------------------------------------ %%
     %
-    cluster_all=1;
+    timer_cluster=tic;
+    cluster_all=0;
     [data_cex_cluster,idx_cluster]=cluster_and_sample(data_cex,falsif_pb{i_f},falsif,options,cluster_all);
     
     if i_f==1
         Data_all{i_f,1}=data;
         Data_all{i_f,2}=data_cex;
     elseif i_f>1
-        Data_all{i_f,1}=get_new_training_data( Data_all{i_f-1,1},Data_all{i_f-1,2},training_options);
+        Data_all{i_f,1}=get_new_training_data( Data_all{i_f-1,1},Data_all{i_f-1,3},training_options);
         Data_all{i_f,2}=data_cex;
     end
     Data_all{i_f,3}=data_cex_cluster;
     data_backup=data_cex;
     data_cex=data_cex_cluster;
+    timer.cluster{i_f}=toc(timer_cluster)
     %
     %%% ------------------------------------ %%
     %%% ----- 11-C: Retraining with CEX ---- %%
@@ -401,7 +417,7 @@ while i_f<=falsif.iterations_max && ~stop
     %
     if stop~=1
         for tm = 1%[2 3 1] % or we choose the preference/order
-            
+            timer_retrain=tic;
             fprintf('\nBeginning retraining with cex.\n')
             training_options.retraining=1; % the structure of the NN remains the same.
             training_options.retraining_method=tm; %1: start from scratch with all data,
@@ -416,7 +432,7 @@ while i_f<=falsif.iterations_max && ~stop
             
 %             training_options.neurons=[30 30 30]
             % [net_cex,data]=nn_retraining(net,data,training_options,options,[],data_cex);
-            [net_all{i_f+1},~,tr]=nn_retraining(net_all{i_f},Data_all{i_f,1},training_options,options,[],Data_all{i_f,2});
+            [net_all{i_f+1},~,tr]=nn_retraining(net_all{i_f},Data_all{i_f,1},training_options,options,[],Data_all{i_f,3});
             if tr.best_perf <= training_options.error*100
                 fprintf('\nDesired MSE value reached.\n');
                 fprintf('\nEnd retraining with cex.\n')
@@ -425,7 +441,7 @@ while i_f<=falsif.iterations_max && ~stop
             fprintf('\n End retraining with cex.\n')
         end
         disp('-----------------------------------')
-        
+        timer.retrain{i_f}=toc(timer_retrain)
         %%% ------------------------------------------ %%
         %%% ------ 11-D: Simulink Construction  ------ %%
         %%% ------------------------------------------ %%
@@ -442,11 +458,14 @@ while i_f<=falsif.iterations_max && ~stop
         %%% ----------------------------------------------- %%
         %%% ------ 11-E: Testing if CEX disappeared   ----- %%
         %%% ----------------------------------------------- %%
-        
+        timer_rechecking=tic;
+
         fprintf('\n Testing the NN on the training data.\n')
         fprintf('The number of original CEX was %i.\n',length(falsif_pb{i_f}.obj_false));
         [rob_temp_false,rob_temp_all,inputs_cex,inputs_all,options]=check_cex_elimination(falsif_pb{i_f},falsif,data_cex,file_name,idx_cluster,options);
         %     fprintf(' \n The original robustness values were %s.\n',num2str(robustness_checks{1}));
+        timer.rechecking{i_f}=toc(timer_rechecking);
+
         fprintf(' \n The new robustness values are %s.\n',num2str(rob_temp_false));
         robustness_checks_false{i_f,2}=rob_temp_false
         robustness_checks_all{i_f,3}=rob_temp_all
@@ -460,9 +479,10 @@ while i_f<=falsif.iterations_max && ~stop
         %%% ------       11-F: Plotting CEX     ----------- %%
         %%% ----------------------------------------------- %%
         %
-        num_cex=5;options.plotting_sim=1;
+        options.input_choice=3
+        num_cex=2;options.plotting_sim=1;
         run_and_plot_cex_nncs(options,file_name,inputs_cex,num_cex); %4th input number of counterexamples
-        
+        options.input_choice=4;
     end
     %
     fprintf('\n End of Iteration %i.\n',i_f)
@@ -479,8 +499,12 @@ end
 %% 12a. Checking CEX against SLX
 fprintf('\n\n------------\n\n');
 fprintf('\nHere we check if there are any problems with the way we store the data.\n');
-fprintf('The number of resulting CEX is %i.\n',numel(idx_cluster));
 
+if exist('idx_cluster')
+    fprintf('The number of resulting CEX is %i.\n',numel(idx_cluster));
+else
+    fprintf('There are no CEX left.\n');
+end
 data_test=data_cex_cluster;
 % data_test=Data_all{2,2};
 % data_test=data_backup;
@@ -527,7 +551,12 @@ hold on
 plot(REF_previous(1,:),REF_previous(2,:),'ms')
 plot(REF(1,:),REF(2,:),'bx')
 
-%% 12b. Evaluating retrained SLX model
+%% 12b. Check NN-cex on original training data
+
+[original_rob,In_Original] = check_cex_all_data(Data_all,falsif,file_name,options);
+figure;falsif_pb{i_f}.BrSet_Logged.PlotRobustSat(phi_3)
+
+%% 12c. Evaluating retrained SLX model
 
 model_name=[];
 options.input_choice=3;
@@ -543,7 +572,7 @@ if model==1
     %     options.sim_cov=[10.125;10.08];
     options.sim_cov=[inputs_all(1,3),inputs_all(3,3)];
 elseif model==2
-    model_name='robotarm_NN_cex';
+    model_name='robotarm';
     options.sim_ref=0.4;               % robotarm
     options.ref_min=-0.4;
     options.ref_max=0.3;
@@ -559,7 +588,7 @@ elseif model==4
     options.sim_ref=3;
     options.ref_min=2;
     options.ref_max=5;
-    options.sim_cov=[2;5];
+    options.sim_cov=[8.9];
     options.u_index_plot=1;
     options.y_index_plot=1;
     options.ref_index_plot=1;

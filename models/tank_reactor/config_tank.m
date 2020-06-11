@@ -6,7 +6,7 @@ options.model=4;
 load PIDGainSchedExample
 
 % Time horizon of simulation in Simulink
-options.T_train=30; % for constant choose 5s
+options.T_train=20; % for constant choose 5s
 options.SLX_model=SLX_model;
 % Choose reference type: (1) for constant, (2) for time varying and (3) for
 % coverage and (4) for Breach
@@ -48,7 +48,7 @@ end
 % end of Breach additions
 % CONSTANT references (Specify the values here)
 if options.reference_type==1
-    options.simin_ref=0:0.125:3;%0.125/2
+    options.simin_ref=8:0.04:9;%0.125/2
 %     options.simin_ref=linspace(-0.5,0.5,51)
     % options.simin_ref=[-0.5;-0.35;-0.3;-0.2;0;0.1;0.15;0.2;0.3;0.4;0.45;0.5];
     options.no_ref=numel(options.simin_ref);
@@ -80,11 +80,11 @@ end
 % Coverage- time varying refereces
 options.testing.train_data=0; %0 for testing centers, 1 for testing training data
 if options.reference_type==3
-    options.coverage.m=3;
+    options.coverage.m=2;
     options.ref_Ts=10;
-    options.coverage.ref_min=1.5;
-    options.coverage.ref_max=5;
-    options.coverage.delta_resolution=1; %0.1
+    options.coverage.ref_min=8;
+    options.coverage.ref_max=9;
+    options.coverage.delta_resolution=0.125; %0.1
 %     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution-1;
     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution;
 
@@ -122,7 +122,7 @@ if options.reference_type==3
         options.coverage.cells{i}.random_value=(options.coverage.cells{i}.max-options.coverage.cells{i}.min).*rand(options.coverage.m,1)+options.coverage.cells{i}.min;
         
     end
-    options.coverage.points='c' % default random
+    %options.coverage.points='c' % default random
     % options: choose coverage as value from 0 - 1
     options.coverage.cell_occupancy=1;
     options.coverage.no_traces_ref=options.coverage.cell_occupancy*options.coverage.no_cells_total;

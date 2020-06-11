@@ -48,6 +48,7 @@ if options.reference_type~=4
         end
         fprintf('Beginning of iteration %i\n',i);
         tic;
+        warning off
         [ref,y,u]=sim_SLX(model,options);
         %     sim(model);
         % sim constructs ref,u and y variables
@@ -101,6 +102,7 @@ if options.reference_type~=4
         folder= 'robotarm';
         folder='quadcopter';
         folder='watertank';
+        folder='tank';
         destination_folder={
             %            strcat('modules/outputs/robotarm/'),...
             %            strcat('outputs/robotarm/'),...
