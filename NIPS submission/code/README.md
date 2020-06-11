@@ -23,14 +23,14 @@ Running the accompanied files requires the installation of MATLAB&trade; in your
 
 > Note that there seems to be a dependency on the [Image Processing Toolbox](https://www.mathworks.com/products/image.html). In fact, we only use one function, i.e. [`mink`](https://www.mathworks.com/help/matlab/ref/mink.html) and we provide an alternative code which is activated via `try` and `catch` statements. 
 
-We use the latest Breach version (1.7.0). For simplicity, we have downloaded and included the corresponding Breach code in the zip folder. Note that a C/C++ compiler is required to use Breach and the interfacing is done via MEX files (more information on Installation). 
+We use the latest [Breach](https://github.com/decyphir/breach) version (1.7.0). For simplicity, we have downloaded and included the corresponding Breach code in the zip folder. Note that a C/C++ compiler is required to use Breach and the interfacing is done via MEX files (more information on Installation). 
 
 ## Installation <a name="Installation"></a>
 
 1. The user has to check that Breach is correctly setup. This requires two main steps, 
  
 	* installing a C/C++ compiler via `$ mex -setup`. Information about different operating systems can be found [here](https://www.mathworks.com/help/matlab/matlab_external/changing-default-compiler.html).
-	* Installing Breach via  the function `InstallBreach`. You should navigate to the `breach` folder and run `$ InstallBreach` in the MATLAB command window. Note that this should be done only once and the Breach path and files will be automatically added to the search path.
+	* Installing Breach via the function `InstallBreach`. You should navigate to the `breach` folder and run `$ InstallBreach` in the MATLAB command window. Note that this should be done only once and the Breach path and files will be automatically added to the search path.
 	
 	<!--
 	 Adding the Breach folder to the MATLAB path. This can be done (i) manually by right-clicking on the root folder of the Breach folder and opting `Add to Path` and `Selected Folders and Subfolders`, (ii) write in the command window `$ addpath(genpath(breach_tool))`, (iii) run `$ InstallBreach` (it will perform other actions as well)
@@ -61,6 +61,6 @@ To run each experiment, you simply need to navigate to the `experiments` directo
 
 Please note that there is a typo (error) in the Table 1 regarding the experiment A<sub>1,2</sub>. In the last row with ID=3, the $n_c$ should be equal to 0 and not equal to 20. 
 
-## Reproducability <a name="Reproducability"></a>
+## Reproducability - Disclaimer <a name="Reproducability"></a>
 
-Running the experiments might lead to results that do not exactly replicate the reported results in the paper. That is the case as there are several random factors in our code. In particular, 1) the trace generation uses a random seed, 2) the training is not deterministic, the initial weights are randomly chosen accroding to the Nguyen-widrow and the splitting of the samples into training, testing and validation data is again done randomly via the `nntraintool` functionalites, 3) the falsification techniques use random, quasi random and optimization based search algorithms with randomly chosen seeds, 4) the clustering is non deterministic due to the nature of the `k-means` algorithm and the use of 'replicates' might not resolve this matter, and 5) retraining also involves random splitting of the data. However, despite the randomness introduced the generated results still qualitatively match the reported results and most importantly the counterexample elimination is succesful.
+Running the experiments might lead to results that do not exactly replicate the reported results in the paper. That is the case as there are several random factors in our code. In particular, 1) the trace generation uses a random seed, 2) the training is not deterministic, the initial weights are randomly chosen accroding to the [Nguyen-Widrow initialization method](https://fr.mathworks.com/help/deeplearning/ref/init.html) and the [splitting of the data](https://fr.mathworks.com/help/deeplearning/ref/dividerand.html) into training, testing and validation data is again done randomly via the `nntraintool` functionalites, 3) the falsification techniques use random, quasi random and optimization based search algorithms with randomly chosen seeds, 4) the clustering is non deterministic due to the nature of the `k-means` algorithm and the use of 'replicates' might not resolve this matter, and 5) retraining also involves random splitting of the data. However, despite the randomness introduced the generated results still qualitatively match the reported results and most importantly the counterexample elimination is succesful.
