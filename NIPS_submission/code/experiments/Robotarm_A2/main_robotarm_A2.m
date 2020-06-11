@@ -279,9 +279,9 @@ while i_f<=falsif.iterations_max && ~stop
             robustness_checks_false{i_f,1}=falsif_pb{i_f}.obj_false;
         end
     end
-    try
-        figure;falsif_pb{i_f}.BrSet_Logged.PlotRobustSat(phi_3)
-    end
+%     try
+%         figure;falsif_pb{i_f}.BrSet_Logged.PlotRobustSat(phi_3)
+%     end
     fprintf('\n\n The NN produces %i falsifying traces out of %i total traces.\n',length(find(falsif_pb_temp.obj_false<0)),length(falsif_pb_temp.obj_log));
     fprintf('\n\n The nominal produces %i falsifying traces out of %i total traces.\n',length(find(rob_nominal<0)),length(falsif_pb_temp.obj_log));
     falsif_temp=toc(timer_falsif);

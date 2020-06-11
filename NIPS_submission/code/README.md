@@ -11,6 +11,7 @@ Insutructions on how to install, run and obtain the experimental results reporte
 - [Installation](#Installation)
 - [Files](#Files)
 - [Usage](#Usage)
+- [Description](#Description)
 - [Remarks](#Remarks)
 - [Reproducibility](#Reproducibility)
 
@@ -54,21 +55,29 @@ We cannot guarantee that the files will be execute sucessfully in other setups. 
 
 >Note that different platforms might introduce differences in the computations which along side the inherent randomness might lead to different results. However, we have observed that even if the number of counterexamples is different, the counterexamples are eventually eliminated via retraining.
 
+
 ## Installation <a name="Installation"></a>
 
 1. The user has to check that Breach is correctly setup. This requires two main steps, 
  
 	* installing a C/C++ compiler via `$ mex -setup`. Information about different operating systems can be found [here](https://www.mathworks.com/help/matlab/matlab_external/changing-default-compiler.html).
+
+	>Beware that the selection of compiler might cause issues with `mex -setup`mex, e.g. it may not support the GCC version installed on your system. The simplest workaround is to ensure that the symlink for `gcc` points to a version mex supports. This can be done by running in Unix-based machines ``sudo ln -f -s <gcc-ver-supported> gcc``  in the terminal in the path of the symlink.
+	
 	* Installing Breach via the function `InstallBreach`. You should navigate to the `breach` folder and run `$ InstallBreach` in the MATLAB command window. 
 Note that this should be done only once and the Breach path and files will be automatically added to the search path.
 	
-	<!--
-	 Adding the Breach folder to the MATLAB path. This can be done (i) manually by right-clicking on the root folder of the Breach folder and opting `Add to Path` and `Selected Folders and Subfolders`, (ii) write in the command window `$ addpath(genpath(breach_tool))`, (iii) run `$ InstallBreach` (it will perform other actions as well)
-	 -->
 
 	> You might get warnings during the installation, e.g. due to different GCC versions or receive the message that `Install mostly successful`. This is acceptable as most features of Breach will work nonetheless.
+	
+	> Better avoid using path names with spaces as Breach might face problems parsing them,
 
 2. Everything else will be automatically handled for each experiment.
+
+>As there might be some problem with relative paths, we recommend that you make sure that the absolute paths of the directory to the Breach and our prototype tool are included. This can be done (i) manually by right-clicking on the root folder of the root folder, e.g. SupplementaryMaterial, and opting `Add to Path` and `Selected Folders and Subfolders`, (ii) write in the command window `$ addpath(genpath(root_directory))`,
+
+
+
 
 ## Files <a name="Files"></a>
 
@@ -88,6 +97,8 @@ In the `code` folder, there exist three subfolders:
 ## Usage <a name="Usage"></a>
 
 To run each experiment, you simply need to navigate to the `experiments` directory and choose the corresponding folder. Then, you should open the `main_<ModelName>_<ID>.m` file and run it. You can run it by writing its name in the command window, e.g. `$ main_robotarm_A2` or use the `Run` button on the top of the MATLAB interface (it is located on the `Editor` tab).  The code will return several figures, display the results, and store in a TXT file (`output_modelName_experiment.txt`) the key results.
+
+## Description <a name="Description"></a>
 
 ## Remarks <a name="Remarks"></a>
 

@@ -125,7 +125,7 @@ if options.reference_type==3
         options.coverage.cells{i}.random_value=(options.coverage.cells{i}.max-options.coverage.cells{i}.min).*rand(options.coverage.m,1)+options.coverage.cells{i}.min;
         
     end
-    options.coverage.points='c' % r:random, c:centers
+    options.coverage.points='r'; % r:random, c:centers
     % options: choose coverage as value from 0 - 1
     options.coverage.cell_occupancy=1;
     options.coverage.no_traces_ref=options.coverage.cell_occupancy*options.coverage.no_cells_total;
@@ -196,10 +196,6 @@ end
 if options.reference_type==2 || options.reference_type==1
     options.no_traces=options.no_ref*options.no_x0;
 elseif options.reference_type==3
-    disp('To DO - check consistency of traces')
-    disp('Add option to input the number of traces instead of the occupancy.')
-    disp(' ')
-    
     options.no_traces=options.coverage.no_traces_ref*options.no_x0;
 end
 if options.reference_type~=4
