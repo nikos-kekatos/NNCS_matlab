@@ -47,11 +47,13 @@ In the `code` folder, there exist three subfolders:
 1. `breach`: contains all the code for ***Breach*** toolbox
 2. `src_code`: contains our code for the synthesis of neural network control systems and is divided into the `core` and the `utilities` subfolders. Here, you can find all the code regarding training, retraining, falsification, etc.
 3. `experiments`: contains 7 subfolders with all the experimental results. There is a correspondence between the name of each folder and the name ID of the reported results of the submitted paper (Table 1, page 7).  Each folder contains 
-	* a Simulink model (model.slx) with the nominal closed-loop system, one closed-loop system which will be filled with the neural network (without counterexamples) and one closed-loop system which will be filled with the neural network (after eliminating the counterexamples) 
-	* a configuration file (config.m) which specifies the options for the trace generation among other things
-	* a text file (specs.stl) which defines the formal specifications that the closed-loop system should satisfy in the form of STL properties
-	* a 'main' file (main.m) which runs the entire algorithm for each experiment.
-	* a Simulink model (model_trained.slx) with pretrained neural network controller which could directly be simulated.
+	* a Simulink model (model\_<*ModelName*>\_<*ID*>.slx) with the nominal closed-loop system, one closed-loop system which will be filled with the neural network (without counterexamples) and one closed-loop system which will be filled with the neural network (after eliminating the counterexamples) 
+	* a configuration file (config\_<*ModelName*>\_<*ID*>.m) which specifies the options for the trace generation among other things
+	* a text file (specs\_<*ModelName*>\_<*ID*>.stl) which defines the formal specifications that the closed-loop system should satisfy in the form of STL properties
+	* a 'main' file (main\_<*ModelName*>\_<*ID*>.m) which runs the entire algorithm for each experiment.
+	* a Simulink model (model\_<*ModelName*>\_<*ID*>\_pretrained.slx) with pretrained neural network controller which could directly be simulated.
+
+> The \<ModelName\> might be *robot-arm* or *water-tank*. The \<IDs\> for the robot-arm are $A_{1,1}$, $A_{1,2}$, $A_{2}$ and for the water-tank are $W_{1,1}$, $W_{1,2}$, $W_{1,3}$, and $W_2$.
  
 ## Usage <a name="Usage"></a>
 
