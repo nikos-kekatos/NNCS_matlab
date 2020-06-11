@@ -11,7 +11,6 @@ Insutructions on how to install, run and obtain the experimental results reporte
 - [Installation](#Installation)
 - [Files](#Files)
 - [Usage](#Usage)
-- [Description](#Description)
 - [Remarks](#Remarks)
 - [Reproducibility](#Reproducibility)
 
@@ -92,13 +91,14 @@ In the `code` folder, there exist three subfolders:
 	* a **'main' file** (main\_<*ModelName*>\_<*ID*>.m) which runs the entire algorithm for each experiment.
 	* a **pretrained Simulink model** (model\_<*ModelName*>\_<*ID*>\_pretrained.slx) with pretrained neural network controller which could directly be simulated.
 
-> The \<ModelName\> might be *robot-arm* or *water-tank*. The \<IDs\> for the robot-arm are $A_{1,1}$, $A_{1,2}$, $A_{2}$ and for the water-tank are $W_{1,1}$, $W_{1,2}$, $W_{1,3}$, and $W_2$.
+> The \<ModelName\> might be *robot-arm* or *water-tank*. The \<IDs\> for the robot-arm are $A_{1,1}$, $A_{1,2}$, $A_{2}$ and for the water-tank are $W_{1,2}$, and $W_2$.
  
 ## Usage <a name="Usage"></a>
 
 To run each experiment, you simply need to navigate to the `experiments` directory and choose the corresponding folder. Then, you should open the `main_<ModelName>_<ID>.m` file and run it. You can run it by writing its name in the command window, e.g. `$ main_robotarm_A2` or use the `Run` button on the top of the MATLAB interface (it is located on the `Editor` tab).  The code will return several figures, display the results, and store in a TXT file (`output_modelName_experiment.txt`) the key results.
 
-## Description <a name="Description"></a>
+> Note that the robot-arm examples are expected to run faster than the water-tank ones. 
+
 
 ## Remarks <a name="Remarks"></a>
 

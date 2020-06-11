@@ -93,7 +93,7 @@ iter=1;reached=0;
 training_options.replace_by_zeros=0;
 disp('====================================')
 disp(' ')
-disp('--- Options ---')
+disp('--- Training ---')
 disp(' ')
 while true && iter<=training_options.iter_max_fail
     fprintf('\n Iteration %i.\n',iter);
@@ -195,9 +195,9 @@ options.testing_breach=1;
 training_options.combining_old_and_cex=1; % 1: combine old and cex
 falsif.iterations_max=3;
 falsif.method='quasi';
-falsif.num_samples=10;
+falsif.num_samples=100;
 falsif.num_corners=25;
-falsif.max_obj_eval=10;
+falsif.max_obj_eval=100;
 falsif.max_obj_eval_local=20;
 falsif.seed=100;
 falsif.num_inputs=1;
@@ -268,7 +268,7 @@ while i_f<=falsif.iterations_max && ~stop
         if any(structfun(@isempty,data_cex))
             stop=1;
             fprintf('\n\n The NN produces %i falsifying traces out of %i total traces.\n',length(find(falsif_pb_temp.obj_false<0)),length(falsif_pb_temp.obj_log));
-            fprintf('\n\n The nominal produces %i falsifying traces out of %i total traces.\n',length(find(rob_nominal<0)),length(falsif_pb_temp.obj_log));
+%             fprintf('\n\n The nominal produces %i falsifying traces out of %i total traces.\n',length(find(rob_nominal<0)),length(falsif_pb_temp.obj_log));
             falsif_temp=toc(timer_falsif);
             timer.falsif{i_f}=falsif_temp
             break;
@@ -283,7 +283,7 @@ while i_f<=falsif.iterations_max && ~stop
 %         figure;falsif_pb{i_f}.BrSet_Logged.PlotRobustSat(phi_3)
 %     end
     fprintf('\n\n The NN produces %i falsifying traces out of %i total traces.\n',length(find(falsif_pb_temp.obj_false<0)),length(falsif_pb_temp.obj_log));
-    fprintf('\n\n The nominal produces %i falsifying traces out of %i total traces.\n',length(find(rob_nominal<0)),length(falsif_pb_temp.obj_log));
+%     fprintf('\n\n The nominal produces %i falsifying traces out of %i total traces.\n',length(find(rob_nominal<0)),length(falsif_pb_temp.obj_log));
     falsif_temp=toc(timer_falsif);
     timer.falsif{i_f}=falsif_temp
     
@@ -415,12 +415,12 @@ for ii=1:i_f
     fprintf(fid,'Iteration %i.\n\n',ii);
     fprintf(fid,'----------------------\n\n');
     fprintf(fid,' The falsification time was %.5f.\n\n',timer.falsif{ii});
-    fprintf(fid, 'The nominal produces %i violating traces out of %i total traces.\n\n',numel(find(robustness_checks_all{ii,2}<0)),numel(robustness_checks_all{ii,2}));
+%     fprintf(fid, 'The nominal produces %i violating traces out of %i total traces.\n\n',numel(find(robustness_checks_all{ii,2}<0)),numel(robustness_checks_all{ii,2}));
     fprintf(fid, 'The NN produces %i violating traces out of %i total traces.\n\n',numel(find(robustness_checks_all{ii,1}<0)),numel(robustness_checks_all{ii,1}));
     if stop && ii==i_f % this means that both quasi and GNM falsification methods have been
         fprintf(fid, 'Before we used sampling-based method for falsification.\n\n');
         fprintf(fid, ' We searched again with optimizaton-based methods as shown below.\n\n');
-        fprintf(fid, 'The nominal produces %i violating traces out of %i total traces.\n\n',numel(find(robustness_checks_all{ii,2}<0)),numel(robustness_checks_all{ii,2}));
+%         fprintf(fid, 'The nominal produces %i violating traces out of %i total traces.\n\n',numel(find(robustness_checks_all{ii,2}<0)),numel(robustness_checks_all{ii,2}));
         fprintf(fid, 'The NN produces %i violating traces out of %i total traces.\n\n',numel(find(robustness_checks_all{ii,1}<0)),numel(robustness_checks_all{ii,1}));
     end
     if numel(robustness_checks_false{ii,1})>0
@@ -451,6 +451,6 @@ options.input_choice=3;
 options.sim_ref=8;               % robotarm
 options.ref_min=8.5;
 options.ref_max=11.5;
-options.sim_cov=[8.7;11.8;10.12;9/5];
+options.sim_cov=[8.7;11.8;10.12;9.5];
 
 run_simulation_nncs(options,model_name,1) %3rd input is true for counterexamples
