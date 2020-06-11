@@ -27,7 +27,7 @@ if strcmp(model_name,'watertank_inport')|| strcmp(model_name,'watertank_inport_N
     %     no_REF=1;
     %     no_U=1;
     %     no_Y=1;
-elseif  strcmp(model_name,'watertank_inport_NN_cex')
+elseif  strcmp(model_name,'watertank_inport_NN_cex') || strcmp(model_name,'watertank_W12') ||strcmp(model_name,'watertank_W2')
     var_names_list={'In1','u','y','u_nn','y_nn','u_nn_cex_1','y_nn_cex_1'};
     var_names_list={};
     model_type=1;
