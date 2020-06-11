@@ -6,9 +6,9 @@ The resolution of each cell is 3.333333e-01.
 
 The cell occupancy (coverage metric) is 100%.
 
-The time spent for trace generation is 112.00000.
+The time spent for trace generation is 50.84872.
 
-The time spent for training is 10.00000.
+The time spent for training is 3.86670.
 
 
 

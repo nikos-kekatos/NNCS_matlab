@@ -135,7 +135,7 @@ end
 
 
 %% 7. Evaluate NN
-% options.plotting_sim=1;% make it 1 to plot
+% options.plotting_sim=0;% make it 1 to plot
 plot_NN_sim(data,options);
 
 %% 8a. Create Simulink block for NN
@@ -416,7 +416,7 @@ for ii=1:i_f
     fprintf(fid, 'The nominal produces %i violating traces out of %i total traces.\n\n',numel(find(robustness_checks_all{ii,2}<0)),numel(robustness_checks_all{ii,2}));
     fprintf(fid, 'The NN produces %i violating traces out of %i total traces.\n\n',numel(find(robustness_checks_all{ii,1}<0)),numel(robustness_checks_all{ii,1}));
     if stop && ii==i_f % this means that both quasi and GNM falsification methods have been
-        fprintf(fid, 'Before we used sampling-based method for falsification.\n\n')
+        fprintf(fid, 'Before we used sampling-based method for falsification.\n\n');
         fprintf(fid, ' We searched again with optimizaton-based methods as shown below.\n\n');
         fprintf(fid, 'The nominal produces %i violating traces out of %i total traces.\n\n',numel(find(robustness_checks_all{ii,2}<0)),numel(robustness_checks_all{ii,2}));
         fprintf(fid, 'The NN produces %i violating traces out of %i total traces.\n\n',numel(find(robustness_checks_all{ii,1}<0)),numel(robustness_checks_all{ii,1}));
@@ -433,8 +433,8 @@ for ii=1:i_f
 end
 fclose(fid);
 
-fprintf(' \n The original CEX were %i, CEX after cluster, %i and with the new CEX are %i.\n',numel(find(robustness_checks_false{i_f,1}<0)),numel(idx_cluster),numel(find(robustness_checks_all{i_f,3}<0)));
-fprintf('\n We have %i CEX after clustering and after retraining we have %i.\n\n',numel(idx_cluster),numel(find(robustness_checks_false{i_f,2}<0)));
+%fprintf(' \n The original CEX were %i, CEX after cluster, %i and with the new CEX are %i.\n',numel(find(robustness_checks_false{i_f,1}<0)),numel(idx_cluster),numel(find(robustness_checks_all{i_f,3}<0)));
+%fprintf('\n We have %i CEX after clustering and after retraining we have %i.\n\n',numel(idx_cluster),numel(find(robustness_checks_false{i_f,2}<0)));
 %% 12b. Check NN-cex on original training data
 
 if options.test_dataMatching

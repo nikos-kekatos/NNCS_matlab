@@ -36,15 +36,15 @@ if training_options.use_error_dyn
             in=[REF_array-Y_array [0;REF_array(1:end-1)-Y_array(1:end-1)] [0;0;REF_array(1:end-2)-Y_array(1:end-2)]...
                 [0;0;0;REF_array(1:end-3)-Y_array(1:end-3)] [0;U_array(1:end-1)] [0;0;U_array(1:end-2)]...
                 ]';
-            if options.model==4
-                if options.extra_y
-                in=[in; Y_array'];             
-                disp('Added y(k) as a separate input')
-                end
-                if options.extra_ref
-                    in=[in;REF_array'];
-                end
-            end
+%             if options.model==4
+%                 if options.extra_y
+%                 in=[in; Y_array'];             
+%                 disp('Added y(k) as a separate input')
+%                 end
+%                 if options.extra_ref
+%                     in=[in;REF_array'];
+%                 end
+%             end
             if training_options.replace_by_zeros==1
                 no_points=size(in,2)/options.coverage.no_traces_ref;
                 in(2,1:no_points:end)=0;

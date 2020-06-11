@@ -30,7 +30,13 @@ We use the latest Breach version (1.7.0). For simplicity, we have downloaded and
 1. The user has to check that Breach is correctly setup. This requires two main steps, 
  
 	* installing a C/C++ compiler via `$ mex -setup`. Information about different operating systems can be found [here](https://www.mathworks.com/help/matlab/matlab_external/changing-default-compiler.html).
-	*  Adding the Breach folder to the MATLAB path. This can be done (i) manually by right-clicking on the root folder of the Breach folder and opting `Add to Path` and `Selected Folders and Subfolders`, (ii) write in the command window `$ addpath(genpath(breach_tool))`, (iii) run `$ InstallBreach` (it will perform other actions as well)
+	* Installing Breach via  the function `InstallBreach`. You should navigate to the `breach` folder and run `$ InstallBreach` in the MATLAB command window. Note that this should be done only once and the Breach path and files will be automatically added to the search path.
+	
+	<!--
+	 Adding the Breach folder to the MATLAB path. This can be done (i) manually by right-clicking on the root folder of the Breach folder and opting `Add to Path` and `Selected Folders and Subfolders`, (ii) write in the command window `$ addpath(genpath(breach_tool))`, (iii) run `$ InstallBreach` (it will perform other actions as well)
+	 -->
+
+	> You might get warnings during the installation, e.g. due to different GCC versions or receive the message that `Install mostly successful`. This is acceptable as most features of Breach will work nonetheless.
 
 2. Everything else will be automatically handled for each experiment.
 

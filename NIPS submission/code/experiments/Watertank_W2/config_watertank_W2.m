@@ -15,6 +15,12 @@ options.plotting_sim=0;
 
 options.test_dataMatching=0;
 options.specs_file='specs_watertank_W2.stl';
+
+
+disp('====================================')
+disp(' ')
+disp('--- Options ---')
+disp(' ')
 % added for Breach
 try
     block_name=strcat(SLX_model,'/Switch1');
