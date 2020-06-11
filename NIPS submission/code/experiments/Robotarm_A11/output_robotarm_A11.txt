@@ -1,0 +1,56 @@
+The number of cells per dimension equals 3.
+
+The number of cells in total equals 9.
+
+The resolution of each cell is 3.333333e-01.
+
+The cell occupancy (coverage metric) is 100%.
+
+The time spent for trace generation is 112.00000.
+
+The time spent for training is 10.00000.
+
+
+
+The STL property for the NN is (((In1[t] > 0)) => (alw_[0.4,T_2] ((y_nn[t]-In1[t]<ov)))) and ((((In1[t] <= 0)) => (alw_[0.4,T_2] ((In1[t]-y_nn[t]<ov)))) and ((alw_[0,sim_time] (((In1[t+dt]-In1[t] > d)) => (alw_[0.4,T_2] ((y_nn[t]-In1[t]<ov))))) and (alw_[0,sim_time] (((In1[t]-In1[t+dt] > d)) => (alw_[0.4,T_2] ((In1[t]-y_nn[t]<ov))))))).
+
+The falsification/retraining loop was executed 2 times.
+
+Iteration 1.
+
+----------------------
+
+ The falsification time was 1086.67101.
+
+The nominal produces 0 violating traces out of 100 total traces.
+
+The NN produces 28 violating traces out of 100 total traces.
+
+Using clustering, we keep 28 counterexamples out of 28 total.
+
+ The retraining time was 17.93051.
+
+ The re-checking time was 711.73084.
+
+ Counterexamples: After clustering we had 28 counterexamples and after retraining only 0 remained.
+
+ Generalization test: Out of the 100 traces, the new NN has 0.
+
+Iteration 2.
+
+----------------------
+
+ The falsification time was 2153.41768.
+
+The nominal produces 0 violating traces out of 100 total traces.
+
+The NN produces 0 violating traces out of 100 total traces.
+
+Before we used sampling-based method for falsification.
+
+ We searched again with optimizaton-based methods as shown below.
+
+The nominal produces 0 violating traces out of 100 total traces.
+
+The NN produces 0 violating traces out of 100 total traces.
+
