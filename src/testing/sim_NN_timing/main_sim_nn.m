@@ -55,11 +55,14 @@ for i=1:no_iterations
         in1=rand(1,10)'*10;   
     end
     out1=sim(net,in1);
-    t1=toc;
+    t1{i}=toc;
     
     tic;
     sim(model_name);
-    t2=toc;
+    t2{i}=toc;
     
-    fprintf('Iteration %i -- Matlab: %.5f sec vs. Simulink %.5f sec.\n\n',i,t1,t2)
+    fprintf('Iteration %i -- Matlab: %.5f sec vs. Simulink %.5f sec.\n\n',i,t1{i},t2{i})
 end
+
+fprintf('After %i iterations, the average values are Matlab: %.5f sec vs. Simulink %.5f sec.\n\n',no_iterations,sum(t1)/length(t1),sum(t2)/length(t2))
+
