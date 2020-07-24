@@ -52,7 +52,10 @@ if options.reference_type~=4
         fprintf('Beginning of iteration %i\n',i);
         tic;
         warning off
+        
+        
         [ref,y,u]=sim_SLX(model,options);
+        
         %     sim(model);
         % sim constructs ref,u and y variables
         t_comput{i}=toc;
@@ -123,6 +126,8 @@ if options.reference_type~=4
         end
         save(destination_name,'REF_struct','U_struct','Y_struct');
     end
+    
+    
     
     [REF,Y,U]=from_traces_to_training_data(REF_struct,Y_struct,U_struct,options);
     if options.save_sim~=0

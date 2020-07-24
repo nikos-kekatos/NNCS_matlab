@@ -49,7 +49,11 @@ if options.reference_type~=4
         fprintf('Beginning of iteration %i\n',i);
         tic;
         warning off
+        
+        
         [ref,y,u]=sim_SLX(model,options);
+        
+        
         %     sim(model);
         % sim constructs ref,u and y variables
         t_comput{i}=toc;

@@ -41,10 +41,14 @@ end
 % The models are saved in ./models/
 % SLX_model='models/robotarm/robotarm_PID','robotarm_PID','quad_1_ref','quad_3_ref',
 %'quad_3_ref_6_y','helicopter','watertank_comp_design_mod';
-model=4; % 1: watertank, 2: robotarm, 3: quadcopter
+%model=4; % 1: watertank, 2: robotarm, 3: quadcopter
+model=10;
+
 
 if model==1
     SLX_model='watertank_inport_NN_cex';
+elseif model==10
+    SLX_model='watertank_multPID';
 elseif model==2
     SLX_model='robotarm'
 elseif model==3
@@ -61,6 +65,8 @@ options.model=model;
 timer_trace_gen=tic;
 if model==1
     run('config_1_watertank.m')
+elseif model==10
+    run('config_1_watertank.m')    
 elseif model==2
     run('config_robotarm.m')
 elseif model==3
@@ -76,7 +82,12 @@ options.save_sim=1;
 % options.no_traces=30;
 % options.breach_segments=2;
 options.coverage.points='r';
+
+
+ 
 [data,options]=trace_generation_nncs(SLX_model,options);
+%%
+
 timer.trace_gen=toc(timer_trace_gen)
 %% 4b. Load previous saved traces
 if options.load==1
@@ -275,7 +286,7 @@ clear Data_all data_cex Br falsif_pb net_all phi_1 phi_3 phi_4  phi_5 phi_all
 clear robustness_checks_all robustness_checks_false falsif falsif_pb_temp file_name
 clear rob_nominal robustness_check_temp block_name falsif_idx data_cex
 clear data_cex_cluster tr tr_all condition cluster_all check_nominal model_name
-clear data_backup i_f ii In1_dt0 In1_u0 In1_u1 inputs_cex iter iter_best num_cex
+clear data_backup i_f ii Inf1_dt0 In1_u0 In1_u1 inputs_cex iter iter_best num_cex
 clear reached seeds_all stop t__ tm training_perf tspan u__ idx_cluster falsif_pb_zero
 clear timer
 %%% ------------------------------------------ %%
