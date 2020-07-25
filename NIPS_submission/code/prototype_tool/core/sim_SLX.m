@@ -6,19 +6,19 @@ function [ref,y,u] = sim_SLX(model,options)
 options.workspace = simset('SrcWorkspace','current');
 
 
- %kp = 20.8521889762703;
- %ki = 19.9734819620964;
- %kd = 820834909861585;
+kp = 20.8521889762703;
+ki = 19.9734819620964;
+kd = 820834909861585;
  
 contNb=2;
 timeNb=2;
 
+
 for timeId = 1:timeNb 
     
+    Jopt= 10000000000;
     
-    if (timeId==1)
-        set_param(model,'LoadInitialState','off')
-    end
+    
         
     %set_param(model,'StartTime',num2str(starttime),'StopTime',num2str(stoptime),...
     %'SaveFinalState','on',...
@@ -29,7 +29,6 @@ for timeId = 1:timeNb
     %'FinalStateName','SimState','SaveOperatingPoint','on')
 
    
-
     starttime=1*(timeId-1);
     stoptime=1*timeId;
    
@@ -50,30 +49,50 @@ for timeId = 1:timeNb
        
        
        
-       kgain=num2str(2*contId)
+      
 
-       set_param('watertank_multPID/Controller/Gain','Gain',num2str(kgain));
-
-       if timeId<=1
-           set_param(model,'StartTime',num2str(starttime),'StopTime',...
-           num2str(stoptime),...
-           'SaveFinalState','on',...
-           'FinalStateName','SimState',...
-           'SaveOperatingPoint','on',...
-           'SaveOutput','on','OutputSaveName','youtNew');
+       
+       if timeId<=1 %first time horizon
+           set_param(model, 'LoadInitialState','off');
+           set_param(model, 'SaveFinalState','on',...
+           'FinalStateName', 'SimState',...
+           'SaveOperatingPoint', 'on');
        else
-           set_param(model,'LoadInitialState','on','InitialState',...
-           'SimStateopt',...
-           'SaveFinalState','on',...
-           'FinalStateName','SimState','SaveOperatingPoint','on',...
-           'SaveOutput','on','OutputSaveName','youtNew');
-           set_param(model,'StartTime',num2str(starttime),'StopTime',...
-           num2str(stoptime));
+           set_param(model,'LoadInitialState','on',...
+           'InitialState','SimStateopt');
+           
+           set_param(model,'LoadInitialState','on',...
+               'InitialState', 'SimStateopt');
+       
        end
+       
+       set_param(model,'SaveFinalState','on',...
+           'FinalStateName','SimState',...
+           'SaveOperatingPoint','on');
+       
+       %%% For Matlab earlier than 2019a
+       %set_param(model,'StartTime', num2str(stop_times(tdx-1)),...
+       %      'StopTime', num2str(stop_times(idx)),...
+       %      'SaveCompleteFinalSimState', 'on',...
+       %      'FinalStateName', 'SimState');
+       
+       set_param(model,'StartTime',num2str(starttime),...
+           'StopTime',num2str(stoptime));
+           
+       %%% This is only for a quick test. We need to set the parameters of
+       %%% the PID
+       
+       %% This is for a test, change the Propotional gain of PID
+       kp=num2str(kp*contId);
+       set_param('watertank_multPID/Controller/PID Controller','P',num2str(kp));
+
        
        sim(model,[],options.workspace);
        
-       if (contId==contNb) 
+       Jcurrent = simout.Data(end)
+       
+       %% Finding the optimal controller
+       if (Jcurrent<=Jopt) 
            SimStateopt = SimState
        end
     end
