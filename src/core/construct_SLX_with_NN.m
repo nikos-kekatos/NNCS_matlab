@@ -4,7 +4,7 @@ function construct_SLX_with_NN(options,file_name,block_name)
 %   be named (originalName_NN.slx) and the default block should be NN.
 
 NN_model=options.NN_model;
-load_system(options.SLX_model);
+load_system(file_name);
 model_path = get_param(bdroot, 'FileName');
 folder_path=fileparts(model_path); % goes up one directory
 original_path=pwd;
@@ -26,7 +26,7 @@ else
     default_block_name=block_name;
 end
 % delete NN block to closed loop SLX model
-Simulink.SubSystem.deleteContents(strcat(options.SLX_model,'/',default_block_name));
+Simulink.SubSystem.deleteContents(strcat([file_name filesep default_block_name]));
 
 % Simulink.SubSystem.deleteContents(strcat(options.SLX_NN_model,'/',default_block_name));
 % from gensim model, create a new temp file with the subsystem elements
@@ -42,23 +42,23 @@ Simulink.SubSystem.copyContentsToBlockDiagram(strcat(NN_model,'/Feed-Forward Neu
 % Simulink.BlockDiagram.copyContentsToSubsystem...
 %     (temp_filename, strcat(options.SLX_NN_model,'/',default_block_name))
 Simulink.BlockDiagram.copyContentsToSubsystem...
-    (temp_filename, strcat(options.SLX_model,'/',default_block_name));
+    (temp_filename, strcat(file_name,'/',default_block_name));
 close_system(temp_filename,0);
 close_system(NN_model,0);
 
 %pc=get_param(strcat(options.SLX_NN_model,'/',default_block_name),'portconnectivity')
 
-pc=get_param(strcat(options.SLX_model,'/',default_block_name),'portconnectivity');
+pc=get_param(strcat(file_name,'/',default_block_name),'portconnectivity');
 [pos_in,pos_out]=pc.Position;
 
 
 % add_line(options.SLX_NN_model,[pos_in(1)-5 pos_in(2); pos_in(1)+5 pos_in(2)])
 % add_line(options.SLX_NN_model,[pos_out(1)-5 pos_out(2); pos_out(1)+5 pos_out(2)])
 
-add_line(options.SLX_model,[pos_in(1)-5 pos_in(2); pos_in(1)+5 pos_in(2)]);
-add_line(options.SLX_model,[pos_out(1)-5 pos_out(2); pos_out(1)+5 pos_out(2)]);
+add_line(file_name,[pos_in(1)-5 pos_in(2); pos_in(1)+5 pos_in(2)]);
+add_line(file_name,[pos_out(1)-5 pos_out(2); pos_out(1)+5 pos_out(2)]);
 
-close_system(options.SLX_model,1);
+close_system(file_name,1);
 % close_system(options.SLX_NN_model,1)
 delete(strcat(NN_model,'.slx'));
 cd(original_path);

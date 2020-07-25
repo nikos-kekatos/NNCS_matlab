@@ -41,6 +41,8 @@ elseif strcmp(model_name,'robotarm')||strcmp(model_name,'robotarm_NN') ||strcmp(
 elseif strcmp(model_name,'tank_reactor')||strcmp(model_name,'tank_reactor_NN') ||strcmp(model_name,'robotarm_NN_cex')
     var_names_list={};
     model_type=4;
+else 
+    model_type=1;
 end
 % Br_falsif = BreachSimulinkSystem(model_name,'all',[],var_names_list);
 Br_falsif = BreachSimulinkSystem(model_name,'all');
@@ -198,6 +200,8 @@ if check_nominal
     if ~exist('rob_nominal','var')
         rob_nominal=[];
     end
+else
+    rob_nominal=[];
 end  
 try
     no_REF=size(data.REF,2);

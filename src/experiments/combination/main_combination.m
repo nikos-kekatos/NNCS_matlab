@@ -19,19 +19,20 @@
 %
 %
 % Author:       Nikos Kekatos
-% Written:      9-February-2020
-% Last update:  10-June-2020
+% Written:      22-July-2020
+% Last update:  ---
 % Last revision:---
 
 
 %%------------- BEGIN CODE --------------
 
 %% 0. Add files to MATLAB path
-try
-    run('../startup_nncs.m')
-    run('/startup_nncs.m')
-end
-rmpath(genpath('/Users/kekatos/Files/Projects/Gitlab/Matlab_Python_Interfacing/NNCS_matlab/modules/NIPS_submission/'))
+current_file=which('main_combination.m');
+current_path=fileparts(current_file);
+idcs   = strfind(current_path,filesep);
+newdir = current_path(1:idcs(end-2)-1); % 2 steps back
+addpath(genpath(newdir));
+rmpath(genpath([newdir filesep 'NIPS_submission']));
 %% 1. Initialization
 clear;close all;clc; bdclose all;
 try
@@ -39,45 +40,59 @@ try
 end
 %% 2. Iput: specify Simulink model
 % The models are saved in ./models/
-% SLX_model='models/robotarm/robotarm_PID','robotarm_PID','quad_1_ref','quad_3_ref',
-%'quad_3_ref_6_y','helicopter','watertank_comp_design_mod';
-model=1; % 1: watertank, 2: robotarm, 3: quadcopter
 
-if model==1
-    SLX_model='watertank_inport_NN_cex';
-elseif model==2
-    SLX_model='robotarm_part_2'
-elseif model==3
-    SLX_model='quadcopter_hadi';
-elseif model==4
-    SLX_model='tank_reactor';
+SLX_model_1='robotarm_part_1';
+SLX_model_2='robotarm_part_2';
+SLX_model={SLX_model_1,SLX_model_2};
+SLX_model={'robotarm_part_both'};
+for i=1:length(SLX_model)
+    load_system(SLX_model{i})
+    % Uncomment next line if you want to open the model
+    % open(SLX_model)
 end
-load_system(SLX_model)
-% Uncomment next line if you want to open the model
-% open(SLX_model)
-options.model=model;
+
 %% 3. Input: specify configuration parameters
 % run('configuration_1.m'),('config_quad_1_ref.m')
 timer_trace_gen=tic;
-if model==1
-    run('config_1_watertank.m')
-elseif model==2
-    run('config_robotarm.m')
-elseif model==3
-    run('config_quadcopter.m')
-elseif model==4
-    run('config_tank.m')
+model=2;
+options.model=model;
+
+run('config_robotarm_combination.m')
+
+%% 4a. Analyse and compare controllers
+
+for i=1:length(SLX_model)
+model_name=SLX_model{i};
+% model_name='watertank_comp_design_mod_NN';
+options.input_choice=3;
+% model=2;
+options.error_mean=0;%0.0001;
+options.error_sd=0;%0.001;
+
+options.ref_Ts=5;
+options.sim_ref=0.4;          % robotarm
+options.ref_min=-0.5;
+options.ref_max=0.5;
+options.sim_cov=[0.3;-0.1]%;-0.5;0.5];
+options.u_index_plot=1;
+options.y_index_plot=1;
+options.ref_index_plot=1;
+
+[ref,y,u]=run_simulation_nncs(options,model_name);
 end
 %% 4a. Run simulations -- Generate training data
 options.error_mean=0%0.0001;
 options.error_sd=0%0.001;
 options.save_sim=0;
-% Breach options
-% options.no_traces=30;
-% options.breach_segments=2;
+
 options.coverage.points='r';
 [data,options]=trace_generation_nncs(SLX_model,options);
 timer.trace_gen=toc(timer_trace_gen)
+
+%%% 4b. Trace Combination -- Time triggered
+
+plot_trace(data,options)
+plot_single_trace(ref,y,u,options)
 %% 4b. Load previous saved traces
 if options.load==1
     % specify dataset from outputs/ folder
@@ -98,7 +113,7 @@ if options.trimming
 end
 %% 5b. Data Preprocessing
 display_ranges(data);
-options.preprocessing_bool=1;
+options.preprocessing_bool=0;
 options.preprocessing_eps=0.0001;
 if options.preprocessing_bool==1
     [data,options]=preprocessing(data,options);
@@ -202,10 +217,16 @@ plot_NN_sim(data,options);
 [options]=create_NN_diagram(options,net);
 
 %% 8b. Integrate NN block in the Simulink model
-construct_SLX_with_NN(options,options.SLX_model);
+if ~iscell(options.SLX_model)
+    file_name=options.SLX_model
+else
+    file_name=options.SLX_model{1}
+end
+
+construct_SLX_with_NN(options,file_name);
 
 %% 9. Analyse NNCS in Simulink
-model_name=[];
+model_name=SLX_model_1;
 % model_name='watertank_comp_design_mod_NN';
 options.input_choice=1;
 % model=2;
@@ -225,7 +246,7 @@ elseif model==2
     options.sim_ref=0.4;          % robotarm
     options.ref_min=-0.5;
     options.ref_max=0.5;
-    options.sim_cov=[0.3;-0.1;-0.5;0.5];
+    options.sim_cov=[0.3;-0.1]%;-0.5;0.5];
     options.u_index_plot=1;
     options.y_index_plot=1;
     options.ref_index_plot=1;

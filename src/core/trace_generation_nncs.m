@@ -49,16 +49,66 @@ if options.reference_type~=4
         fprintf('Beginning of iteration %i\n',i);
         tic;
         warning off
-        [ref,y,u]=sim_SLX(model,options);
+        if ~iscell(model) 
+            [ref,y,u]=sim_SLX(model,options);
+            t_comput{i}=toc;
+        
+            fprintf('End of iteration %i\n\n',i);
+        
+            REF_struct=[REF_struct;ref];
+            U_struct=[U_struct;u];
+            Y_struct=[Y_struct;y];
+        end
+        if iscell(model) && length(model)==1
+            [ref,y,u]=sim_SLX(model{1},options);
+            t_comput{i}=toc;        
+            fprintf('End of iteration %i\n\n',i);
+        
+            REF_struct=[REF_struct;ref];
+            U_struct=[U_struct;u];
+            Y_struct=[Y_struct;y];
+        else
+            model_no=length(model);
+            for ii=1:model_no
+                options_comb{ii}=options;
+                if ii==1
+                    options_comb{ii}.T_train=1.5;
+                elseif ii==2
+                    options_comb{ii}.T_train=options.T_train-1.5;
+                    options_comb{ii}.x0=y_temp{ii-1}.signals.values(end);
+                    fprintf('The last value for y is %i.\n\n',y_temp{ii-1}.signals.values(end));
+                end
+                [ref_temp{ii},y_temp{ii},u_temp{ii}]=sim_SLX(model{ii},options_comb{ii});
+                if i==1 && options.plotting_sim
+                    plot_single_trace(ref_temp{ii},y_temp{ii},u_temp{ii},options)
+                end
+            end
+            t_comput{i}=toc;
+            
+            fprintf('End of iteration %i\n\n',i);
+            % only works for 2d need to extend
+            %{
+            ref=[];u=[];y=[];
+            sampling_times=ref_temp{1}.time;
+            for j=1:model_no
+                sampling_times=[sampling_times;ref_temp{j}.time]
+                ref.signals.values=[ref.signals.val]                    
+            end
+            %}
+            ref.time=[ref_temp{1}.time(1:(end-1));ref_temp{2}.time(1:(end-1))+ref_temp{1}.time(end)];
+               u.time=ref.time;
+               y.time=ref.time;
+               u.signals.values=[u_temp{1}.signals.values(1:(end-1));u_temp{2}.signals.values(1:(end-1))]
+               ref.signals.values=[ref_temp{1}.signals.values(1:(end-1));ref_temp{2}.signals.values(1:(end-1))]
+               y.signals.values=[y_temp{1}.signals.values(1:(end-1));y_temp{2}.signals.values(1:(end-1))]
+
+            REF_struct=[REF_struct;ref];
+            U_struct=[U_struct;u];
+            Y_struct=[Y_struct;y];
+        end
         %     sim(model);
         % sim constructs ref,u and y variables
-        t_comput{i}=toc;
         
-        fprintf('End of iteration %i\n\n',i);
-        
-        REF_struct=[REF_struct;ref];
-        U_struct=[U_struct;u];
-        Y_struct=[Y_struct;y];
     end
     
     if options.plotting_sim
@@ -103,6 +153,8 @@ if options.reference_type~=4
         folder='quadcopter';
         folder='watertank';
         folder='tank';
+        folder='MatlabQuadSimAP-master';
+        
         destination_folder={
             %            strcat('modules/outputs/robotarm/'),...
             %            strcat('outputs/robotarm/'),...

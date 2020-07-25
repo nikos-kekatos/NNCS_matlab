@@ -1,4 +1,4 @@
-function plot_trace(data)
+function plot_trace(data,options)
 %plot_trace Plot an individual simulation trace
 
 if nargin<1
@@ -8,9 +8,10 @@ if nargin<1
         legend('ref','y')
         title('Random Simulation Trace')
 else
-    n=options.points_per_sim;
+%     n=options.points_per_sim;
+n=options.T_train/options.dt;
     t=0:options.dt:options.T_train;
-     figure;plot(t(1:end-2),data.REF(n+1:2*n-2),'--r',t(1:end-2),data.Y(n+1:2*n-2));
+     figure;plot(t(1:(end-1)),data.REF(1:n),'--r',t(1:(end-1)),data.Y(1:n));
         xlabel('time (sec)')
         ylabel ('angle (rad)')
         legend('ref','y')

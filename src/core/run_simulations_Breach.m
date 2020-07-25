@@ -44,7 +44,7 @@ Br.SetTime(sim_time);
 % First, plot coverage measures for the case where we don't snap to grid
 Br_sys = Br.copy();
 if options.model==5
-    nbinputsig = 3
+    nbinputsig = 1
 else
     nbinputsig = 1
 end

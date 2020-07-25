@@ -55,6 +55,12 @@ for i=1:num_cex
             options.sim_cov=[inputs_cex(1:end,i)];
         end
     end
+    if options.model==7
+        Kp=0.0055;
+        Ki=0.0131;
+        Kd=3.3894e-004;
+        N=9.9135;
+    end
     options.workspace = simset('SrcWorkspace','current');
     sim(model_name,[],options.workspace);
     
