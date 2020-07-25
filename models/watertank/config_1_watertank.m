@@ -45,7 +45,7 @@ end
 % end of Breach additions
 % CONSTANT references (Specify the values here)
 if options.reference_type==1
-    options.simin_ref=8:0.5:12;
+    options.simin_ref= 8:0.5:12;
     options.simin_ref=linspace(-0.5,0.5,51)
     % options.simin_ref=[-0.5;-0.35;-0.3;-0.2;0;0.1;0.15;0.2;0.3;0.4;0.45;0.5];
     options.no_ref=numel(options.simin_ref);
@@ -81,7 +81,7 @@ if options.reference_type==3
     options.ref_Ts=5;
     options.coverage.ref_min=8;
     options.coverage.ref_max=12;
-    options.coverage.delta_resolution=0.5; %0.1
+    options.coverage.delta_resolution=4; %0.5; %0.1
 %     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution-1;
     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution;
 
