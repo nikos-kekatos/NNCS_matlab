@@ -50,46 +50,44 @@ for timeId = 1:timeNb
        
        
       
-
+       
        
        if timeId<=1 %first time horizon
            set_param(model, 'LoadInitialState','off');
-           set_param(model, 'SaveFinalState','on',...
-           'FinalStateName', 'SimState',...
-           'SaveOperatingPoint', 'on');
+           %set_param(model, 'SaveFinalState','on',...
+           %'FinalStateName', 'SimState',...
+           %'SaveOperatingPoint', 'on');
        else
            set_param(model,'LoadInitialState','on',...
            'InitialState','SimStateopt');
-           
-           set_param(model,'LoadInitialState','on',...
-               'InitialState', 'SimStateopt');
-       
        end
        
-       set_param(model,'SaveFinalState','on',...
-           'FinalStateName','SimState',...
-           'SaveOperatingPoint','on');
+       %set_param(model,'SaveFinalState','on',...
+       %   'FinalStateName','SimState',...
+       %    'SaveOperatingPoint','on');
        
-       %%% For Matlab earlier than 2019a
-       %set_param(model,'StartTime', num2str(stop_times(tdx-1)),...
-       %      'StopTime', num2str(stop_times(idx)),...
-       %      'SaveCompleteFinalSimState', 'on',...
-       %      'FinalStateName', 'SimState');
        
        set_param(model,'StartTime',num2str(starttime),...
            'StopTime',num2str(stoptime));
+       
+       
+       %%% For Matlab earlier than 2019a
+       set_param(model,'SaveFinalState', 'on',...
+             'FinalStateName', 'SimState');
+       
+       
            
        %%% This is only for a quick test. We need to set the parameters of
        %%% the PID
        
        %% This is for a test, change the Propotional gain of PID
-       kp=num2str(kp*contId);
+       kp=kp*contId;
        set_param('watertank_multPID/Controller/PID Controller','P',num2str(kp));
 
        
        sim(model,[],options.workspace);
        
-       Jcurrent = simout.Data(end)
+       Jcurrent = J.Data(end)
        
        %% Finding the optimal controller
        if (Jcurrent<=Jopt) 
