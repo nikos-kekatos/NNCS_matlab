@@ -1,0 +1,204 @@
+====================================
+ 
+--- Options ---
+ 
+The number of cells per dimension equals 3.
+
+The number of cells in total equals 9.
+
+The selected cell occupancy (given a resolution 0.33333) is 100.00%.
+
+The number of different reference traces (coverage-based) is 9.
+
+The total number of traces is 9.
+
+====================================
+ 
+--- Trace Generation ---
+ 
+Beginning of iteration 1
+End of iteration 1
+
+Beginning of iteration 2
+End of iteration 2
+
+Beginning of iteration 3
+End of iteration 3
+
+Beginning of iteration 4
+End of iteration 4
+
+Beginning of iteration 5
+End of iteration 5
+
+Beginning of iteration 6
+End of iteration 6
+
+Beginning of iteration 7
+End of iteration 7
+
+Beginning of iteration 8
+End of iteration 8
+
+Beginning of iteration 9
+End of iteration 9
+
+Last point of all traces will be deleted.
+Equally sized variables U and Y for iteration 1.
+Equally sized variables U and Y for iteration 2.
+Equally sized variables U and Y for iteration 3.
+Equally sized variables U and Y for iteration 4.
+Equally sized variables U and Y for iteration 5.
+Equally sized variables U and Y for iteration 6.
+Equally sized variables U and Y for iteration 7.
+Equally sized variables U and Y for iteration 8.
+Equally sized variables U and Y for iteration 9.
+
+timer = 
+
+  struct with fields:
+
+    trace_gen: 52.6499
+
+ 
+The reference range is -0.45222<=ref<=0.39560.
+
+The control range is -137.33010<=u<=136.97027.
+
+The plant output range is -0.47043<=y<=0.41181.
+
+====================================
+ 
+--- Options ---
+ 
+
+ Iteration 1.
+Training started
+Training finished
+
+ The requested training error was 0.000010.
+
+ We ran 1 training attempts with random initializations.
+
+ The smallest training error was 0.958351.
+
+ The smallest validation error was 0.958351.
+
+timer = 
+
+  struct with fields:
+
+    trace_gen: 52.6499
+        train: 53.0510
+
+A copy of the original file "robotarm_A12.slx" has been created because it was last saved in an earlier version of Simulink. To recover the original version, rename the file "robotarm_A12.slx.r2018b" as "robotarm_A12.slx".
+
+You can turn this feature off using the Simulink Preferences. Click here if you don't want to see this message again.
+ The nominal value is 0.10004. 
+
+ The NN value is 0.09732. 
+
+ The absolute ss error is 0.00272. 
+
+ The relative ss error is -2.72134%. 
+
+
+ans =
+
+  0×1 empty cell array
+
+
+ Iteration 1.
+
+ Beginning falsification with Breach.
+
+ We use the model robotarm_A12 for falsification.
+
+ans =
+
+  0×1 empty cell array
+
+Found var options in base workspace used by robotarm_A12_breach/Constant.
+
+alw_[0,sim_time] (((abs(In1[t+dt]-In1[t])>d) or ([t]==0)) => (ev_[0,3] (alw_[0,2] ((abs(y_nn[t]-In1[t])<e_stab)))))
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++
+Running 100 random samples with seed 100
+#calls (max:  100)        time spent (max: Inf)     [current  obj]     (current best) 
+Unrecognized function or variable 'RobustOr'.
+
+Error in STL_Formula/STL_EvalThom_Gen>GetValues (line 195)
+        [time_values, valarray] = RobustOr(time_values1, valarray1, time_values2,
+        valarray2);
+
+Error in STL_Formula/STL_EvalThom_Gen>GetValues (line 212)
+        [valarray1, time_values1] = GetValues(Sys, phi.phi1, P, traj, partition,
+        relabs, interval);
+
+Error in STL_Formula/STL_EvalThom_Gen (line 100)
+        [val, time_values] = GetValues(Sys, phi, Pii, traj, partition, relabs,
+        interval);
+
+Error in STL_Formula/STL_Eval_IO (line 90)
+        [val, tau] = STL_EvalThom_Gen(Sys, phi, P, trajs, partition, relabs,
+        taus);
+
+Error in stl_monitor/get_standard_rob (line 238)
+                            [rob, time] = STL_Eval_IO(this.Sys, phi, this.P0,
+                            this.P.traj{1}, this.inout, this.relabs, time);
+
+Error in alw_monitor/computeSignals (line 23)
+            [time, Xout] = this.get_standard_rob(this.subphi, time);
+
+Error in alw_A_implies_B_monitor/eval (line 21)
+            [~, Xout] = this.computeSignals(t, X,p);
+
+Error in BreachRequirement/evalRequirement (line 1196)
+            [val, time,  Xout] = req.eval(time, Xin, pin);
+
+Error in BreachRequirement/eval_req (line 1180)
+                    = this.evalRequirement(req, time, Xin, p_in);
+
+Error in BreachRequirement/evalAllTraces (line 215)
+                            [traces_vals(it, ipre), traces_vals_vac(it, ipre)]  =
+                            eval_req(this,req,it);
+
+Error in BreachRequirement/Eval (line 180)
+                [traces_vals, traces_vals_precond, traces_vals_vac] =
+                this.evalAllTraces(varargin{:});
+
+Error in BreachProblem>@(x)(this.Spec.Eval(this.BrSys,this.params,x)) (line 261)
+            this.robust_fn = @(x) (this.Spec.Eval(this.BrSys, this.params, x));
+
+Error in BreachProblem/objective_fn (line 711)
+            this.robust_fn(x);
+
+Error in BreachProblem>@(isample)this.objective_fn(x(:,isample)) (line 756)
+            fun = @(isample) this.objective_fn(x(:, isample));
+
+Error in BreachProblem/objective_wrapper (line 780)
+                            [fval(:,iter), cval(:,iter)] = fun(iter);
+
+Error in BreachProblem>@(x)(objective_wrapper(this,x)) (line 264)
+            this.objective = @(x) (objective_wrapper(this,x));
+
+Error in BreachProblem/FevalInit (line 7)
+[fval, cval] = this.objective(X0);
+
+Error in BreachProblem/solve_random (line 20)
+res = this.FevalInit(X0);
+
+Error in BreachProblem/solve (line 439)
+                    res = this.solve_random();
+
+Error in FalsificationProblem/solve (line 134)
+            res = solve@BreachProblem(this);
+
+Error in falsification_breach (line 145)
+falsif_pb.solve();
+
+Error in main_A12 (line 250)
+    [data_cex,falsif_pb_temp,rob_nominal]=
+    falsification_breach(options,falsif,file_name,check_nominal);

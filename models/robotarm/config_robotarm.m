@@ -81,7 +81,7 @@ if options.reference_type==3
     options.ref_Ts=5;
     options.coverage.ref_min=-0.5;
     options.coverage.ref_max=0.5;
-    options.coverage.delta_resolution= 1/3 % paper1/7;
+    options.coverage.delta_resolution= 1/8 % paper1/7;
 %     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution-1;
     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution;
 

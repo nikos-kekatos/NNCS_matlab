@@ -6,7 +6,7 @@ options.model=4;
 load PIDGainSchedExample
 
 % Time horizon of simulation in Simulink
-options.T_train=20; % for constant choose 5s
+options.T_train=10; % for constant choose 5s
 options.SLX_model=SLX_model;
 % Choose reference type: (1) for constant, (2) for time varying and (3) for
 % coverage and (4) for Breach
@@ -81,10 +81,10 @@ end
 options.testing.train_data=0; %0 for testing centers, 1 for testing training data
 if options.reference_type==3
     options.coverage.m=2;
-    options.ref_Ts=10;
+    options.ref_Ts=5;
     options.coverage.ref_min=8;
     options.coverage.ref_max=9;
-    options.coverage.delta_resolution=0.125; %0.1
+    options.coverage.delta_resolution=0.1; %0.1
 %     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution-1;
     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution;
 

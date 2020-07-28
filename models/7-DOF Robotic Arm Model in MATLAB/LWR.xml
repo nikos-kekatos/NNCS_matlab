@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<SimscapeMultibodyImportXML version="2.0" xmlns="urn:mathworks:SimscapeMultibody:import" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<Created by="" on="11/10/18||11:53:38" using="Simscape Multibody Link Version 5.1" from="SolidWorks 26.4.0"/>
+<ModelUnits mass="kilogram" length="millimeter"/>
+<DataUnits mass="kilogram" length="meter"/>
+<RootAssembly name="KUKA Arm LWR" uid="KUKA Arm LWR" version="280">
+<AssemblyFile name="KUKA Arm LWR.SLDASM" type="SolidWorks Assembly"/>
+<InstanceTree>
+<Instance name="Link2^KUKA Arm LWR-1" uid="Link2^KUKA Arm LWR-1" entityUid="Link2^KUKA Arm LWR" rigid="true">
+<Transform>
+<Rotation>0.013608441825216911 3.812197480856226e-15 -0.99990740086824548 -2.5868776665916365e-15 1 3.7773438853856008e-15 0.99990740086824548 2.5352343594476479e-15 0.013608441825216911</Rotation>
+<Translation>0.1558901161528565 4.07121430180961e-15 0.045388869140755843</Translation>
+</Transform>
+<Instance name="ring-1" uid="ring-1" entityUid="ring*:*Default">
+<Transform>
+<Rotation>-0.35428624503359718 0.29847428898226236 0.8862247770156999 -0.64429736612542776 -0.76477506758774272 -1.609823385706477e-15 0.6777626137401136 -0.57099228962631055 0.46325548523840832</Rotation>
+<Translation>0.060478562189654743 0.10081305653664942 0.10460286676104755</Translation>
+</Transform>
+</Instance>
+<Instance name="ring-2" uid="ring-2" entityUid="ring*:*Default">
+<Transform>
+<Rotation>0.014616582646667235 0.99989317204976114 1.5276062513260404e-16 3.0891955660194949e-14 -2.9880611873699861e-16 -1 -0.99989317204976114 0.014616582646667235 -3.0893023060222752e-14</Rotation>
+<Translation>0.054939657333307489 0.056313056536646679 0.10170751997831184</Translation>
+</Transform>
+</Instance>
+<Instance name="unity-1" uid="unity-1" entityUid="unity*:*Default">
+<Transform>
+<Rotation>0.46325548523840931 -0.88622477701569957 0 3.1487326969262233e-15 1.6409367717530024e-15 1 -0.88622477701569957 -0.46325548523840931 3.5506578926594836e-15</Rotation>
+<Translation>0.054939657333307003 0.05631305653664944 0.10170751997830754</Translation>
+</Transform>
+</Instance>
+</Instance>
+<Instance name="Link4^KUKA Arm LWR-1" uid="Link4^KUKA Arm LWR-1" entityUid="Link4^KUKA Arm LWR" rigid="true">
+<Transform>
+<Rotation>0.012181682628496327 0.93721584531636992 0.34853703662058777 0.76195017630791018 0.21701819572744119 -0.61019261839811745 -0.6475210694893897 0.27300102932247045 -0.71146813179241464</Rotation>
+<Translation>-0.086571704177195855 0.092264464403747914 0.21354973017962672</Translation>
+</Transform>
+<Instance name="ring-2" uid="ring-2" entityUid="ring*:*Default">
+<Transform>
+<Rotation>0.97850098669816843 -0.10492497985269315 -0.1775572235467284 -0.12889506435929002 0.36095805134495107 -0.92363160813880241 0.16100273728892137 0.9266606896659465 0.33967349736667268</Rotation>
+<Translation>0.079237673496644762 0.14653282113952015 0.093000652850329546</Translation>
+</Transform>
+</Instance>
+<Instance name="unity-1" uid="unity-1" entityUid="unity*:*Default">
+<Transform>
+<Rotation>-0.41668715377657728 0.89154094030725939 0.17755722354672779 0.3832510560467236 -0.0048249855959118793 0.92363160813880263 0.82431210346363737 0.45291441936644833 -0.33967349736667263</Rotation>
+<Translation>0.079237673496644775 0.14653282113952015 0.09300065285032949</Translation>
+</Transform>
+</Instance>
+<Instance name="ring-1" uid="ring-1" entityUid="ring*:*Default">
+<Transform>
+<Rotation>0.41517135562573387 0.18107318195673855 -0.89154094030725928 0.40845549726838526 -0.91276548262148649 0.0048249855959116295 -0.81289412116162241 -0.36615799391905468 -0.45291441936644822</Rotation>
+<Translation>0.08156683906755384 0.18766458386167137 0.075054467096472288</Translation>
+</Transform>
+</Instance>
+</Instance>
+<Instance name="Link3^KUKA Arm LWR-1" uid="Link3^KUKA Arm LWR-1" entityUid="Link3^KUKA Arm LWR" rigid="true">
+<Transform>
+<Rotation>-0.059409037504621495 0.50644663939619539 -0.86022227808112173 -0.26288867609348271 0.82338650642039379 0.50291570369857697 0.96299538433192422 0.25602043373355771 0.084222486702130811</Rotation>
+<Translation>0.09463821033979157 -0.018902349086564487 0.014424620840156246</Translation>
+</Transform>
+<Instance name="ring-1" uid="ring-1" entityUid="ring*:*Default">
+<Transform>
+<Rotation>0.97850098669816887 -0.10492497985268925 -0.17755722354672776 -0.12889506435929071 0.3609580513449514 -0.9236316081388023 0.16100273728891756 0.92666068966594695 0.33967349736667352</Rotation>
+<Translation>0.07879378043777796 0.1442237421191731 0.093849836593746169</Translation>
+</Transform>
+</Instance>
+<Instance name="ring-2" uid="ring-2" entityUid="ring*:*Default">
+<Transform>
+<Rotation>-0.35428624503359701 0.29847428898226253 0.88622477701569979 -0.64429736612542787 -0.76477506758774261 -1.4155343563970746e-15 0.6777626137401136 -0.57099228962631055 0.46325548523840826</Rotation>
+<Translation>0.062694124132193968 0.10081305653664942 0.10576100547414354</Translation>
+</Transform>
+</Instance>
+<Instance name="unity kuka-1" uid="unity kuka-1" entityUid="unity kuka*:*Default">
+<Transform>
+<Rotation>0.42787740880987069 0.88622477701570035 -0.17755722354672832 -0.38328142721364644 -1.5543122344752192e-15 -0.9236316081388023 -0.81854521596746321 0.46325548523840715 0.33967349736667257</Rotation>
+<Translation>0.078349887378911132 0.14191466309882611 0.094699020337162862</Translation>
+</Transform>
+</Instance>
+</Instance>
+<Instance name="Link 1^KUKA Arm LWR-1" uid="Link 1^KUKA Arm LWR-1" grounded="true" entityUid="Link 1^KUKA Arm LWR" rigid="true">
+<Transform>
+<Rotation>1 0 0 0 1 0 0 0 1</Rotation>
+<Translation>0 0 0</Translation>
+</Transform>
+<Instance name="ring-1" uid="ring-1" entityUid="ring*:*Default">
+<Transform>
+<Rotation>0.83801162688330111 -0.54565237396020083 0 -1.9173746186822029e-15 -2.9193500608361263e-15 -1 0.54565237396020083 0.83801162688330111 -3.4926693063781252e-15</Rotation>
+<Translation>0.054939657333306968 0.053813056536649438 0.10170751997830747</Translation>
+</Transform>
+</Instance>
+<Instance name="base-1" uid="base-1" entityUid="base*:*Default">
+<Transform>
+<Rotation>-0.272140139636393 -0.96225762891165711 -2.6358517538097482e-14 -1.7127880423983131e-14 3.223637867484608e-14 -0.99999999999999989 0.96225762891165711 -0.272140139636393 -2.525424619900865e-14</Rotation>
+<Translation>0.054939657333308578 0.051313056536645779 0.10170751997830844</Translation>
+</Transform>
+</Instance>
+<Instance name="ring for base-1" uid="ring for base-1" grounded="true" entityUid="ring for base*:*Default">
+<Transform>
+<Rotation>1 0 0 0 -3.4914813388431334e-15 -1 0 1 -3.4914813388431334e-15</Rotation>
+<Translation>0.054939657333306968 0.031313056536648849 0.1017075199783074</Translation>
+</Transform>
+</Instance>
+</Instance>
+<Instance name="Link6^KUKA Arm LWR-1" uid="Link6^KUKA Arm LWR-1" entityUid="Link6^KUKA Arm LWR" rigid="true">
+<Transform>
+<Rotation>-0.069667417029703971 -0.44370118431883177 0.89346276365524901 0.38298199055823956 -0.83890107982114059 -0.38674251535481974 0.92112498929974629 0.31523679561401219 0.22837363415804296</Rotation>
+<Translation>0.14038515558526454 0.30195829476169045 0.027654482328795249</Translation>
+</Transform>
+<Instance name="unity-1" uid="unity-1" entityUid="unity*:*Default">
+<Transform>
+<Rotation>-0.3499307249235909 -0.82399723884586817 0.44561983587900944 -0.93676920156358146 0.30604503486320006 -0.16970533178869973 0.0034569866039856068 -0.47682804763349212 -0.87898979643318487</Rotation>
+<Translation>0.093595185365107969 0.17931845102608368 0.0264491849551571</Translation>
+</Transform>
+</Instance>
+<Instance name="ring-1" uid="ring-1" entityUid="ring*:*Default">
+<Transform>
+<Rotation>0.36850144040925059 -0.81586129353430648 -0.44561983587900988 0.92959818170826858 0.3271808688281882 0.1697053317886999 0.0073422735571717357 -0.4767840483755304 0.87898979643318464</Rotation>
+<Translation>0.093595185365107969 0.17931845102608368 0.0264491849551571</Translation>
+</Transform>
+</Instance>
+</Instance>
+<Instance name="Link5^KUKA Arm LWR-1" uid="Link5^KUKA Arm LWR-1" entityUid="Link5^KUKA Arm LWR" rigid="true">
+<Transform>
+<Rotation>-0.13105817295338693 0.76654124183545369 0.62867979120334427 0.70135038185692655 0.51988223785604926 -0.4876782757422452 -0.70066496784930199 0.37701058781836194 -0.60574880891471028</Rotation>
+<Translation>-0.063884468647033565 0.031175294952818216 0.19043089203141855</Translation>
+</Transform>
+<Instance name="ring-2" uid="ring-2" entityUid="ring*:*Default">
+<Transform>
+<Rotation>0.42446764502945722 0.15805685710906395 -0.89154094030725883 0.35783792333552999 -0.93377124615020912 0.0048249855959112131 -0.83173267276575225 -0.32107520892135277 -0.45291441936644894</Rotation>
+<Translation>0.079337986716785575 0.18767664632566103 0.073922181048056118</Translation>
+</Transform>
+</Instance>
+<Instance name="ring-1" uid="ring-1" entityUid="ring*:*Default">
+<Transform>
+<Rotation>0.36850144040925159 -0.81586129353430614 -0.44561983587900961 0.92959818170826813 0.32718086882818936 0.16970533178869984 0.0073422735571722492 -0.47678404837553007 0.87898979643318476</Rotation>
+<Translation>0.09248113577541052 0.17974271435555553 0.028646659446240036</Translation>
+</Transform>
+</Instance>
+<Instance name="unity-1" uid="unity-1" entityUid="unity*:*Default">
+<Transform>
+<Rotation>0.081103104917212718 -0.89154094030725917 -0.44561983587900988 0.98548303885784183 0.0048249855959113979 0.16970533178869984 -0.14914914178868421 -0.45291441936644872 0.87898979643318476</Rotation>
+<Translation>0.09136708618571307 0.18016697768502729 0.030844133937322993</Translation>
+</Transform>
+</Instance>
+</Instance>
+<Instance name="Link7^KUKA Arm LWR-1" uid="Link7^KUKA Arm LWR-1" entityUid="Link7^KUKA Arm LWR" rigid="true">
+<Transform>
+<Rotation>0.90479347541418054 0.24259282918075428 -0.34999640866444037 0.18240322190162145 0.52189411637274596 0.8332800225226924 0.38480882459714505 -0.81778680016590422 0.42795667769831025</Rotation>
+<Translation>-0.10377517780326864 0.10642251639538743 0.28562974786848971</Translation>
+</Transform>
+<Instance name="head-1" uid="head-1" entityUid="head*:*Default">
+<Transform>
+<Rotation>0.31931493153603918 0.46804543035107093 0.82399723884586851 -0.44436005756148361 0.84195045927865475 -0.30604503486319984 -0.83700783373997734 -0.26842671112976629 0.47682804763349163</Rotation>
+<Translation>0.12372523354729793 0.1679410008256973 -0.0067055103907022184</Translation>
+</Transform>
+</Instance>
+<Instance name="caméra-1" uid="caméra-1" entityUid="caméra*:*Default">
+<Transform>
+<Rotation>-0.50216725736373691 -0.80365789993623327 0.31931493153603924 -0.82838464918175692 0.34106159596760893 -0.44436005756148333 0.2482074105094362 -0.48765865892662102 -0.83700783373997723</Rotation>
+<Translation>0.12723769779419442 0.16305304019252104 -0.015912596561841907</Translation>
+</Transform>
+</Instance>
+</Instance>
+</InstanceTree>
+<Constraints>
+<Concentric name="Concentric31">
+<ConstraintGeometry geomType="circle">
+<InstancePath>
+<Uid>Link2^KUKA Arm LWR-1</Uid>
+<Uid>unity-1</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>Link 1^KUKA Arm LWR-1</Uid>
+<Uid>ring-1</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+</Concentric>
+<Concentric name="Concentric32">
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>Link2^KUKA Arm LWR-1</Uid>
+<Uid>ring-2</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>Link 1^KUKA Arm LWR-1</Uid>
+<Uid>ring-1</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+</Concentric>
+<Coincident name="Coincident34">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Link2^KUKA Arm LWR-1</Uid>
+<Uid>ring-2</Uid>
+</InstancePath>
+<Position>0 0 0.0025000000000000022</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Link 1^KUKA Arm LWR-1</Uid>
+<Uid>ring-1</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Coincident name="Coincident36">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Link3^KUKA Arm LWR-1</Uid>
+<Uid>ring-2</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>-1.1102230246251565e-16 0 1.0000000000000002</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Link2^KUKA Arm LWR-1</Uid>
+<Uid>ring-1</Uid>
+</InstancePath>
+<Position>0 0 0.0025000000000000022</Position>
+<Axis>0 1.1102230246251565e-16 1</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Concentric name="Concentric34">
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>Link3^KUKA Arm LWR-1</Uid>
+<Uid>ring-2</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>-1.1102230246251565e-16 0 1.0000000000000002</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>Link2^KUKA Arm LWR-1</Uid>
+<Uid>ring-1</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>0 1.1102230246251565e-16 1</Axis>
+</ConstraintGeometry>
+</Concentric>
+<Concentric name="Concentric37">
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>Link4^KUKA Arm LWR-1</Uid>
+<Uid>ring-2</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>1.6653345369377348e-16 1.1102230246251565e-16 0.99999999999999989</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>Link3^KUKA Arm LWR-1</Uid>
+<Uid>ring-1</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+</Concentric>
+<Coincident name="Coincident38">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Link4^KUKA Arm LWR-1</Uid>
+<Uid>ring-2</Uid>
+</InstancePath>
+<Position>0 0 0.0025000000000000022</Position>
+<Axis>1.6653345369377348e-16 1.1102230246251565e-16 0.99999999999999989</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Link3^KUKA Arm LWR-1</Uid>
+<Uid>ring-1</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Concentric name="Concentric39">
+<ConstraintGeometry geomType="circle">
+<InstancePath>
+<Uid>Link5^KUKA Arm LWR-1</Uid>
+<Uid>unity-1</Uid>
+</InstancePath>
+<Position>0 -0.0062499999999999917 0.044500000000000005</Position>
+<Axis>0 -1 0</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>Link4^KUKA Arm LWR-1</Uid>
+<Uid>ring-1</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+</Concentric>
+<Coincident name="Coincident40">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Link4^KUKA Arm LWR-1</Uid>
+<Uid>ring-1</Uid>
+</InstancePath>
+<Position>0 0 0.0024999999999999745</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Link5^KUKA Arm LWR-1</Uid>
+<Uid>ring-2</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Concentric name="Concentric40">
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>Link4^KUKA Arm LWR-1</Uid>
+<Uid>ring-1</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>Link5^KUKA Arm LWR-1</Uid>
+<Uid>ring-2</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+</Concentric>
+<Coincident name="Coincident42">
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Link5^KUKA Arm LWR-1</Uid>
+<Uid>ring-1</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="plane">
+<InstancePath>
+<Uid>Link6^KUKA Arm LWR-1</Uid>
+<Uid>ring-1</Uid>
+</InstancePath>
+<Position>0 0 0.0024999999999999883</Position>
+<Axis>1.6653345369377348e-16 0 1</Axis>
+</ConstraintGeometry>
+</Coincident>
+<Concentric name="Concentric41">
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>Link5^KUKA Arm LWR-1</Uid>
+<Uid>ring-1</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>0 0 1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="cylinder">
+<InstancePath>
+<Uid>Link6^KUKA Arm LWR-1</Uid>
+<Uid>ring-1</Uid>
+</InstancePath>
+<Position>0 0 0</Position>
+<Axis>1.6653345369377348e-16 0 1</Axis>
+</ConstraintGeometry>
+</Concentric>
+<Coincident name="Coincident43">
+<ConstraintGeometry geomType="circle">
+<InstancePath>
+<Uid>Link7^KUKA Arm LWR-1</Uid>
+<Uid>head-1</Uid>
+</InstancePath>
+<Position>0 0 -0.0062499999999999778</Position>
+<Axis>0 0 -1</Axis>
+</ConstraintGeometry>
+<ConstraintGeometry geomType="circle">
+<InstancePath>
+<Uid>Link6^KUKA Arm LWR-1</Uid>
+<Uid>unity-1</Uid>
+</InstancePath>
+<Position>0 -0.0062499999999999778 0.044499999999999984</Position>
+<Axis>1.1102230246251565e-16 -1.0000000000000002 0</Axis>
+</ConstraintGeometry>
+</Coincident>
+</Constraints>
+</RootAssembly>
+<Assemblies>
+<Assembly name="Link2^KUKA Arm LWR" uid="Link2^KUKA Arm LWR" version="104">
+<ModelUnits mass="kilogram" length="meter"/>
+<AssemblyFile name="KUKA Arm LWR.sldasm" type="SolidWorks Assembly"/>
+</Assembly>
+<Assembly name="Link4^KUKA Arm LWR" uid="Link4^KUKA Arm LWR" version="104">
+<ModelUnits mass="kilogram" length="meter"/>
+<AssemblyFile name="KUKA Arm LWR.sldasm" type="SolidWorks Assembly"/>
+</Assembly>
+<Assembly name="Link3^KUKA Arm LWR" uid="Link3^KUKA Arm LWR" version="104">
+<ModelUnits mass="kilogram" length="meter"/>
+<AssemblyFile name="KUKA Arm LWR.sldasm" type="SolidWorks Assembly"/>
+</Assembly>
+<Assembly name="Link 1^KUKA Arm LWR" uid="Link 1^KUKA Arm LWR" version="104">
+<ModelUnits mass="kilogram" length="meter"/>
+<AssemblyFile name="KUKA Arm LWR.sldasm" type="SolidWorks Assembly"/>
+</Assembly>
+<Assembly name="Link6^KUKA Arm LWR" uid="Link6^KUKA Arm LWR" version="104">
+<ModelUnits mass="kilogram" length="meter"/>
+<AssemblyFile name="KUKA Arm LWR.sldasm" type="SolidWorks Assembly"/>
+</Assembly>
+<Assembly name="Link5^KUKA Arm LWR" uid="Link5^KUKA Arm LWR" version="104">
+<ModelUnits mass="kilogram" length="meter"/>
+<AssemblyFile name="KUKA Arm LWR.sldasm" type="SolidWorks Assembly"/>
+</Assembly>
+<Assembly name="Link7^KUKA Arm LWR" uid="Link7^KUKA Arm LWR" version="103">
+<ModelUnits mass="kilogram" length="meter"/>
+<AssemblyFile name="KUKA Arm LWR.sldasm" type="SolidWorks Assembly"/>
+</Assembly>
+</Assemblies>
+<Parts>
+<Part name="base" uid="base*:*Default" version="171">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="base.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0</Mass>
+<CenterOfMass>0 0 0</CenterOfMass>
+<Inertia>0 0 0 0 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="base_Default_sldprt.STL" type="STL"/>
+<VisualProperties>
+<Ambient r="1" g="0.5490196078431373" b="0" a="1"/>
+<Diffuse r="1" g="0.5490196078431373" b="0" a="1"/>
+<Specular r="0.29999999999999999" g="0.16470588235294117" b="0" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="caméra" uid="caméra*:*Default" version="234">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="caméra.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>4.3349357300101846e-05</Mass>
+<CenterOfMass>0 0 0.0032265928381281731</CenterOfMass>
+<Inertia>8.0736620660079934e-10 8.0736620337184171e-10 1.3917709087202645e-09 0 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="caméra_Default_sldprt.STL" type="STL"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.40000000596046448</Shininess>
+</VisualProperties>
+</Part>
+<Part name="head" uid="head*:*Default" version="174">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="head.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0.00014294481319601716</Mass>
+<CenterOfMass>-0.00021902101101548563 3.1677694336687817e-08 0.0031581955316714399</CenterOfMass>
+<Inertia>1.1868030697135302e-08 1.2399860167566199e-08 1.5878611152393563e-08 -3.7808195094384899e-14 -1.1042734408098574e-10 -2.2968845901983384e-14</Inertia>
+</MassProperties>
+<GeometryFile name="head_Default_sldprt.STL" type="STL"/>
+<VisualProperties>
+<Ambient r="0.59999999999999998" g="0.59999999999999998" b="0.59999999999999998" a="1"/>
+<Diffuse r="0.59999999999999998" g="0.59999999999999998" b="0.59999999999999998" a="1"/>
+<Specular r="0.56999999999999995" g="0.56999999999999995" b="0.56999999999999995" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="ring for base" uid="ring for base*:*Default" version="116">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="ring for base.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0</Mass>
+<CenterOfMass>0 0 0</CenterOfMass>
+<Inertia>0 0 0 0 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="ring for base_Default_sldprt.STL" type="STL"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.40000000596046448</Shininess>
+</VisualProperties>
+</Part>
+<Part name="ring" uid="ring*:*Default" version="121">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="ring.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0</Mass>
+<CenterOfMass>0 0 0</CenterOfMass>
+<Inertia>0 0 0 0 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="ring_Default_sldprt.STL" type="STL"/>
+<VisualProperties>
+<Ambient r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Diffuse r="0.792156862745098" g="0.81960784313725488" b="0.93333333333333335" a="1"/>
+<Specular r="0.396078431372549" g="0.40980392156862744" b="0.46666666666666667" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.40000000596046448</Shininess>
+</VisualProperties>
+</Part>
+<Part name="unity kuka" uid="unity kuka*:*Default" version="457">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="unity kuka.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0</Mass>
+<CenterOfMass>0 0 0</CenterOfMass>
+<Inertia>0 0 0 0 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="unity kuka_Default_sldprt.STL" type="STL"/>
+<VisualProperties>
+<Ambient r="0.58823529411764708" g="0.58823529411764708" b="0.62745098039215685" a="1"/>
+<Diffuse r="0.4705882352941177" g="0.4705882352941177" b="0.50196078431372548" a="1"/>
+<Specular r="0.20588235294117646" g="0.20588235294117646" b="0.21960784313725487" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+<Part name="unity" uid="unity*:*Default" version="339">
+<ModelUnits mass="kilogram" length="millimeter"/>
+<PartFile name="unity.SLDPRT" type="SolidWorks Part"/>
+<MassProperties>
+<Mass>0</Mass>
+<CenterOfMass>0 0 0</CenterOfMass>
+<Inertia>0 0 0 0 0 0</Inertia>
+</MassProperties>
+<GeometryFile name="unity_Default_sldprt.STL" type="STL"/>
+<VisualProperties>
+<Ambient r="1" g="0.5490196078431373" b="0" a="1"/>
+<Diffuse r="1" g="0.5490196078431373" b="0" a="1"/>
+<Specular r="0.29999999999999999" g="0.16470588235294117" b="0" a="1"/>
+<Emissive r="0" g="0" b="0" a="1"/>
+<Shininess>0.3125</Shininess>
+</VisualProperties>
+</Part>
+</Parts>
+</SimscapeMultibodyImportXML>

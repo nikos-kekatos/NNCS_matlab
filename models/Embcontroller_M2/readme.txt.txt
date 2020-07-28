@@ -1,0 +1,1 @@
+The model file is named emb_controller.slx. Be sure to initialize variables by clicking the button inside the model. 

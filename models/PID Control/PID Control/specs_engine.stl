@@ -1,0 +1,37 @@
+param sim_time=9.9, r=0.1, dt=0.01, T=10, d=0.01, T_1=6, T_2=4,e=0.3, ov=0.05
+
+phi_1:=   alw_[0,sim_time] (abs(y_nn[t]-y[t])<0.2)
+#phi_2:=   alw_[0,sim_time] (y_nn_3_[t]-In1[t]<0.2*In1[t])
+
+#phi_3:= alw_[0,sim_time]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,7] alw_[0,3] (abs(y_nn[t]-In1[t])<e)))
+#phi_4:= alw_[0,sim_time]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,7] alw_[0,3] (abs(y_nn_cex_1[t]-In1[t])<e)))
+#phi_5:= alw_[0,sim_time]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,7] alw_[0,3] (abs(y[t]-In1[t])<e)))
+
+
+
+
+
+phi_3:=   alw_[0,sim_time] (abs(y_nn[t]-y[t])<20)
+#phi_3:= ((In1[t] > 0) => (alw_[0.2,3](y_nn[t]-In1[t]<ov))) and ((In1[t] <= 0) => (alw_[0.2,3](In1[t]-y_nn[t]<ov))) and (alw_[0,sim_time] ((In1[t+dt]-In1[t] > d) => (alw_[0.2,3](y_nn[t]-In1[t]<ov)))) and (alw_[0,sim_time] ((In1[t]-In1[t+dt] > d) => (alw_[0.2,3](In1[t]-y_nn[t]<ov))))
+
+phi_4:=   alw_[0,sim_time] (abs(y_nn_cex_1[t]-y[t])<20)
+#phi_4:= alw_[0,sim_time] ((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,7] alw_[0,2] (abs(y_nn_cex_1[t]-In1[t])<e)))
+
+#phi_4:= ((In1[t] > 0) => (alw_[0.2,3](y_nn[t]-In1[t]<ov))) and ((In1[t] <= 0) => (alw_[0.2,3](In1[t]-y_nn_cex_1[t]<ov))) and (alw_[0,sim_time] ((In1[t+dt]-In1[t] > d) => (alw_[0.2,3](y_nn_cex_1[t]-In1[t]<ov)))) and (alw_[0,sim_time] ((In1[t]-In1[t+dt] > d) => (alw_[0.2,3](In1[t]-y_nn_cex_1[t]<ov))))
+
+#phi_5:= alw_[0,sim_time]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,3] alw_[0,2] (abs(y[t]-In1[t])<e)))
+%phi_5:= ((In1[t] > 0) => (alw_[0.2,3](y[t]-In1[t]<ov))) and ((In1[t] <= 0) => (alw_[0.2,3](In1[t]-y[t]<ov))) and (alw_[0,sim_time] ((In1[t+dt]-In1[t] > d) => (alw_[0.2,3](y[t]-In1[t]<ov)))) and (alw_[0,sim_time] ((In1[t]-In1[t+dt] > d) => (alw_[0.2,3](In1[t]-y[t]<ov))))
+
+## OLDER attempts
+#phi_3:=(abs(In1[t+dt]-In1[t])>d) => ev_[0,2] alw_[0,3] (abs(y_nn[t]-In1[t])<e) and (alw_[0,T-d](In1[t+dt]==In1[t]))
+
+#step:= (abs(In1[t+dt]-In1[t])>d)
+#stabilization:= ev_[0,2] alw_[0,3] (abs(y_nn[t]-In1[t])<e) and (alw_[0,T-d](In1[t+dt]==In1[t]))
+#phi_3:= step => stabilization
+#phi_3:=ev_[0,10] alw y[t+dt]>10
+#step := alw_[0,10] abs(y_nn[t+dt]-y[t])< 0.2
+
+#=> (alw In1[t]>15)
+# alw_[0,T-d] (In1[t+dt] == In1[t])) 
+#and ev_[0,T_1](alw_[0,T_2] (abs(y[t]-In1[t])<e))
+

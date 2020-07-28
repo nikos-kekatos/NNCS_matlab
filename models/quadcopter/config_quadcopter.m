@@ -81,7 +81,7 @@ if options.reference_type==3
     options.ref_Ts=5;
     options.coverage.ref_min=-1;
     options.coverage.ref_max=3;
-    options.coverage.delta_resolution=0.5; %0.1
+    options.coverage.delta_resolution=0.8; %0.1
 %     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution-1;
     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution;
 
@@ -122,7 +122,7 @@ if options.reference_type==3
     options.coverage.points='c' % r:random, c:centers
 
     % options: choose coverage as value from 0 - 1
-    options.coverage.cell_occupancy=0.8;
+    options.coverage.cell_occupancy=1;
     options.coverage.no_traces_ref=options.coverage.cell_occupancy*options.coverage.no_cells_total;
     options.coverage.no_traces_ref=floor(options.coverage.no_traces_ref);
     fprintf('The selected cell occupancy (given a resolution %.5f) is %.2f%%.\n\n',options.coverage.delta_resolution,options.coverage.cell_occupancy*100);

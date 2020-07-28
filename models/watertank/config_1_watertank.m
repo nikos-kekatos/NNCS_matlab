@@ -119,7 +119,7 @@ if options.reference_type==3
         options.coverage.cells{i}.random_value=(options.coverage.cells{i}.max-options.coverage.cells{i}.min).*rand(options.coverage.m,1)+options.coverage.cells{i}.min;
         
     end
-    options.coverage.points='c' % r:random, c:centers
+    options.coverage.points='r' % r:random, c:centers
     % options: choose coverage as value from 0 - 1
     options.coverage.cell_occupancy=1;
     options.coverage.no_traces_ref=options.coverage.cell_occupancy*options.coverage.no_cells_total;
