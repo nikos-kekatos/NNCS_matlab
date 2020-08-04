@@ -38,70 +38,38 @@ clear;close all;clc; bdclose all;
 try
     delete(findall(0)); % close Simulink scopes
 end
-%% 2. Iput: specify Simulink model
+%% 2. Input: specify Simulink model
 % The models are saved in ./models/
 
-SLX_model_1='robotarm_part_1';
-SLX_model_2='robotarm_part_2';
-SLX_model={SLX_model_1,SLX_model_2};
-SLX_model={'robotarm_part_both'};
-for i=1:length(SLX_model)
-    load_system(SLX_model{i})
-    % Uncomment next line if you want to open the model
-    % open(SLX_model)
-end
+SLX_model='watertank_multPID_2018a_v3';
+
+load_system(SLX_model)
+% Uncomment next line if you want to open the model
+% open(SLX_model)
 
 %% 3. Input: specify configuration parameters
-% run('configuration_1.m'),('config_quad_1_ref.m')
 timer_trace_gen=tic;
-model=2;
+model=10;
 options.model=model;
 
-run('config_robotarm_combination.m')
+run('config_1_watertank_comb.m')
 
-%% 4a. Analyse and compare controllers
 
-for i=1:length(SLX_model)
-model_name=SLX_model{i};
-% model_name='watertank_comp_design_mod_NN';
-options.input_choice=3;
-% model=2;
-options.error_mean=0;%0.0001;
-options.error_sd=0;%0.001;
-
-options.ref_Ts=5;
-options.sim_ref=0.4;          % robotarm
-options.ref_min=-0.5;
-options.ref_max=0.5;
-options.sim_cov=[0.3;-0.1]%;-0.5;0.5];
-options.u_index_plot=1;
-options.y_index_plot=1;
-options.ref_index_plot=1;
-
-[ref,y,u]=run_simulation_nncs(options,model_name);
-end
-%% 4a. Run simulations -- Generate training data
+%% 4a. Run simulations -- Generate training data (combined)
 options.error_mean=0%0.0001;
 options.error_sd=0%0.001;
 options.save_sim=0;
-
 options.coverage.points='r';
+
 [data,options]=trace_generation_nncs(SLX_model,options);
 timer.trace_gen=toc(timer_trace_gen)
 
-%%% 4b. Trace Combination -- Time triggered
-
-plot_trace(data,options)
-plot_single_trace(ref,y,u,options)
 %% 4b. Load previous saved traces
 if options.load==1
     % specify dataset from outputs/ folder
-    dataset{1}='array_sim_cov_varying_ref_81_traces_1x1_time_20_29-03-2020_07:33.mat';
-    %     dataset{2}='array_sim_constant_ref_300_traces_30x10_time_60_11-02-2020_08:26.mat';
-    dataset{1}='array_sim_constant_ref_25_traces_25x1_time_10_18-04-2020_19:22.mat';     
-    dataset{1}='array_sim_cov_varying_ref_64_traces_1x1_time_20_06-06-2020_03:24.mat;'
-    dataset{1}='data_part_1.mat'
-    dataset{2}='data_part_2.mat'
+    dataset{1}='array_sim_cov_varying_ref_64_traces_1x1_time_20_06-06-2020_03:24.mat';
+    %     dataset{1}='data_part_1.mat',  dataset{2}='data_part_2.mat'
+    dataset{1}='comb_3_contr_10_sec.mat';
     [data,options]= load_data(dataset,options);
 end
 %% 5a. Data Selection
@@ -122,30 +90,13 @@ end
 %the assignments could go a function/file
 timer_train=tic;
 training_options.retraining=0;
-% data=data_combined;
-if model==1
-    training_options.use_error_dyn=1;       % watertank=1    %robotarm=0    %quadcopter=0
-    training_options.use_previous_u=2;      % waterank=2     %robotarm=2    %quadcopter=0
-    training_options.use_previous_ref=3;    % waterank=3     %robotarm=3    %quadcopter=0
-    training_options.use_previous_y=3; % waterank=3     %robotarm=3    %quadcopter=0
-elseif model==2
-    training_options.use_error_dyn=0;       % watertank=1    %robotarm=0    %quadcopter=0
-    training_options.use_previous_u=2;      % waterank=2     %robotarm=2    %quadcopter=0
-    training_options.use_previous_ref=3;    % waterank=3     %robotarm=3    %quadcopter=0
-    training_options.use_previous_y=3;
-elseif model==3
-    training_options.use_error_dyn=0;       % watertank=1    %robotarm=0    %quadcopter=0
-    training_options.use_previous_u=0;      % waterank=2     %robotarm=2    %quadcopter=0
-    training_options.use_previous_ref=3;    % waterank=3     %robotarm=3    %quadcopter=0
-    training_options.use_previous_y=3;
-elseif model==4
-    training_options.use_error_dyn=0;       % watertank=1    %robotarm=0    %quadcopter=0
-    training_options.use_previous_u=2;      % waterank=2     %robotarm=2    %quadcopter=0
-    training_options.use_previous_ref=3;    % waterank=3     %robotarm=3    %quadcopter=0
-    training_options.use_previous_y=3;
-    options.extra_y=1;
-    options.extra_ref=0;
-end
+
+training_options.use_error_dyn=1;       % watertank=1    %robotarm=0    %quadcopter=0
+training_options.use_previous_u=2;      % waterank=2     %robotarm=2    %quadcopter=0
+training_options.use_previous_ref=3;    % waterank=3     %robotarm=3    %quadcopter=0
+training_options.use_previous_y=3;
+options.extra_y=0;
+options.extra_ref=0;
 training_options.neurons=[30 30];
 % training_options.neurons=[50 ];
 training_options.input_normalization=0;
@@ -200,15 +151,9 @@ timer.train=toc(timer_train)
 if options.plotting_sim
     figure;plotperform(tr)
 end
-%{
-% Test the Network
-outputs = net(inputs);
-errors = gsubtract(targets,outputs);
-performance = perform(net,targets,outputs);
-%}
 
 %% 7. Evaluate NN
-options.plotting_sim=1
+% options.plotting_sim=1
 plot_NN_sim(data,options);
 
 %% 8a. Create Simulink block for NN
@@ -217,12 +162,8 @@ plot_NN_sim(data,options);
 [options]=create_NN_diagram(options,net);
 
 %% 8b. Integrate NN block in the Simulink model
-if ~iscell(options.SLX_model)
-    file_name=options.SLX_model
-else
-    file_name=options.SLX_model{1}
-end
 
+file_name=options.SLX_model
 construct_SLX_with_NN(options,file_name);
 
 %% 9. Analyse NNCS in Simulink
@@ -398,7 +339,7 @@ while i_f<=falsif.iterations_max && ~stop
             stop=1;
             fprintf('\n\n The NN produces %i falsifying traces out of %i total traces.\n',length(find(falsif_pb_temp.obj_false<0)),length(falsif_pb_temp.obj_log));
             fprintf('\n\n The nominal produces %i falsifying traces out of %i total traces.\n',length(find(rob_nominal<0)),length(falsif_pb_temp.obj_log));
-             falsif_temp=toc(timer_falsif);
+            falsif_temp=toc(timer_falsif);
             timer.falsif{i_f}=falsif_temp
             break;
         else
@@ -457,7 +398,7 @@ while i_f<=falsif.iterations_max && ~stop
             % Data_all contains the data from all cases (training, cex) and
             % iterations.
             
-%             training_options.neurons=[30 30 30]
+            %             training_options.neurons=[30 30 30]
             % [net_cex,data]=nn_retraining(net,data,training_options,options,[],data_cex);
             [net_all{i_f+1},~,tr]=nn_retraining(net_all{i_f},Data_all{i_f,1},training_options,options,[],Data_all{i_f,3});
             if tr.best_perf <= training_options.error*100
@@ -486,13 +427,13 @@ while i_f<=falsif.iterations_max && ~stop
         %%% ------ 11-E: Testing if CEX disappeared   ----- %%
         %%% ----------------------------------------------- %%
         timer_rechecking=tic;
-
+        
         fprintf('\n Testing the NN on the training data.\n')
         fprintf('The number of original CEX was %i.\n',length(falsif_pb{i_f}.obj_false));
         [rob_temp_false,rob_temp_all,inputs_cex,inputs_all,options]=check_cex_elimination(falsif_pb{i_f},falsif,data_cex,file_name,idx_cluster,options);
         %     fprintf(' \n The original robustness values were %s.\n',num2str(robustness_checks{1}));
         timer.rechecking{i_f}=toc(timer_rechecking);
-
+        
         fprintf(' \n The new robustness values are %s.\n',num2str(rob_temp_false));
         robustness_checks_false{i_f,2}=rob_temp_false
         robustness_checks_all{i_f,3}=rob_temp_all

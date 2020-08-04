@@ -19,103 +19,102 @@
 %
 %
 % Author:       Nikos Kekatos
-% Written:      9-February-2020
-% Last update:  10-June-2020
+% Written:      22-July-2020
+% Last update:  ---
 % Last revision:---
 
 
 %%------------- BEGIN CODE --------------
 
 %% 0. Add files to MATLAB path
-%{
-try
-    run('../startup_nncs.m')
-    run('/startup_nncs.m')
-end
-rmpath(genpath('/Users/kekatos/Files/Projects/Gitlab/Matlab_Python_Interfacing/NNCS_matlab/modules/NIPS_submission/'))
-%}
-current_file=which('main_nncs_td.m');
+current_file=which('main_combination.m');
 current_path=fileparts(current_file);
 idcs   = strfind(current_path,filesep);
 newdir = current_path(1:idcs(end-2)-1); % 2 steps back
 addpath(genpath(newdir));
 rmpath(genpath([newdir filesep 'NIPS_submission']));
 %% 1. Initialization
-clear;close all;clc; %bdclose all;
+clear;close all;clc; bdclose all;
 try
     delete(findall(0)); % close Simulink scopes
 end
 %% 2. Input: specify Simulink model
 % The models are saved in ./models/
-% SLX_model='models/robotarm/robotarm_PID','robotarm_PID','quad_1_ref','quad_3_ref',
-%'quad_3_ref_6_y','helicopter','watertank_comp_design_mod';
-%model=4; % 1: watertank, 2: robotarm, 3: quadcopter
-model=10;
 
-
-if model==1
-    SLX_model='watertank_inport_NN_cex';
-elseif model==10
-    SLX_model='watertank_multPID_2018a_v3';
-elseif model==2
-    SLX_model='robotarm'
-elseif model==3
-    SLX_model='quadcopter';
-elseif model==4
-    SLX_model='tank_reactor';
+SLX_model_1='robotarm_part_1';
+SLX_model_2='robotarm_part_2';
+SLX_model={SLX_model_1,SLX_model_2};
+SLX_model={'robotarm_part_both'};
+for i=1:length(SLX_model)
+    load_system(SLX_model{i})
+    % Uncomment next line if you want to open the model
+    % open(SLX_model)
 end
-load_system(SLX_model)
-% Uncomment next line if you want to open the model
-% open(SLX_model)
-options.model=model;
+
 %% 3. Input: specify configuration parameters
 % run('configuration_1.m'),('config_quad_1_ref.m')
 timer_trace_gen=tic;
-if model==1
-    run('config_1_watertank.m')
-elseif model==10
-    run('config_1_watertank_td.m')    
-elseif model==2
-    run('config_robotarm.m')
-elseif model==3
-    run('config_quadcopter.m')
-elseif model==4
-    run('config_tank.m')
+model=2;
+options.model=model;
+
+run('config_robotarm_combination.m')
+
+%% 4a. Analyse and compare controllers
+
+for i=1:length(SLX_model)
+model_name=SLX_model{i};
+% model_name='watertank_comp_design_mod_NN';
+options.input_choice=3;
+% model=2;
+options.error_mean=0;%0.0001;
+options.error_sd=0;%0.001;
+
+options.ref_Ts=5;
+options.sim_ref=0.4;          % robotarm
+options.ref_min=-0.5;
+options.ref_max=0.5;
+options.sim_cov=[0.3;-0.1]%;-0.5;0.5];
+options.u_index_plot=1;
+options.y_index_plot=1;
+options.ref_index_plot=1;
+
+[ref,y,u]=run_simulation_nncs(options,model_name);
 end
 %% 4a. Run simulations -- Generate training data
 options.error_mean=0%0.0001;
 options.error_sd=0%0.001;
 options.save_sim=0;
-% Breach options
-% options.no_traces=30;
-% options.breach_segments=2;
+
 options.coverage.points='r';
-
-
- 
-[data,options]=trace_generation_nncs_td(SLX_model,options);
-%%
-
+[data,options]=trace_generation_nncs(SLX_model,options);
 timer.trace_gen=toc(timer_trace_gen)
+
+%%% 4b. Trace Combination -- Time triggered
+
+plot_trace(data,options)
+plot_single_trace(ref,y,u,options)
 %% 4b. Load previous saved traces
 if options.load==1
     % specify dataset from outputs/ folder
     dataset{1}='array_sim_cov_varying_ref_81_traces_1x1_time_20_29-03-2020_07:33.mat';
     %     dataset{2}='array_sim_constant_ref_300_traces_30x10_time_60_11-02-2020_08:26.mat';
-    dataset{1}='array_sim_constant_ref_25_traces_25x1_time_10_18-04-2020_19:22.mat';
+    dataset{1}='array_sim_constant_ref_25_traces_25x1_time_10_18-04-2020_19:22.mat';     
+    dataset{1}='array_sim_cov_varying_ref_64_traces_1x1_time_20_06-06-2020_03:24.mat;'
+    dataset{1}='data_part_1.mat'
+    dataset{2}='data_part_2.mat'
     [data,options]= load_data(dataset,options);
 end
 %% 5a. Data Selection
 options.trimming=0;
-options.keepData_factor=50;% we keep one out of every 5 data
-options.deleteData_factor=0; % we delete one every 3 data points
+options.keepData_factor=1;% we keep one out of every 5 data
+options.deleteData_factor=5; % we delete one every 3 data points
 if options.trimming
     [data]=trim_data(data,options);
 end
 %% 5b. Data Preprocessing
 display_ranges(data);
 options.preprocessing_bool=0;
-options.preprocessing_eps=0.001;
+options.preprocessing_eps=0.0001;
 if options.preprocessing_bool==1
     [data,options]=preprocessing(data,options);
 end
@@ -123,6 +122,7 @@ end
 %the assignments could go a function/file
 timer_train=tic;
 training_options.retraining=0;
+% data=data_combined;
 if model==1
     training_options.use_error_dyn=1;       % watertank=1    %robotarm=0    %quadcopter=0
     training_options.use_previous_u=2;      % waterank=2     %robotarm=2    %quadcopter=0
@@ -136,17 +136,10 @@ elseif model==2
 elseif model==3
     training_options.use_error_dyn=0;       % watertank=1    %robotarm=0    %quadcopter=0
     training_options.use_previous_u=0;      % waterank=2     %robotarm=2    %quadcopter=0
-    training_options.use_previous_ref=0;    % waterank=3     %robotarm=3    %quadcopter=0
-    training_options.use_previous_y=0;
-elseif model==4
-    training_options.use_error_dyn=1;       % watertank=1    %robotarm=0    %quadcopter=0
-    training_options.use_previous_u=2;      % waterank=2     %robotarm=2    %quadcopter=0
     training_options.use_previous_ref=3;    % waterank=3     %robotarm=3    %quadcopter=0
     training_options.use_previous_y=3;
-    options.extra_y=1;
-    options.extra_ref=0;
-elseif model==10
-    training_options.use_error_dyn=1;       % watertank=1    %robotarm=0    %quadcopter=0
+elseif model==4
+    training_options.use_error_dyn=0;       % watertank=1    %robotarm=0    %quadcopter=0
     training_options.use_previous_u=2;      % waterank=2     %robotarm=2    %quadcopter=0
     training_options.use_previous_ref=3;    % waterank=3     %robotarm=3    %quadcopter=0
     training_options.use_previous_y=3;
@@ -159,8 +152,8 @@ training_options.input_normalization=0;
 training_options.loss='mse';
 % training_options.loss='custom_v1';
 % training_options.loss='wmse';
-% training_options.div='dividerand';
-training_options.div='dividetrain';
+training_options.div='dividerand';
+% training_options.div='dividetrain';
 training_options.error=1e-5;
 training_options.max_fail=50; % Validation performance has increased more than max_fail times since the last time it decreased (when using validation).
 training_options.regularization=0; %0-1
@@ -224,12 +217,18 @@ plot_NN_sim(data,options);
 [options]=create_NN_diagram(options,net);
 
 %% 8b. Integrate NN block in the Simulink model
-construct_SLX_with_NN(options,options.SLX_model);
+if ~iscell(options.SLX_model)
+    file_name=options.SLX_model
+else
+    file_name=options.SLX_model{1}
+end
+
+construct_SLX_with_NN(options,file_name);
 
 %% 9. Analyse NNCS in Simulink
-model_name=[];
+model_name=SLX_model_1;
 % model_name='watertank_comp_design_mod_NN';
-options.input_choice=3;
+options.input_choice=1;
 % model=2;
 options.error_mean=0;%0.0001;
 options.error_sd=0;%0.001;
@@ -247,7 +246,7 @@ elseif model==2
     options.sim_ref=0.4;          % robotarm
     options.ref_min=-0.5;
     options.ref_max=0.5;
-    options.sim_cov=[0.3;0.1;-0.5;0.5];
+    options.sim_cov=[0.3;-0.1]%;-0.5;0.5];
     options.u_index_plot=1;
     options.y_index_plot=1;
     options.ref_index_plot=1;
@@ -262,11 +261,12 @@ elseif model==3
     options.y_index_plot=3;
     options.ref_index_plot=1;
 elseif model==4
-    options.ref_Ts=10;             %tank_reactor
+    options.ref_Ts=5;             %tank_reactor
     options.sim_ref=8.5;
     options.ref_min=2;
     options.ref_max=2.5;
-    options.sim_cov=[9;8];
+    options.sim_cov=[8.9033;8.9646];
+    options.sim_cov=[options.coverage.cells{32}.random_value];
     options.u_index_plot=1;
     options.y_index_plot=1;
     options.ref_index_plot=1;
@@ -301,16 +301,16 @@ clear Data_all data_cex Br falsif_pb net_all phi_1 phi_3 phi_4  phi_5 phi_all
 clear robustness_checks_all robustness_checks_false falsif falsif_pb_temp file_name
 clear rob_nominal robustness_check_temp block_name falsif_idx data_cex
 clear data_cex_cluster tr tr_all condition cluster_all check_nominal model_name
-clear data_backup i_f ii Inf1_dt0 In1_u0 In1_u1 inputs_cex iter iter_best num_cex
+clear data_backup i_f ii In1_dt0 In1_u0 In1_u1 inputs_cex iter iter_best num_cex
 clear reached seeds_all stop t__ tm training_perf tspan u__ idx_cluster falsif_pb_zero
-clear timer
+
 %%% ------------------------------------------ %%
 %%% ----- 11-A: Falsification with Breach ---- %%
 %%% ------------------------------------------ %%
 
 options.testing_breach=1;
 training_options.combining_old_and_cex=1; % 1: combine old and cex
-falsif.iterations_max=3;
+falsif.iterations_max=1;
 falsif.method='quasi';
 falsif.num_samples=100;
 falsif.num_corners=25;
@@ -320,6 +320,7 @@ falsif.seed=100;
 falsif.num_inputs=1;
 
 falsif.property_file=options.specs_file;
+falsif.property_file='specs_watertank_stabilization.stl';
 % falsif.property_file='specs_robotarm_overshoot.stl';
 [~,falsif.property_all]=STL_ReadFile(falsif.property_file);
 falsif.property=falsif.property_all{2};%// TO-DO automatically specify the file
@@ -374,7 +375,7 @@ while i_f<=falsif.iterations_max && ~stop
     %     end
     falsif.seed=seeds_all(i_f);
     falsif.iteration=i_f; % choose property
-    check_nominal=1;
+    check_nominal=0;
     [data_cex,falsif_pb_temp,rob_nominal]= falsification_breach(options,falsif,file_name,check_nominal);
     robustness_checks_false{i_f,1}=falsif_pb_temp.obj_false;
     robustness_checks_all{i_f,1}=falsif_pb_temp.obj_log;

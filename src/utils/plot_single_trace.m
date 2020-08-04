@@ -3,17 +3,17 @@ function plot_single_trace(ref,y,u,options)
 %   This requires the simulation to be run and the inputs are the ref,y and
 %   u.
 
-if isempty(options.ref_index_plot)
+if  ~isfield(options,'ref_index_plot') || isempty(options.ref_index_plot)
     ref_idx=1;
 else
     ref_idx=options.ref_index_plot;
 end
-if isempty(options.y_index_plot)
+if  ~isfield(options,'y_index_plot') || isempty(options.y_index_plot)  
     y_idx=1;
 else
     y_idx=options.y_index_plot;
 end
-if isempty(options.u_index_plot)
+if  ~isfield(options,'u_index_plot') || isempty(options.u_index_plot)
     u_idx=1;
 else
     u_idx=options.u_index_plot;

@@ -67,7 +67,7 @@ if options.reference_type~=4
             REF_struct=[REF_struct;ref];
             U_struct=[U_struct;u];
             Y_struct=[Y_struct;y];
-        else
+        elseif iscell(model) && length(model)>1
             model_no=length(model);
             for ii=1:model_no
                 options_comb{ii}=options;
@@ -95,12 +95,12 @@ if options.reference_type~=4
                 ref.signals.values=[ref.signals.val]                    
             end
             %}
-            ref.time=[ref_temp{1}.time(1:(end-1));ref_temp{2}.time(1:(end-1))+ref_temp{1}.time(end)];
-               u.time=ref.time;
-               y.time=ref.time;
-               u.signals.values=[u_temp{1}.signals.values(1:(end-1));u_temp{2}.signals.values(1:(end-1))]
-               ref.signals.values=[ref_temp{1}.signals.values(1:(end-1));ref_temp{2}.signals.values(1:(end-1))]
-               y.signals.values=[y_temp{1}.signals.values(1:(end-1));y_temp{2}.signals.values(1:(end-1))]
+%             ref.time=[ref_temp{1}.time(1:(end-1));ref_temp{2}.time(1:(end-1))+ref_temp{1}.time(end)];
+%                u.time=ref.time;
+%                y.time=ref.time;
+%                u.signals.values=[u_temp{1}.signals.values(1:(end-1));u_temp{2}.signals.values(1:(end-1))]
+%                ref.signals.values=[ref_temp{1}.signals.values(1:(end-1));ref_temp{2}.signals.values(1:(end-1))]
+%                y.signals.values=[y_temp{1}.signals.values(1:(end-1));y_temp{2}.signals.values(1:(end-1))]
 
             REF_struct=[REF_struct;ref];
             U_struct=[U_struct;u];

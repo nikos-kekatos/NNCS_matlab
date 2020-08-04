@@ -111,30 +111,44 @@ clearvars ref y u
 y.signals.values=[];
 ref.signals.values=[];
 u.signals.values=[];
-ref.time=[];
+ref.time=[];u.time=[];y.time=[];
+
+
 for ii=1:timeNb
     if ii<timeNb
         ref_temp_time=ref_opt{ii}.time(1:(end-1));
         ref_temp_values=ref_opt{ii}.signals.values(1:(end-1));
-%         u_temp_time=u_opt{ii}(1:(end-1));
+        u_temp_time=u_opt{ii}.time(1:(end-1));
         u_temp_values=u_opt{ii}.signals.values(1:(end-1));
-%         y_temp_time=y_opt{ii}(1:(end-1));
+        y_temp_time=y_opt{ii}.time(1:(end-1));
         y_temp_values=y_opt{ii}.signals.values(1:(end-1));       
     elseif ii==timeNb
         ref_temp_time=ref_opt{ii}.time
         ref_temp_values=ref_opt{ii}.signals.values
-        u_temp_values=u_opt{ii}.signals.values(1:(end-1));
-        y_temp_values=y_opt{ii}.signals.values(1:(end-1));       
+        u_temp_values=u_opt{ii}.signals.values;
+        y_temp_values=y_opt{ii}.signals.values; 
+        u_temp_time=u_opt{ii}.time;
+        y_temp_time=y_opt{ii}.time;
     end
+    %{
     if ii==1
         ref.time=[ref_temp_time]
     else
         ref.time=[ref.time;ref.time(end)+ ref_temp_time]
     end
+    %}
+    ref.time=[ref.time;ref_temp_time]
+    u.time=[u.time;u_temp_time]
+    y.time=[y.time;y_temp_time]
     y.signals.values=[y.signals.values;y_temp_values]
     u.signals.values=[u.signals.values;u_temp_values]
     ref.signals.values=[ref.signals.values;ref_temp_values]
 end
+
+plot_single_trace(ref,y,u,options)
+figure;plot(min_cost,'o-')
+xlabel('time segments (s)')
+ylabel('contoller choice -- 1...no\_controllers')
 %%% This is only for a quick test. We need to set the parameters of
 %%% the PID
 

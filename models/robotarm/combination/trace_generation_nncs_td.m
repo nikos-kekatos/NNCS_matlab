@@ -67,7 +67,7 @@ if options.reference_type~=4
             REF_struct=[REF_struct;ref];
             U_struct=[U_struct;u];
             Y_struct=[Y_struct;y];
-        else
+        elseif iscell(model) && length(model)>1
             model_no=length(model);
             for ii=1:model_no
                 options_comb{ii}=options;

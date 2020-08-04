@@ -2,6 +2,18 @@
 % we store all the specifications in a structure named options.
 % clear options
 
+%%combination
+%-----
+options.combination=1; % if more than one nominal controllers
+if options.combination
+    ctrl_configuration='watertank_controllers';
+    run(ctrl_configuration)
+end
+
+options.no_time_segments=10;
+options.time_segments_step=1;
+%---------
+
 % Time horizon of simulation in Simulink
 options.T_train=10; % for constant choose 5s
 options.SLX_model=SLX_model;
