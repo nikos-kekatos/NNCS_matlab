@@ -157,23 +157,85 @@ end
 plot_NN_sim(data,options);
 
 %% 8a. Create Simulink block for NN
-
+options.SLX_model_combined=strcat(options.SLX_model,'_comb')
 % gensim(net)
 [options]=create_NN_diagram(options,net);
 
 %% 8b. Integrate NN block in the Simulink model
 
-file_name=options.SLX_model
-construct_SLX_with_NN(options,file_name);
+file_name=options.SLX_model_combined
+construct_SLX_with_NN(options,file_name,'NN_comb');
 
-%% 9. Analyse NNCS in Simulink
-model_name=SLX_model_1;
+
+
+%% 9. Individual Controller---Simulate, generate traces, create NN, plot, etc.
+
+%data generation
+options.combination=0;
+[data_single,options]=trace_generation_nncs(options.SLX_model_combined,options);
+timer.trace_gen=toc(timer_trace_gen);
+
+% Training
+timer_train=tic;
+iter=1;reached=0;
+training_options.replace_by_zeros=0;
+while true && iter<=training_options.iter_max_fail
+    fprintf('\n Iteration %i.\n',iter);
+    [net,data_single,tr]=nn_training(data_single,training_options,options);
+    net_all{iter}=net;
+    tr_all{iter}=tr;
+    if tr_all{iter}.best_perf<training_options.error*10 && tr_all{iter}.best_vperf<training_options.error*100
+        reached=1;
+        break;
+    else
+        if iter<training_options.iter_max_fail
+            iter=iter+1;
+        else
+            break;
+        end
+    end
+end
+fprintf('\n The requested training error was %f.\n',training_options.error);
+if reached
+    fprintf('The obtained training error is %f reached after %i random initializations.\n',tr_all{iter}.best_perf,iter);
+    fprintf('The validation error is %f.\n',tr_all{iter}.best_vperf);
+    net=net_all{iter};
+    tr=tr_all{iter};
+else
+    fprintf('\n We ran %i training attempts with random initializations.\n',iter);
+    for ii=1:iter
+        training_perf(ii)=tr_all{ii}.best_perf;
+    end
+    iter_best=find(training_perf==min(training_perf));
+    fprintf('\n The smallest training error was %f.\n',tr_all{iter_best}.best_vperf);
+    fprintf('\n The smallest validation error was %f.\n',tr_all{iter_best}.best_vperf);
+    net=net_all{iter_best};
+    tr=tr_all{iter_best};
+end
+timer.train=toc(timer_train)
+if options.plotting_sim
+    figure;plotperform(tr)
+end
+
+%evaluate training
+% options.plotting_sim=1
+plot_NN_sim(data_single,options);
+
+% Simulink
+options.SLX_model_combined=strcat(options.SLX_model,'_comb')
+% gensim(net)
+[options]=create_NN_diagram(options,net);
+
+file_name=options.SLX_model_combined;
+construct_SLX_with_NN(options,file_name,'NN_single');
+
+%% 10. Analyse NNCS in Simulink
+model_name=options.SLX_model_combined;
 % model_name='watertank_comp_design_mod_NN';
-options.input_choice=1;
+options.input_choice=3;
 % model=2;
 options.error_mean=0;%0.0001;
 options.error_sd=0;%0.001;
-if model==1
     options.ref_Ts=5;options.T_train=10;
     options.sim_ref=11;          % watertank
     options.ref_min=8.5;
@@ -182,58 +244,13 @@ if model==1
     options.u_index_plot=1;
     options.y_index_plot=1;
     options.ref_index_plot=1;
-elseif model==2
-    options.ref_Ts=5;
-    options.sim_ref=0.4;          % robotarm
-    options.ref_min=-0.5;
-    options.ref_max=0.5;
-    options.sim_cov=[0.3;-0.1]%;-0.5;0.5];
-    options.u_index_plot=1;
-    options.y_index_plot=1;
-    options.ref_index_plot=1;
-    
-elseif model==3
-    options.ref_Ts=4;options.T_train=40;
-    options.sim_ref=0.5;          %quadcopter
-    options.ref_min=-1;
-    options.ref_max=3;
-    options.sim_cov=[0.5;2.75;-1;0.8;0.5;2.75;-1;0.8; 0.8;2.1];
-    options.u_index_plot=1;
-    options.y_index_plot=3;
-    options.ref_index_plot=1;
-elseif model==4
-    options.ref_Ts=5;             %tank_reactor
-    options.sim_ref=8.5;
-    options.ref_min=2;
-    options.ref_max=2.5;
-    options.sim_cov=[8.9033;8.9646];
-    options.sim_cov=[options.coverage.cells{32}.random_value];
-    options.u_index_plot=1;
-    options.y_index_plot=1;
-    options.ref_index_plot=1;
-end
-[ref,y,u]=run_simulation_nncs(options,model_name,0);
 
-%% 10. Data matching (analysis w/ training data)
+[ref,y,u]=run_simulation_nncs(options,model_name,3); % 3 for combined
 
-warning('This code only works for coverage')
+disp('This is the end of the existing implementation')
+stop
 
-if options.reference_type~=3
-    warning('It is not possible to perform data matching');
-else
-    if options.plotting_sim
-        plot_coverage_boxes(options,1);
-    end
-    options.testing.plotting=0;
-    options.testing.train_data=0;% 0: for centers, 1: random points
-    if options.test_dataMatching
-        [testing,options]=test_coverage(options,model_name);
-    end
-end
-% The average MSE error over 49 simulations is 0.00031.
-
-% The maximum MSE error over 49 simulations is 0.00207.
-%% 11. Falsification with Breach
+%% 11. Falsification with Breach (NOT FINISHED)
 
 %  delete(fullfile(which(strcat(options.SLX_model,'_breach.slx'))))
 get_param(Simulink.allBlockDiagrams(),'Name')

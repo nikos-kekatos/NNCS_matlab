@@ -183,6 +183,37 @@ elseif plot_cex==2
     % ylabel('plant output')
     legend('reference', 'PID', 'NN original','NN with cex','FontSize',14)
     title('Simulating NNCS -- PID vs original NN vs refined NN','FontSize',18,'FontWeight','bold');
+elseif plot_cex==3
+    
+    FIG = figure('rend', 'painters', 'pos', [200,200,1069,356], 'Color', 'w');
+    AX = axes('NextPlot', 'add');
+    set(AX, 'YScale', 'linear');
+    axis(AX, 'tight');
+    grid(AX);
+    set(AX, 'FontSize', 12);
+    xlabel(AX, '$t$', 'Interpreter', 'latex', 'FontSize', 20);
+    ylabel(AX, '$\ y(k)$', 'Interpreter', 'latex', 'FontSize', 20);
+    plot(ref.time(1:end-1),ref.signals.values(1:end-1,ref_idx),'r',y_nn.time,y_nn.signals.values(:,y_idx),'b-.',y_nn_cex_1.time,y_nn_cex_1.signals.values(:,y_idx),'m.-.','Linewidth',0.75);
+    % xlabel('time (s)')
+    % ylabel('plant output')
+    % legend('reference',' NN original','NN with cex','FontSize',14)
+    legend('reference',' NN -- single','NN -- combined','FontSize',14)
+    
+    title('Simulating NNCS --  single vs combined ','FontSize',18,'FontWeight','bold');
+    
+    FIG = figure('rend', 'painters', 'pos', [200,200,1069,356], 'Color', 'w');
+    AX = axes('NextPlot', 'add');
+    set(AX, 'YScale', 'linear');
+    axis(AX, 'tight');
+    grid(AX);
+    set(AX, 'FontSize', 12);
+    xlabel(AX, '$t$', 'Interpreter', 'latex', 'FontSize', 20);
+    ylabel(AX, '$\ y(k)$', 'Interpreter', 'latex', 'FontSize', 20);
+    plot(ref.time(1:end-1),ref.signals.values(1:end-1,ref_idx),'r',y.time,y.signals.values(:,y_idx),'g--',y_nn.time,y_nn.signals.values(:,y_idx),'b-.',y_nn_cex_1.time,y_nn_cex_1.signals.values(:,y_idx),'m.-.','Linewidth',0.75);
+    % xlabel('time (s)')
+    % ylabel('plant output')
+    legend('reference', 'single PID', 'single NN','combined NN ','FontSize',14)
+    title('Simulating NNCS -- PID vs singe NN vs combined NN','FontSize',18,'FontWeight','bold');
 end
 close_system(options.SLX_model,1)
 end
