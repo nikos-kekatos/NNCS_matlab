@@ -25,6 +25,9 @@ options.y_index_lqr=1; % could be a vector
 options.u_des=0; % also a vector
 %---------
 
+% debugging
+options.debug=1;
+
 % Time horizon of simulation in Simulink
 options.T_train=10; % for constant choose 5s
 options.SLX_model=SLX_model;

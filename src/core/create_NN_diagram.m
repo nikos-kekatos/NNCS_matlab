@@ -11,9 +11,11 @@ cd(folder_path);
 gensim(net,'InputMode','none','OutputMode','none')
 % save_system('untitled','nn_gensim','ErrorIfShadowed',true)
 options.NN_model='nn_gensim';
+if options.debug
 if exist(options.NN_model,'file')
-    disp('The NN model has not been deleted')
+    disp('Please note that we have not deleted the NN model.')
     close_system(options.NN_model);
+end
 end
 save_system('untitled',options.NN_model);
 cd(original_path);
