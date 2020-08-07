@@ -64,7 +64,7 @@ if options.combination
             starttime;
             stoptime;
             
-            set_param(strcat(options.SLX_model,filesep,'Controller',filesep,'PID Controller'),'P',num2str(C{contID}.Kp), ...
+            set_param(strcat(options.SLX_model,'/Controller/PID Controller'),'P',num2str(C{contID}.Kp), ...
                 'I',num2str(C{contID}.Ki),'D',num2str(C{contID}.Kd),'N',num2str(C{contID}.N));
             
             

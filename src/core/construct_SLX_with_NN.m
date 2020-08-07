@@ -26,7 +26,7 @@ else
     default_block_name=block_name;
 end
 % delete NN block to closed loop SLX model
-Simulink.SubSystem.deleteContents(strcat([file_name filesep default_block_name]));
+Simulink.SubSystem.deleteContents(strcat([file_name,'/',default_block_name]));
 
 % Simulink.SubSystem.deleteContents(strcat(options.SLX_NN_model,'/',default_block_name));
 % from gensim model, create a new temp file with the subsystem elements
@@ -37,18 +37,18 @@ if exist(temp_filename,'file')
 end
 new_system(temp_filename);
 load_system(temp_filename);
-Simulink.SubSystem.copyContentsToBlockDiagram(strcat(NN_model,filesep,'Feed-Forward Neural Network'),temp_filename);
+Simulink.SubSystem.copyContentsToBlockDiagram(strcat(NN_model,'/Feed-Forward Neural Network'),temp_filename);
 
 % Simulink.BlockDiagram.copyContentsToSubsystem...
 %     (temp_filename, strcat(options.SLX_NN_model,'/',default_block_name))
 Simulink.BlockDiagram.copyContentsToSubsystem...
-    (temp_filename, strcat(file_name,filesep,default_block_name));
+    (temp_filename, strcat(file_name,'/',default_block_name));
 close_system(temp_filename,0);
 close_system(NN_model,0);
 
 %pc=get_param(strcat(options.SLX_NN_model,'/',default_block_name),'portconnectivity')
 
-pc=get_param(strcat(file_name,filesep,default_block_name),'portconnectivity');
+pc=get_param(strcat(file_name,'/',default_block_name),'portconnectivity');
 [pos_in,pos_out]=pc.Position;
 
 
