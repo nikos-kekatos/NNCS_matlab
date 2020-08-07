@@ -9,9 +9,20 @@ if options.combination
     ctrl_configuration='watertank_controllers';
     run(ctrl_configuration)
 end
-
+options.combination_matlab=1;
 options.no_time_segments=10;
 options.time_segments_step=1;
+
+options.Q=[1/4]; % should be diagonal
+options.R=[1/10]; %should be diagonal
+if ~isdiag(options.Q)
+    warning('The Q matrix (for x-ref) is not diagonal')
+end
+if ~isdiag(options.R)
+    warning('The R matrix for (u) is not diagonal')
+end
+options.y_index_lqr=1; % could be a vector
+options.u_des=0; % also a vector
 %---------
 
 % Time horizon of simulation in Simulink

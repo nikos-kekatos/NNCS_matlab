@@ -232,7 +232,7 @@ construct_SLX_with_NN(options,file_name,'NN_single');
 %% 10. Analyse NNCS in Simulink
 model_name=options.SLX_model_combined;
 % model_name='watertank_comp_design_mod_NN';
-options.input_choice=3;
+options.input_choice=2;
 % model=2;
 options.error_mean=0;%0.0001;
 options.error_sd=0;%0.001;

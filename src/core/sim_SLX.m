@@ -27,8 +27,10 @@ if options.combination
         timeNb=options.no_time_segments;
         timeNb_step=options.time_segments_step;
     catch
-        timeNb=10;
-        timeNb_step=1;
+        if options.model==10
+            timeNb=10;
+            timeNb_step=1;
+        end
     end
     
     for timeId = 1:timeNb_step:timeNb
@@ -67,18 +69,21 @@ if options.combination
             
             
             sim(model,[],options.workspace);
-            
-            Jcurrent(timeId,contID) = J.Data(end);
-            if (Jcurrent(timeId,contID)<=Jopt)
-                Jopt=Jcurrent(timeId,contID);
-                SimStateopt = SimState;
-                min_cost(timeId)=contID;
-                ref_opt{timeId}=ref;
-                y_opt{timeId}=y;
-                u_opt{timeId}=u;
+            if options.combination_matlab==1
+                Jcurrent(timeId,contID) = compute_cost_function(ref,u,y,options);
+
+            elseif options.combination_matlab==0 % use Simulink and existing cost function
+                Jcurrent(timeId,contID) = J.Data(end);
                 
             end
-            
+            if (Jcurrent(timeId,contID)<=Jopt)
+                    Jopt=Jcurrent(timeId,contID);
+                    SimStateopt = SimState;
+                    min_cost(timeId)=contID;
+                    ref_opt{timeId}=ref;
+                    y_opt{timeId}=y;
+                    u_opt{timeId}=u;            
+            end
         end
         if options.plotting_sim
         fprintf('For the %i-segment, the Controller %i has the smallest cost.\n\n',timeId,min_cost(timeId));

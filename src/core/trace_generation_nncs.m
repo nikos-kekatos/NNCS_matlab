@@ -72,7 +72,7 @@ if options.reference_type~=4
             for ii=1:model_no
                 options_comb{ii}=options;
                 if ii==1
-                    options_comb{ii}.T_train=1.5;
+                    options_comb{ii}.T_train=1.5; % time to switch from fast to slow.
                 elseif ii==2
                     options_comb{ii}.T_train=options.T_train-1.5;
                     options_comb{ii}.x0=y_temp{ii-1}.signals.values(end);
