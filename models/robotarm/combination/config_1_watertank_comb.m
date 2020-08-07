@@ -28,6 +28,7 @@ options.u_des=0; % also a vector
 % Time horizon of simulation in Simulink
 options.T_train=10; % for constant choose 5s
 options.SLX_model=SLX_model;
+options.SLX_folder='watertank';
 % Choose reference type: (1) for constant, (2) for time varying and (3) for
 % coverage and (4) for Breach
 

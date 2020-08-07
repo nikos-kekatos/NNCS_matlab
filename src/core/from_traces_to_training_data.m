@@ -103,16 +103,17 @@ end
         end
         options.sim_name= strcat('array_sim_',temp_st,num2str(options.no_traces),'_traces_',num2str(options.no_ref),'x',num2str(options.no_x0),'_time_',num2str(options.T_train),'_',datestr(now,'dd-mm-yyyy_HH:MM'),'.mat');
          warning('Fix issue with folder names. Probably add a flag with the corresponding folder. Or use which to find dir.\n');
-            folder= 'robotarm';
-            folder='quadcopter';
-%             folder='watertank';
-            folder='tank'
+%             folder= 'robotarm';
+%             folder='quadcopter';
+% %             folder='watertank';
+%             folder='tank'
+        folder=options.SLX_folder;
         destination_folder={
 %            strcat('modules/outputs/robotarm/'),...
 %            strcat('outputs/robotarm/'),...
-            strcat('../outputs/',[folder],'/'),...
-            strcat('../../outputs/',[folder],'/'),...
-            strcat('../../../outputs/',[folder],'/')};
+            strcat('..',filesep,'outputs',filesep,[folder],filesep),...
+            strcat('..',filesep,'..',filesep,'outputs',filesep,[folder],filesep),...
+            strcat('..',filesep,'..',filesep,'..',filesep,'outputs',filesep,[folder],filesep)};
         ic=1;
         while ic<=length(destination_folder)
             if exist(destination_folder{ic},'dir')

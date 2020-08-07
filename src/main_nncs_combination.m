@@ -27,12 +27,14 @@
 %%------------- BEGIN CODE --------------
 
 %% 0. Add files to MATLAB path
-current_file=which('main_combination.m');
+%% You need to change current folder to this one.
+current_file=which('main_nncs_combination.m');
 current_path=fileparts(current_file);
 idcs   = strfind(current_path,filesep);
-newdir = current_path(1:idcs(end-2)-1); % 2 steps back
-addpath(genpath(newdir));
-rmpath(genpath([newdir filesep 'NIPS_submission']));
+module_dir = current_path(1:idcs(end)-1); % 1 step back
+addpath(genpath(module_dir));
+rmpath(genpath([module_dir filesep 'NIPS_submission']));
+% clear idcs current_file current_path module_dir
 %% 1. Initialization
 clear;close all;clc; bdclose all;
 try
@@ -54,11 +56,10 @@ options.model=model;
 
 run('config_1_watertank_comb.m')
 
-
 %% 4a. Run simulations -- Generate training data (combined)
 options.error_mean=0%0.0001;
 options.error_sd=0%0.001;
-options.save_sim=0;
+options.save_sim=1;
 options.coverage.points='r';
 
 [data,options]=trace_generation_nncs(SLX_model,options);

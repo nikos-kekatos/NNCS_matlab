@@ -149,18 +149,18 @@ if options.reference_type~=4
         end
         
         warning('Fix issue with folder names. Probably add a flag with the corresponding folder. Or use which to find dir.\n');
-        folder= 'robotarm';
-        folder='quadcopter';
-        folder='watertank';
-        folder='tank';
-        folder='MatlabQuadSimAP-master';
-        
+%         folder= 'robotarm';
+%         folder='quadcopter';
+%         folder='watertank';
+%         folder='tank';
+%         folder='MatlabQuadSimAP-master';
+        folder=options.SLX_folder;
         destination_folder={
             %            strcat('modules/outputs/robotarm/'),...
             %            strcat('outputs/robotarm/'),...
-            strcat('../outputs/',[folder],'/'),...
-            strcat('../../outputs/',[folder],'/'),...
-            strcat('../../../outputs/',[folder],'/')};
+            strcat('..',filesep,'outputs',filesep,[folder],filesep),...
+            strcat('..',filesep,'..',filesep,'outputs',filesep,[folder],filesep),...
+            strcat('..',filesep,'..',filesep,'..',filesep,'outputs',filesep,[folder],filesep)};
         ic=1;
         while ic<=length(destination_folder)
             if exist(destination_folder{ic},'dir')
