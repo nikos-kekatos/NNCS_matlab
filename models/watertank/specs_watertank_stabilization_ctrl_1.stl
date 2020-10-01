@@ -1,0 +1,13 @@
+#param sim_time=9.99, r=0.1, dt=0.01, T=10, d=0.01, T_1=6, T_2=4,e=0.025,tau=3,ov=0.07
+
+param sim_time=9.99, r=0.1, dt=0.01, T=10, d=0.01, T_1=6, T_2=4,e=0.02,tau=3,ov=0.07
+
+phi_5_nom:= (alw_[0,sim_time]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,3.5] alw_[0,1.5] (abs(y[t]-In1[t])<e))))
+
+# just stabilization,  Controller 1 : 2 cex, controller 2: 0 cex.
+
+phi_5:= (alw_[0,sim_time]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,3.5] alw_[0,1.5] (abs(y_nn[t]-In1[t])<e))))
+
+phi_6:= (alw_[0,sim_time]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,3.5] alw_[0,1.5] (abs(y_nn_cex_1[t]-In1[t])<e))))
+
+phi_7:= (alw_[0,sim_time]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,3.5] alw_[0,1.5] (abs(y[t]-In1[t])<e))))

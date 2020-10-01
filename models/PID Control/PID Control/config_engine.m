@@ -2,6 +2,12 @@
 % we store all the specifications in a structure named options.
 % clear options
 
+options.combination=0; % if more than one nominal controllers
+
+options.debug=0;
+options.SLX_folder='engine';
+
+
 options.model=7;
 % addpath(genpath('utilities'))
 % run('quad_variables.m')
@@ -88,7 +94,7 @@ if options.reference_type==3
     options.ref_Ts=15;
     options.coverage.ref_min=2000;
     options.coverage.ref_max=2200;
-    options.coverage.delta_resolution=10; %0.1
+    options.coverage.delta_resolution=40; %0.1
 %     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution-1;
     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution;
 

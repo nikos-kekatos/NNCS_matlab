@@ -58,6 +58,8 @@ elseif options.model==7
     Ki=0.0131;
     Kd=3.3894e-004;
     N=9.9135;
+elseif options.model==10
+    ic=2;
 end
 options.workspace = simset('SrcWorkspace','current');
 sim(model_name,[],options.workspace);
@@ -184,7 +186,15 @@ elseif plot_cex==2
     legend('reference', 'PID', 'NN original','NN with cex','FontSize',14)
     title('Simulating NNCS -- PID vs original NN vs refined NN','FontSize',18,'FontWeight','bold');
 elseif plot_cex==3
-    
+    load_system(options.SLX_model)
+    ref_all=ref;
+    y_all=y;
+    u_all=u;
+    if options.combination~=1
+        warning('options.combination is not set correctly!')
+        options.combination=1;
+    end
+    [ref_comb,y_comb,u_comb]=sim_SLX(options.SLX_model,options);
     FIG = figure('rend', 'painters', 'pos', [200,200,1069,356], 'Color', 'w');
     AX = axes('NextPlot', 'add');
     set(AX, 'YScale', 'linear');
@@ -193,7 +203,7 @@ elseif plot_cex==3
     set(AX, 'FontSize', 12);
     xlabel(AX, '$t$', 'Interpreter', 'latex', 'FontSize', 20);
     ylabel(AX, '$\ y(k)$', 'Interpreter', 'latex', 'FontSize', 20);
-    plot(ref.time(1:end-1),ref.signals.values(1:end-1,ref_idx),'r',y_nn.time,y_nn.signals.values(:,y_idx),'b-.',y_nn_cex_1.time,y_nn_cex_1.signals.values(:,y_idx),'m.-.','Linewidth',0.75);
+    plot(ref_all.time(1:end-1),ref_all.signals.values(1:end-1,ref_idx),'r',y_nn.time,y_nn.signals.values(:,y_idx),'b-.',y_nn_cex_1.time,y_nn_cex_1.signals.values(:,y_idx),'m.-.','Linewidth',0.75);
     % xlabel('time (s)')
     % ylabel('plant output')
     % legend('reference',' NN original','NN with cex','FontSize',14)
@@ -209,11 +219,56 @@ elseif plot_cex==3
     set(AX, 'FontSize', 12);
     xlabel(AX, '$t$', 'Interpreter', 'latex', 'FontSize', 20);
     ylabel(AX, '$\ y(k)$', 'Interpreter', 'latex', 'FontSize', 20);
-    plot(ref.time(1:end-1),ref.signals.values(1:end-1,ref_idx),'r',y.time,y.signals.values(:,y_idx),'g--',y_nn.time,y_nn.signals.values(:,y_idx),'b-.',y_nn_cex_1.time,y_nn_cex_1.signals.values(:,y_idx),'m.-.','Linewidth',0.75);
+    plot(ref_all.time(1:end-1),ref_all.signals.values(1:end-1,ref_idx),'r',y_all.time,y_all.signals.values(:,y_idx),'g--',ref_comb.time(1:end-1),ref_comb.signals.values(1:end-1,ref_idx),'c', y_comb.time,y_comb.signals.values(:,y_idx),'k:',y_nn.time,y_nn.signals.values(:,y_idx),'b-.',y_nn_cex_1.time,y_nn_cex_1.signals.values(:,y_idx),'m.-.','Linewidth',0.75);
     % xlabel('time (s)')
     % ylabel('plant output')
-    legend('reference', 'single PID', 'single NN','combined NN ','FontSize',14)
+    legend('reference', 'single PID', 'combined ref','combined PID','single NN','combined NN ','FontSize',14)
     title('Simulating NNCS -- PID vs singe NN vs combined NN','FontSize',18,'FontWeight','bold');
+elseif plot_cex==4
+    % we have already ran the combined/falsif which has the combined NN and
+    % the combined NN with cex
+    load_system(options.SLX_model)
+    ref_all=ref;
+    y_all=y;
+    u_all=u;
+    if options.combination~=1
+        warning('options.combination is not set correctly!')
+        options.combination=1;
+    end
+    [ref_comb,y_comb,u_comb]=sim_SLX(options.SLX_model,options);
+    FIG = figure('rend', 'painters', 'pos', [200,200,1069,356], 'Color', 'w');
+    AX = axes('NextPlot', 'add');
+    set(AX, 'YScale', 'linear');
+    axis(AX, 'tight');
+    grid(AX);
+    set(AX, 'FontSize', 12);
+    xlabel(AX, '$t$', 'Interpreter', 'latex', 'FontSize', 20);
+    ylabel(AX, '$\ y(k)$', 'Interpreter', 'latex', 'FontSize', 20);
+    plot(ref_all.time(1:end-1),ref_all.signals.values(1:end-1,ref_idx),'r',...
+        y_all.time,y_all.signals.values(:,y_idx),'g--',...
+        ref_comb.time(1:end-1), ref_comb.signals.values(1:end-1,ref_idx),'c', ...
+        y_comb.time, y_comb.signals.values(:,y_idx),'k:',...
+        y_nn.time,y_nn.signals.values(:,y_idx),'b-.',...
+        'Linewidth',0.75);
+    % xlabel('time (s)')
+    % ylabel('plant output')
+    legend('reference', 'single PID', 'combined ref','combined PID','combined NN ','FontSize',14)
+    title('Simulating NNCS -- PID  vs combined NN','FontSize',18,'FontWeight','bold');
+    %{
+    FIG = figure('rend', 'painters', 'pos', [200,200,1069,356], 'Color', 'w');
+    AX = axes('NextPlot', 'add');
+    set(AX, 'YScale', 'linear');
+    axis(AX, 'tight');
+    grid(AX);
+    set(AX, 'FontSize', 12);
+    xlabel(AX, '$t$', 'Interpreter', 'latex', 'FontSize', 20);
+    ylabel(AX, '$\ y(k)$', 'Interpreter', 'latex', 'FontSize', 20);
+    plot(ref_all.time(1:end-1),ref_all.signals.values(1:end-1,ref_idx),'r',y_all.time,y_all.signals.values(:,y_idx),'g--',ref_comb.time(1:end-1),ref_comb.signals.values(1:end-1,ref_idx),'c', y_comb.time,y_comb.signals.values(:,y_idx),'k:',y_nn.time,y_nn.signals.values(:,y_idx),'b-.',y_nn_cex_1.time,y_nn_cex_1.signals.values(:,y_idx),'m.-.','Linewidth',0.75);
+    % xlabel('time (s)')
+    % ylabel('plant output')
+    legend('reference', 'single PID', 'combined ref','combined PID','single NN','combined NN ','FontSize',14)
+    title('Simulating NNCS -- PID vs singe NN vs combined NN','FontSize',18,'FontWeight','bold');
+    %}
 end
 close_system(options.SLX_model,1)
 end

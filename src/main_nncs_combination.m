@@ -28,13 +28,18 @@
 
 %% 0. Add files to MATLAB path
 %% You need to change current folder to this one.
-current_file=which('main_nncs_combination.m');
+current_file = matlab.desktop.editor.getActiveFilename;
 current_path=fileparts(current_file);
+% current_file=which('main_nncs_combination.m');
+% current_path=fileparts(current_file);
 idcs   = strfind(current_path,filesep);
-module_dir = current_path(1:idcs(end)-1); % 1 step back
+module_dir = current_path(1:idcs(end)-1); % 1 steps back
+cd(current_path);
 addpath(genpath(module_dir));
 rmpath(genpath([module_dir filesep 'NIPS_submission']));
 % clear idcs current_file current_path module_dir
+addpath(genpath('/Users/kekatos/Files/Projects/Github/breach/'))
+
 %% 1. Initialization
 clear;close all;clc; bdclose all;
 try
@@ -55,23 +60,69 @@ model=10;
 options.model=model;
 
 run('config_1_watertank_comb.m')
-
+options.debug=0;
+options.plotting_sim=0;
+options.save_sim=0;
+%% Falsification nominal controllers
+options.falsif_nominal=0;
+if options.falsif_nominal
+run('falsification_nominal.m')
+end
+%  Controller -- 1
+% We ran 100 scenarios and found 0 (overshoot) and 2 (stabilization)  CEX.
+% 
+%  Controller -- 2
+% We ran 100 scenarios and found 3 and 0 CEX.
 %% 4a. Run simulations -- Generate training data (combined)
 options.error_mean=0%0.0001;
 options.error_sd=0%0.001;
-options.save_sim=1;
-options.coverage.points='r';
-
+% options.save_sim=1;
+% options.coverage.points='r';
+% options.plotting_sim=1
+options.load=1
+if ~options.load
 [data,options]=trace_generation_nncs(SLX_model,options);
 timer.trace_gen=toc(timer_trace_gen)
-
+end
 %% 4b. Load previous saved traces
 if options.load==1
     % specify dataset from outputs/ folder
     dataset{1}='array_sim_cov_varying_ref_64_traces_1x1_time_20_06-06-2020_03:24.mat';
     %     dataset{1}='data_part_1.mat',  dataset{2}='data_part_2.mat'
     dataset{1}='comb_3_contr_10_sec.mat';
+    dataset{1}='comb_32_v3.mat';
     [data,options]= load_data(dataset,options);
+    % load('comb_data_16.mat');
+    % load('comb_16_v2.mat');
+%     load('comb_32_v3.mat')
+end
+%% 4c. Plot all traces w/ combined
+if options.debug
+for i=1:floor(options.no_traces)%/10
+    fprintf('Testing controllers -- Trace %i.\n\n',i)
+    model_name=options.SLX_model_falsif;
+    % model_name='watertank_comp_design_mod_NN';
+    options.input_choice=3;
+    options.error_mean=0;%0.0001;
+    options.error_sd=0;%0.001;
+    options.ref_Ts=5;options.T_train=10;
+    options.sim_ref=11;          % watertank
+    options.ref_min=8.5;
+    options.ref_max=11.5;
+    options.sim_cov=[12;8];%[8.5;11;8;12;9;8];
+    if options.coverage.points=='r'
+        options.sim_cov=options.coverage.cells{i}.random_value;
+    elseif strcmp(options.coverage.points,'r')
+        warning('to-do')
+    end
+    options.u_index_plot=1;
+    options.y_index_plot=1;
+    options.ref_index_plot=1;
+    
+    run_simulation_nncs_comb(options,model_name,1); % 3 for combined (with nominal NN) %4 for combined (no nominal)
+    options.input_choice=4;
+    
+end
 end
 %% 5a. Data Selection
 options.trimming=0;
@@ -112,9 +163,9 @@ training_options.regularization=0; %0-1
 training_options.param_ratio=0.5;
 training_options.algo= 'trainlm'%'trainlm'; % trainscg % trainrp
 %add option for saved mat files
-training_options.iter_max_fail=1;
+training_options.iter_max_fail=2;
 iter=1;reached=0;
-training_options.replace_by_zeros=0;
+training_options.replace_by_zeros=1;
 while true && iter<=training_options.iter_max_fail
     fprintf('\n Iteration %i.\n',iter);
     [net,data,tr]=nn_training(data,training_options,options);
@@ -162,93 +213,61 @@ options.SLX_model_combined=strcat(options.SLX_model,'_comb')
 % gensim(net)
 [options]=create_NN_diagram(options,net);
 
-%% 8b. Integrate NN block in the Simulink model
+% 8b. Integrate NN block in the Simulink model
 
-file_name=options.SLX_model_combined
+file_name=options.SLX_model_falsif
 construct_SLX_with_NN(options,file_name,'NN_comb');
 
+%% 9A. Data matching (analysis w/ training data)
+% Compare via MSE (y_nn, y_nominal) 
+% compare  over training data
 
-%% 9. Individual Controller---Simulate, generate traces, create NN, plot, etc.
+%%% ADD OPTION and move 
+warning('This code only works for coverage')
+file_name=options.SLX_model_falsif;
 
-%data generation
-options.combination=0;
-[data_single,options]=trace_generation_nncs(options.SLX_model_combined,options);
-timer.trace_gen=toc(timer_trace_gen);
-
-% Training
-timer_train=tic;
-iter=1;reached=0;
-training_options.replace_by_zeros=0;
-while true && iter<=training_options.iter_max_fail
-    fprintf('\n Iteration %i.\n',iter);
-    [net,data_single,tr]=nn_training(data_single,training_options,options);
-    net_all{iter}=net;
-    tr_all{iter}=tr;
-    if tr_all{iter}.best_perf<training_options.error*10 && tr_all{iter}.best_vperf<training_options.error*100
-        reached=1;
-        break;
-    else
-        if iter<training_options.iter_max_fail
-            iter=iter+1;
-        else
-            break;
-        end
+if options.reference_type==3
+    if options.plotting_sim
+        plot_coverage_boxes(options,1);
+    end
+    options.testing.plotting=0;
+    options.test_dataMatching=1;
+    options.testing.train_data=1;% 0: for centers, 1: random points
+    if options.test_dataMatching
+        [testing,options]=test_coverage(options,file_name);
     end
 end
-fprintf('\n The requested training error was %f.\n',training_options.error);
-if reached
-    fprintf('The obtained training error is %f reached after %i random initializations.\n',tr_all{iter}.best_perf,iter);
-    fprintf('The validation error is %f.\n',tr_all{iter}.best_vperf);
-    net=net_all{iter};
-    tr=tr_all{iter};
-else
-    fprintf('\n We ran %i training attempts with random initializations.\n',iter);
-    for ii=1:iter
-        training_perf(ii)=tr_all{ii}.best_perf;
-    end
-    iter_best=find(training_perf==min(training_perf));
-    fprintf('\n The smallest training error was %f.\n',tr_all{iter_best}.best_vperf);
-    fprintf('\n The smallest validation error was %f.\n',tr_all{iter_best}.best_vperf);
-    net=net_all{iter_best};
-    tr=tr_all{iter_best};
+%% 9B. Matching test against STL property
+
+falsification_options;
+
+[original_rob,In_Original] = check_cex_all_data([],falsif,file_name,options);
+
+%% 10. Individual Controller---Simulate, generate traces, create NN, plot, etc.
+
+if options.training_nominal
+    training_nominal
 end
-timer.train=toc(timer_train)
-if options.plotting_sim
-    figure;plotperform(tr)
-end
-
-%evaluate training
-% options.plotting_sim=1
-plot_NN_sim(data_single,options);
-
-% Simulink
-options.SLX_model_combined=strcat(options.SLX_model,'_comb')
-% gensim(net)
-[options]=create_NN_diagram(options,net);
-
-file_name=options.SLX_model_combined;
-construct_SLX_with_NN(options,file_name,'NN_single');
-
-%% 10. Analyse NNCS in Simulink
-model_name=options.SLX_model_combined;
+%% 11. Analyse NNCS in Simulink
+model_name=options.SLX_model_falsif;
 % model_name='watertank_comp_design_mod_NN';
 options.input_choice=3;
 % model=2;
 options.error_mean=0;%0.0001;
 options.error_sd=0;%0.001;
-    options.ref_Ts=5;options.T_train=10;
-    options.sim_ref=11;          % watertank
-    options.ref_min=8.5;
-    options.ref_max=11.5;
-    options.sim_cov=[8.5;11;8;12;9;8];
-    options.u_index_plot=1;
-    options.y_index_plot=1;
-    options.ref_index_plot=1;
+options.ref_Ts=5;options.T_train=10;
+options.sim_ref=11;          % watertank
+options.ref_min=8.5;
+options.ref_max=11.5;
+options.sim_cov=[11.5;9.5];%[8.5;11;8;12;9;8];
+options.sim_cov=options.coverage.cells{12}.random_value
+options.u_index_plot=1;
+options.y_index_plot=1;
+options.ref_index_plot=1;
 
-[ref,y,u]=run_simulation_nncs(options,model_name,3); % 3 for combined
+[ref,y,u]=run_simulation_nncs_comb(options,model_name,5); % 3 for combined (with nominal NN) %4 for combined (no nominal)
+options.input_choice=4;
 
-disp('This is the end of the existing implementation')
-stop
 
 %% 11. Falsification with Breach (NOT FINISHED)
 
@@ -256,7 +275,7 @@ stop
 get_param(Simulink.allBlockDiagrams(),'Name')
 bdclose all;
 clear Data_all data_cex Br falsif_pb net_all phi_1 phi_3 phi_4  phi_5 phi_all
-clear robustness_checks_all robustness_checks_false falsif falsif_pb_temp file_name
+clear robustness_checks_all robustness_checks_false  falsif_pb_temp file_name
 clear rob_nominal robustness_check_temp block_name falsif_idx data_cex
 clear data_cex_cluster tr tr_all condition cluster_all check_nominal model_name
 clear data_backup i_f ii In1_dt0 In1_u0 In1_u1 inputs_cex iter iter_best num_cex
@@ -265,52 +284,19 @@ clear reached seeds_all stop t__ tm training_perf tspan u__ idx_cluster falsif_p
 %%% ------------------------------------------ %%
 %%% ----- 11-A: Falsification with Breach ---- %%
 %%% ------------------------------------------ %%
-
-options.testing_breach=1;
-training_options.combining_old_and_cex=1; % 1: combine old and cex
-falsif.iterations_max=1;
-falsif.method='quasi';
+falsif.max_obj_eval_local=100;
 falsif.num_samples=100;
-falsif.num_corners=25;
-falsif.max_obj_eval=100;
-falsif.max_obj_eval_local=20;
 falsif.seed=100;
-falsif.num_inputs=1;
+falsif.iterations_max=2;
+falsif.property_file='specs_watertank_comb_ctrl_1.stl';
+%'specs_watertank_stabilization_ctrl_1.stl'
+%'specs_watertank_stabilization_comb.stl';
 
-falsif.property_file=options.specs_file;
-falsif.property_file='specs_watertank_stabilization.stl';
-% falsif.property_file='specs_robotarm_overshoot.stl';
-[~,falsif.property_all]=STL_ReadFile(falsif.property_file);
-falsif.property=falsif.property_all{2};%// TO-DO automatically specify the file
-falsif.property_cex=falsif.property_all{3};
-falsif.property_nom=falsif.property_all{4};
-if model==1
-    falsif.breach_ref_min=8;            %watertank 8 % quadcopter -1 %robotarm -0.5
-    falsif.breach_ref_max=12;           % watertank 12 % quadcopter 3  % robotarm 0.5
-elseif model==2
-    falsif.breach_ref_min=-0.5;            %watertank 8 % quadcopter -1 %robotarm -0.5
-    falsif.breach_ref_max=0.5;
-elseif model==3
-    falsif.breach_ref_min=-1;            %watertank 8 % quadcopter -1 %robotarm -0.5
-    falsif.breach_ref_max=3;
-elseif model==4
-    falsif.breach_ref_min=8;            %watertank 8 % quadcopter -1 %robotarm -0.5
-    falsif.breach_ref_max=9;
-end
-falsif.stop_at_false=false;
-falsif.T=options.T_train;
-falsif.input_template='fixed';
-try
-    falsif.breach_segments=options.breach_segments;
-catch
-    falsif.breach_segments=2;
-    options.breach_segments=falsif.breach_segments;
-end
 stop=0;
 i_f=1;
 
 % file_name=strcat(options.SLX_NN_model,'_cex');
-file_name=strcat(options.SLX_model);
+file_name=strcat(options.SLX_model_falsif);
 
 options.input_choice=4;
 net_all{1}=net;
@@ -324,7 +310,7 @@ while i_f<=falsif.iterations_max && ~stop
     %         fprintf('The number of CEX is now %i.\n',length(falsif_pb.obj_false));
     %     end
     fprintf('\n Beginning falsification with Breach.\n')
-    fprintf('\n We use the model %s for falsification.\n',options.SLX_model);
+    fprintf('\n We use the model %s for falsification.\n',file_name);
     %     if i_f==1
     %         model_name=options.SLX_NN_model;
     %     else
@@ -345,6 +331,8 @@ while i_f<=falsif.iterations_max && ~stop
     
     if any(structfun(@isempty,data_cex))
         fprintf('\n Breach could not falsify the STL formula.\n')
+%         fprintf('\n\n The NN produces %i falsifying traces out of %i total traces.\n',length(find(falsif_pb_temp.obj_false<0)),length(falsif_pb_temp.obj_log));
+
         fprintf('\n Trying with a different method (GNN) and more objective evaluations.\n')
         falsif.method='GNM';
         %         falsif.max_obj_eval=falsif.max_obj_eval*2;
@@ -352,16 +340,18 @@ while i_f<=falsif.iterations_max && ~stop
         if check_nominal
             robustness_checks_all{i_f,2}=rob_nominal;
         end
+        falsif_pb{i_f}=falsif_pb_zero;
         if any(structfun(@isempty,data_cex))
             stop=1;
             fprintf('\n\n The NN produces %i falsifying traces out of %i total traces.\n',length(find(falsif_pb_temp.obj_false<0)),length(falsif_pb_temp.obj_log));
-            fprintf('\n\n The nominal produces %i falsifying traces out of %i total traces.\n',length(find(rob_nominal<0)),length(falsif_pb_temp.obj_log));
+            if check_nominal
+                fprintf('\n\n The nominal produces %i falsifying traces out of %i total traces.\n',length(find(rob_nominal<0)),length(falsif_pb_temp.obj_log));
+            end
             falsif_temp=toc(timer_falsif);
             timer.falsif{i_f}=falsif_temp
             break;
         else
             falsif.method='quasi';
-            falsif_pb{i_f}=falsif_pb_zero;
             robustness_checks_all{i_f,1}=falsif_pb{i_f}.obj_log;
             robustness_checks_false{i_f,1}=falsif_pb{i_f}.obj_false;
         end
@@ -369,31 +359,53 @@ while i_f<=falsif.iterations_max && ~stop
     try
         figure;falsif_pb{i_f}.BrSet_Logged.PlotRobustSat(phi_3)
     end
-    fprintf('\n\n The NN produces %i falsifying traces out of %i total traces.\n',length(find(falsif_pb_temp.obj_false<0)),length(falsif_pb_temp.obj_log));
-    fprintf('\n\n The nominal produces %i falsifying traces out of %i total traces.\n',length(find(rob_nominal<0)),length(falsif_pb_temp.obj_log));
+    fprintf('\n\n The NN produces %i falsifying traces out of %i total traces.\n',length(find(falsif_pb{i_f}.obj_false<0)),length(falsif_pb{i_f}.obj_log));
+    if check_nominal
+        fprintf('\n\n The nominal produces %i falsifying traces out of %i total traces.\n',length(find(rob_nominal<0)),length(falsif_pb{i_f}.obj_log));
+    end
     falsif_temp=toc(timer_falsif);
     timer.falsif{i_f}=falsif_temp
     
     fprintf('\n End falsification with Breach.\n')
     disp('-----------------------------------')
+    
+    %%% ------------------------------------ %%
+    %%% ----- 11-AB: Generating new combined traces ---- %%
+    %%% ------------------------------------ %%
+    
+    % the references are stored in data_cex.REF
+    options_new=options;
+    options_new.coverage=rmfield(options_new.coverage,'cells')
+    options_new.no_traces=size(data_cex.REF_values,2)
+    options_new.coverage.no_traces_ref=options_new.no_traces;
+    for i=1:options_new.no_traces
+    options_new.coverage.cells{i}.random_value=[data_cex.REF_values(:,i)]
+    end
+    options_new.plotting_sim=1;
+    options_new.input_choice=3;
+    [data_cex_comb,options_new]=trace_generation_nncs(SLX_model,options_new);
+    timer.trace_gen_cex=toc(timer_trace_gen)
+%     options_new.input_choice=4;
+
+    %
     %%% ------------------------------------ %%
     %%% ----- 11-B: Clustering  CEX     ---- %%
     %%% ------------------------------------ %%
     %
     timer_cluster=tic;
     cluster_all=0;
-    [data_cex_cluster,idx_cluster]=cluster_and_sample(data_cex,falsif_pb{i_f},falsif,options,cluster_all);
+    [data_cex_cluster,idx_cluster]=cluster_and_sample(data_cex_comb,falsif_pb{i_f},falsif,options,cluster_all);
     
     if i_f==1
         Data_all{i_f,1}=data;
-        Data_all{i_f,2}=data_cex;
+        Data_all{i_f,2}=data_cex_comb;
     elseif i_f>1
         Data_all{i_f,1}=get_new_training_data( Data_all{i_f-1,1},Data_all{i_f-1,3},training_options);
-        Data_all{i_f,2}=data_cex;
+        Data_all{i_f,2}=data_cex_comb;
     end
     Data_all{i_f,3}=data_cex_cluster;
-    data_backup=data_cex;
-    data_cex=data_cex_cluster;
+    data_backup=data_cex_comb;
+    data_cex_comb=data_cex_cluster;
     timer.cluster{i_f}=toc(timer_cluster)
     %
     %%% ------------------------------------ %%
@@ -465,7 +477,7 @@ while i_f<=falsif.iterations_max && ~stop
         %%% ----------------------------------------------- %%
         %
         options.input_choice=3
-        num_cex=2;options.plotting_sim=1;
+        num_cex=2;
         run_and_plot_cex_nncs(options,file_name,inputs_cex,num_cex); %4th input number of counterexamples
         options.input_choice=4;
     end

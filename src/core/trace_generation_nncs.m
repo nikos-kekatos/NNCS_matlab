@@ -26,7 +26,7 @@ elseif options.reference_type==3 % coverage
             sim_cov_ref=[sim_cov_ref,options.coverage.cells{i_cov}.centers];
         end
     end
-    simin_all_coverage=combvec(sim_cov_ref,options.simin_x0);    
+    simin_all_coverage=combvec(sim_cov_ref,options.simin_x0);
 end
 
 if options.reference_type~=4
@@ -49,21 +49,24 @@ if options.reference_type~=4
         fprintf('Beginning of iteration %i\n',i);
         tic;
         warning off
-        if ~iscell(model) 
+        if ~iscell(model)
             [ref,y,u]=sim_SLX(model,options);
+            if options.debug
+                plot_single_trace(ref,y,u,options)
+            end
             t_comput{i}=toc;
-        
+            
             fprintf('End of iteration %i\n\n',i);
-        
+            
             REF_struct=[REF_struct;ref];
             U_struct=[U_struct;u];
             Y_struct=[Y_struct;y];
         end
         if iscell(model) && length(model)==1
             [ref,y,u]=sim_SLX(model{1},options);
-            t_comput{i}=toc;        
+            t_comput{i}=toc;
             fprintf('End of iteration %i\n\n',i);
-        
+            
             REF_struct=[REF_struct;ref];
             U_struct=[U_struct;u];
             Y_struct=[Y_struct;y];
@@ -92,16 +95,16 @@ if options.reference_type~=4
             sampling_times=ref_temp{1}.time;
             for j=1:model_no
                 sampling_times=[sampling_times;ref_temp{j}.time]
-                ref.signals.values=[ref.signals.val]                    
+                ref.signals.values=[ref.signals.val]
             end
             %}
-%             ref.time=[ref_temp{1}.time(1:(end-1));ref_temp{2}.time(1:(end-1))+ref_temp{1}.time(end)];
-%                u.time=ref.time;
-%                y.time=ref.time;
-%                u.signals.values=[u_temp{1}.signals.values(1:(end-1));u_temp{2}.signals.values(1:(end-1))]
-%                ref.signals.values=[ref_temp{1}.signals.values(1:(end-1));ref_temp{2}.signals.values(1:(end-1))]
-%                y.signals.values=[y_temp{1}.signals.values(1:(end-1));y_temp{2}.signals.values(1:(end-1))]
-
+            %             ref.time=[ref_temp{1}.time(1:(end-1));ref_temp{2}.time(1:(end-1))+ref_temp{1}.time(end)];
+            %                u.time=ref.time;
+            %                y.time=ref.time;
+            %                u.signals.values=[u_temp{1}.signals.values(1:(end-1));u_temp{2}.signals.values(1:(end-1))]
+            %                ref.signals.values=[ref_temp{1}.signals.values(1:(end-1));ref_temp{2}.signals.values(1:(end-1))]
+            %                y.signals.values=[y_temp{1}.signals.values(1:(end-1));y_temp{2}.signals.values(1:(end-1))]
+            
             REF_struct=[REF_struct;ref];
             U_struct=[U_struct;u];
             Y_struct=[Y_struct;y];
@@ -149,11 +152,11 @@ if options.reference_type~=4
         end
         
         warning('Fix issue with folder names. Probably add a flag with the corresponding folder. Or use which to find dir.\n');
-%         folder= 'robotarm';
-%         folder='quadcopter';
-%         folder='watertank';
-%         folder='tank';
-%         folder='MatlabQuadSimAP-master';
+        %         folder= 'robotarm';
+        %         folder='quadcopter';
+        %         folder='watertank';
+        %         folder='tank';
+        %         folder='MatlabQuadSimAP-master';
         folder=options.SLX_folder;
         destination_folder={
             %            strcat('modules/outputs/robotarm/'),...
@@ -170,13 +173,22 @@ if options.reference_type~=4
                 ic=ic+1;
             end
         end
-        save(destination_name,'REF_struct','U_struct','Y_struct');
+        if exist(destination_name,'var')
+            save(destination_name,'REF_struct','U_struct','Y_struct');
+            save_bool=1;
+        else
+            save_bool=0;
+        end
     end
     
     [REF,Y,U]=from_traces_to_training_data(REF_struct,Y_struct,U_struct,options);
     if options.save_sim~=0
-        fprintf('The simulation data are saved as a structure named %s.\n\n',char(options.sim_name));
-        fprintf('The simulation data are saved as a structure in %s.\n\n',destination_folder{ic});
+        if save_bool==1
+            fprintf('The simulation data are saved as a structure named %s.\n\n',char(options.sim_name));
+            fprintf('The simulation data are saved as a structure in %s.\n\n',destination_folder{ic});
+        else
+            fprintf('The simulation data were not saved.\n\n');
+        end
     end
     data.REF=REF;
     data.U=U;
@@ -195,6 +207,8 @@ options.num_Y=size(data.Y,2);
 options.num_U=size(data.U,2);
 
 % remove slprj
-rmdir('slprj','s');
+try
+    rmdir('slprj','s');
+end
 
 end

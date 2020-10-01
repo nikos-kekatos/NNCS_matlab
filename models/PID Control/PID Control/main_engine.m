@@ -36,12 +36,20 @@ end
 rmpath('/Users/kekatos/Files/Projects/Gitlab/Matlab_Python_Interfacing/NNCS_matlab/modules/NIPS_submission')
 addpath(genpath('/Users/kekatos/Files/Projects/Github/breach/'))
 InitBreach
+%%
+current_file=which('main_nncs_combination.m');
+current_path=fileparts(current_file);
+idcs   = strfind(current_path,filesep);
+module_dir = current_path(1:idcs(end)-1); % 1 step back
+addpath(genpath(module_dir));
+rmpath(genpath([module_dir filesep 'NIPS_submission']));
+% clear idcs current_file current_path module_dir
 %% 1. Initialization
 clear;close all;clc; bdclose all;
 try
     delete(findall(0)); % close Simulink scopes
 end
-%% 2. Iput: specify Simulink model
+%% 2. Input: specify Simulink model
 % The models are saved in ./models/
 % SLX_model='models/robotarm/robotarm_PID','robotarm_PID','quad_1_ref','quad_3_ref',
 %'quad_3_ref_6_y','helicopter','watertank_comp_design_mod';
@@ -87,7 +95,7 @@ end
 %% 4a. Run simulations -- Generate training data
 options.error_mean=0%0.0001;
 options.error_sd=0%0.001;
-options.save_sim=0;
+options.save_sim=1;
 % Breach options
 % options.no_traces=30;
 % options.breach_segments=2;
@@ -174,7 +182,9 @@ training_options.algo= 'trainlm'%'trainlm'; % trainscg % trainrp
 %add option for saved mat files
 training_options.iter_max_fail=1;
 iter=1;reached=0;
-training_options.replace_by_zeros=0;
+training_options.replace_by_zeros=1; %% very important to use 1. 
+% probably due to scaling factor and ranges.
+
 while true && iter<=training_options.iter_max_fail
     fprintf('\n Iteration %i.\n',iter);
     [net,data,tr]=nn_training(data,training_options,options);
@@ -306,6 +316,7 @@ elseif model==7
     options.ref_index_plot=1;
 end
 run_simulation_nncs(options,model_name,1);
+options.input_choice=4;
 
 %% 10. Data matching (analysis w/ training data)
 
@@ -317,15 +328,14 @@ else
     if options.plotting_sim && options.coverage.m==2
         plot_coverage_boxes(options,1);
     end
-    options.testing.plotting=0;
+    options.testing.plotting=1;
     options.testing.train_data=0;% 0: for centers, 1: random points
     if options.test_dataMatching
         [testing,options]=test_coverage(options,model_name);
     end
 end
-% The average MSE error over 49 simulations is 0.00031.
-
-% The maximum MSE error over 49 simulations is 0.00207.
+% The average MSE error over 25 simulations is 9.16348.
+% The maximum MSE error over 25 simulations is 14.46734.
 %% 11. Falsification with Breach
 
 %  delete(fullfile(which(strcat(options.SLX_model,'_breach.slx'))))
@@ -346,7 +356,7 @@ options.testing_breach=1;
 training_options.combining_old_and_cex=1; % 1: combine old and cex
 falsif.iterations_max=1;
 falsif.method='quasi';
-falsif.num_samples=25;
+falsif.num_samples=2;
 falsif.num_corners=25;
 falsif.max_obj_eval=25;
 falsif.max_obj_eval_local=20;
@@ -354,7 +364,7 @@ falsif.seed=100;
 falsif.num_inputs=1;
 
 falsif.property_file=options.specs_file;
-falsif.property_file='specs_switched.stl';
+falsif.property_file='specs_engine.stl';
 [~,falsif.property_all]=STL_ReadFile(falsif.property_file);
 falsif.property=falsif.property_all{2};%// TO-DO automatically specify the file
 falsif.property_cex=falsif.property_all{3};
@@ -436,8 +446,10 @@ while i_f<=falsif.iterations_max && ~stop
         if any(structfun(@isempty,data_cex))
             stop=1;
             fprintf('\n\n The NN produces %i falsifying traces out of %i total traces.\n',length(find(falsif_pb_temp.obj_false<0)),length(falsif_pb_temp.obj_log));
+            if check_nominal
             fprintf('\n\n The nominal produces %i falsifying traces out of %i total traces.\n',length(find(rob_nominal<0)),length(falsif_pb_temp.obj_log));
-             falsif_temp=toc(timer_falsif);
+            end
+            falsif_temp=toc(timer_falsif);
             timer.falsif{i_f}=falsif_temp
             break;
         else
@@ -450,8 +462,13 @@ while i_f<=falsif.iterations_max && ~stop
     try
         figure;falsif_pb{i_f}.BrSet_Logged.PlotRobustSat(phi_3)
     end
-    fprintf('\n\n The NN produces %i falsifying traces out of %i total traces.\n',length(find(falsif_pb_temp.obj_false<0)),length(falsif_pb_temp.obj_log));
-    fprintf('\n\n The nominal produces %i falsifying traces out of %i total traces.\n',length(find(rob_nominal<0)),length(falsif_pb_temp.obj_log));
+    try
+        figure;falsif_pb{i_f}.BrSet_Logged.PlotSignals({'In1', 'y','y_nn'});
+    end
+    fprintf('\n\n The NN produces %i falsifying traces out of %i total traces.\n',length(find(falsif_pb{i_f}.obj_false<0)),length(falsif_pb{i_f}.obj_log));
+    if check_nominal
+        fprintf('\n\n The nominal produces %i falsifying traces out of %i total traces.\n',length(find(rob_nominal<0)),length(falsif_pb{i_f}.obj_log));
+    end
     falsif_temp=toc(timer_falsif);
     timer.falsif{i_f}=falsif_temp
     
@@ -492,7 +509,7 @@ while i_f<=falsif.iterations_max && ~stop
             training_options.loss='mse';
             training_options.error=1e-6;
             training_options.max_fail=50;
-            training_options.replace_by_zeros=2;
+            training_options.replace_by_zeros=1;
 
             % net.performParam.ratio=0.5;
             % Data_all contains the data from all cases (training, cex) and

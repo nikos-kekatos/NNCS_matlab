@@ -23,6 +23,10 @@ ref_values=ref.signals.values;
 u_values=u.signals.values(1:end-1,:);
 y_values_all=y.signals.values;
 y_values=y_values_all(:,y_index);
+y_values=y_values(end/2:end);
+u_values=u_values(end/2:end);
+ref_values=ref_values(end/2:end);
+
 Q=options.Q;
 R=options.R;
 J=((y_values-ref_values)'*Q*(y_values-ref_values)+(u_values-u_des)'*R*(u_values-u_des));

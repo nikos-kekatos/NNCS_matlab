@@ -11,7 +11,7 @@ phi_1:=   alw_[0,sim_time] (abs(y_nn[t]-y[t])<0.2)
 
 
 
-phi_3:=   alw_[0,sim_time] (abs(y_nn[t]-y[t])<20)
+phi_3:=   alw_[0,sim_time] (abs(y_nn[t]-y[t])<26)
 #phi_3:= ((In1[t] > 0) => (alw_[0.2,3](y_nn[t]-In1[t]<ov))) and ((In1[t] <= 0) => (alw_[0.2,3](In1[t]-y_nn[t]<ov))) and (alw_[0,sim_time] ((In1[t+dt]-In1[t] > d) => (alw_[0.2,3](y_nn[t]-In1[t]<ov)))) and (alw_[0,sim_time] ((In1[t]-In1[t+dt] > d) => (alw_[0.2,3](In1[t]-y_nn[t]<ov))))
 
 phi_4:=   alw_[0,sim_time] (abs(y_nn_cex_1[t]-y[t])<20)

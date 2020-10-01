@@ -1,0 +1,13 @@
+param sim_time=9.99, r=0.1, dt=0.01, T=10, d=0.01, T_1=6, T_2=4,e=0.02,tau=3,ov=0.07
+
+phi_5_nom:= ((In1[t] > 0) => (alw_[T_1,T_2](y[t]-In1[t]<In1[t]*ov))) and ((In1[t] <= 0) => (alw_[T_1,T_2](In1[t]-y[t]<In1[t]*ov))) and (alw_[0,sim_time] ((In1[t+dt]-In1[t] > d) => (alw_[T_1,T_2](y[t]-In1[t]<In1[t]*ov)))) and (alw_[0,sim_time] ((In1[t]-In1[t+dt] > d) => (alw_[T_1,T_2](In1[t]-y[t]<In1[t]*ov))))
+
+# just overshoot,  Controller 1 : 0 cex, controller 2: 3 cex.
+param ov=0.046, T_1=0.2, T_2=2.5 
+
+
+phi_5:= ((In1[t] > 0) => (alw_[T_1,T_2](y_nn[t]-In1[t]<In1[t]*ov))) and ((In1[t] <= 0) => (alw_[T_1,T_2](In1[t]-y_nn[t]<In1[t]*ov))) and (alw_[0,sim_time] ((In1[t+dt]-In1[t] > d) => (alw_[T_1,T_2](y_nn[t]-In1[t]<In1[t]*ov)))) and (alw_[0,sim_time] ((In1[t]-In1[t+dt] > d) => (alw_[T_1,T_2](In1[t]-y_nn[t]<In1[t]*ov))))
+
+phi_6:= ((In1[t] > 0) => (alw_[T_1,T_2](y_nn_cex_1[t]-In1[t]<In1[t]*ov))) and ((In1[t] <= 0) => (alw_[T_1,T_2](In1[t]-y_nn_cex_1[t]<In1[t]*ov))) and (alw_[0,sim_time] ((In1[t+dt]-In1[t] > d) => (alw_[T_1,T_2](y_nn_cex_1[t]-In1[t]<In1[t]*ov)))) and (alw_[0,sim_time] ((In1[t]-In1[t+dt] > d) => (alw_[T_1,T_2](In1[t]-y_nn_cex_1[t]<In1[t]*ov))))
+
+phi_7:= ((In1[t] > 0) => (alw_[T_1,T_2](y[t]-In1[t]<In1[t]*ov))) and ((In1[t] <= 0) => (alw_[T_1,T_2](In1[t]-y[t]<In1[t]*ov))) and (alw_[0,sim_time] ((In1[t+dt]-In1[t] > d) => (alw_[T_1,T_2](y[t]-In1[t]<In1[t]*ov)))) and (alw_[0,sim_time] ((In1[t]-In1[t+dt] > d) => (alw_[T_1,T_2](In1[t]-y[t]<In1[t]*ov))))

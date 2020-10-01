@@ -2,6 +2,7 @@
 % we store all the specifications in a structure named options.
 % clear options
 
+
 %%combination
 %-----
 options.combination=1; % if more than one nominal controllers
@@ -10,8 +11,8 @@ if options.combination
     run(ctrl_configuration)
 end
 options.combination_matlab=1;
-options.no_time_segments=10;
-options.time_segments_step=1;
+options.T_segments=10;
+options.time_step_segments=5;
 
 options.Q=[1/4]; % should be diagonal
 options.R=[1/10]; %should be diagonal
@@ -25,12 +26,23 @@ options.y_index_lqr=1; % could be a vector
 options.u_des=0; % also a vector
 %---------
 
+%falsify nominal controllers
+options.falsif_nominal=0;
+
+%train nominal controllers
+options.training_nominal=0;
+
 % debugging
-options.debug=1;
+options.debug=0;
 
 % Time horizon of simulation in Simulink
 options.T_train=10; % for constant choose 5s
+if options.T_segments~=options.T_train
+    warning('The time horizon for simulation/training is different from the time horizon for the combined simulation')
+end
 options.SLX_model=SLX_model;
+options.SLX_model_falsif=strcat(options.SLX_model,'_falsif')
+
 options.SLX_folder='watertank';
 % Choose reference type: (1) for constant, (2) for time varying and (3) for
 % coverage and (4) for Breach
@@ -108,7 +120,7 @@ if options.reference_type==3
     options.ref_Ts=5;
     options.coverage.ref_min=8;
     options.coverage.ref_max=12;
-    options.coverage.delta_resolution=1; %0.5; %0.1
+    options.coverage.delta_resolution=4/6; %0.5; %0.1
 %     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution-1;
     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution;
 
@@ -150,7 +162,7 @@ if options.reference_type==3
         options.coverage.cells{i}.random_value=(options.coverage.cells{i}.max-options.coverage.cells{i}.min).*rand(options.coverage.m,1)+options.coverage.cells{i}.min;
         
     end
-    options.coverage.points='c' % r:random, c:centers
+    options.coverage.points='r' % r:random, c:centers
     % options: choose coverage as value from 0 - 1
     options.coverage.cell_occupancy=1;
     options.coverage.no_traces_ref=options.coverage.cell_occupancy*options.coverage.no_cells_total;
@@ -211,7 +223,7 @@ options.load=0;
 
 % Add error on the PID output that follows the normal distribution
 options.error_mean=0;
-options.error_sd=0.01;
+options.error_sd=0%0.01;
 
 % Do NOT change this part
 options.dt=0.01; % PID sampling time
@@ -249,3 +261,9 @@ end
 % options.main_dir=main_dir;
 
 clearvars i no_cells flag x0_default x0_max x0_min block_name
+
+
+%
+options.num_REF=1;
+options.num_U=1;
+options.num_Y=1;

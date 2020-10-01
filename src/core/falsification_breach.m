@@ -13,6 +13,7 @@ function [data_cex,falsif_pb,rob_nominal] = falsification_breach(options,falsif,
 %   the worst robustness and choose them for use in the retraining loop.
 persistent input_param
 % InitBreach
+disp('Open/loaded Simulink files')
 get_param(Simulink.allBlockDiagrams(),'Name')
 bdclose all
 % falsif.property
@@ -42,7 +43,7 @@ elseif strcmp(model_name,'tank_reactor')||strcmp(model_name,'tank_reactor_NN') |
     var_names_list={};
     model_type=4;
 else 
-    model_type=1;
+    model_type=5;
 end
 % Br_falsif = BreachSimulinkSystem(model_name,'all',[],var_names_list);
 Br_falsif = BreachSimulinkSystem(model_name,'all');
@@ -152,6 +153,8 @@ if options.plotting_sim
         figure;falsif_pb.BrSet_Logged.PlotSignals({'In1', 'y','y_nn'});
     elseif model_type==2
         figure;falsif_pb.BrSet_Logged.PlotSignals({'In1', 'y_3_','y_nn_3_)'});
+    elseif model_type==5
+        figure;falsif_pb.BrSet_Logged.PlotSignals({'In1', 'y','y_nn'});
     end
 end
 Br_False = falsif_pb.GetFalse(); % AFC_False contains the falsifying trace
@@ -258,14 +261,41 @@ U_cex_breach_all=[];
 Y_cex_breach_all=[];
 U_NN_cex_breach_all=[];
 Y_NN_cex_breach_all=[];
-
+REF_cex_breach_values=[];
+REF_cex_breach_values_all=[];
 % for i=1:length(cex_traces) not correct as all traces might be logged
 for i=falsif_idx
+    REF_cex_breach_values_temp=[];
     REF_cex_breach_all=[REF_cex_breach_all,cex.P.traj{i}.X(index_REF,1:(end-1))];
     U_cex_breach_all=[U_cex_breach_all,cex.P.traj{i}.X(index_U,1:(end-1))];
     Y_cex_breach_all=[Y_cex_breach_all,cex.P.traj{i}.X(index_Y,1:(end-1))];
     U_NN_cex_breach_all=[U_NN_cex_breach_all,cex.P.traj{i}.X(index_U_NN,1:(end-1))];
     Y_NN_cex_breach_all=[Y_NN_cex_breach_all,cex.P.traj{i}.X(index_Y_NN,1:(end-1))];
+    ref_values_all=cex.P.traj{i}.X(index_REF,1:(end-1));
+    no_ref_points=size(ref_values_all,2)/options.breach_segments;
+    if no_ref_points~=fix(no_ref_points)
+        no_ref_points=fix(no_ref_points);
+        remain=1;
+    else 
+        remain=0;
+    end
+    try % problem appears if the segments are not equal
+        for i_ref=1:options.breach_segments
+            REF_cex_breach_values_temp=[REF_cex_breach_values_temp;unique(ref_values_all(1+(i_ref-1)*no_ref_points:i_ref*no_ref_points),'stable')];
+        end
+    catch
+        REF_cex_breach_values_temp=unique(ref_values_all,'stable')';
+        if numel(REF_cex_breach_values_temp)~=options.breach_segments
+            fprintf('\n There is a repeated setpoint.\n')
+            if options.breach_segments==2
+                REF_cex_breach_values_temp=repmat(REF_cex_breach_values_temp,2,1)
+            else
+                warning('Not implemented')
+            end
+        end
+    end
+    REF_cex_breach_values=REF_cex_breach_values_temp;
+    REF_cex_breach_values_all  =  [REF_cex_breach_values_all,REF_cex_breach_values];
 end
 
 
@@ -283,6 +313,7 @@ data_cex.U=U_cex_breach_all';
 data_cex.Y=Y_cex_breach_all';
 data_cex.U_NN=U_NN_cex_breach_all';
 data_cex.Y_NN=Y_NN_cex_breach_all';
+data_cex.REF_values=REF_cex_breach_values_all;
 close_system(strcat(options.SLX_model,'_breach'),0)
 
 try
