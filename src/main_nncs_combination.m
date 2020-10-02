@@ -375,11 +375,11 @@ while i_f<=falsif.iterations_max && ~stop
     
     % the references are stored in data_cex.REF
     options_new=options;
-    options_new.coverage=rmfield(options_new.coverage,'cells')
-    options_new.no_traces=size(data_cex.REF_values,2)
+    options_new.coverage=rmfield(options_new.coverage,'cells');
+    options_new.no_traces=size(data_cex.REF_values,2);
     options_new.coverage.no_traces_ref=options_new.no_traces;
     for i=1:options_new.no_traces
-    options_new.coverage.cells{i}.random_value=[data_cex.REF_values(:,i)]
+    options_new.coverage.cells{i}.random_value=[data_cex.REF_values(:,i)];
     end
     options_new.plotting_sim=1;
     options_new.input_choice=3;

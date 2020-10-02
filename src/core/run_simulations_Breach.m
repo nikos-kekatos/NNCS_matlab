@@ -29,10 +29,11 @@ if options.input_choice~=4
     % Need to use the function as a standalone // FIX
 end
 % assert(options.input_choice,'4')
+if options.debug
 Br.Sim();
 figure;Br.PlotSignals();
 Br.PrintAll()
-
+end
 
 % sim_time = 20
 sim_time=options.T_train;
@@ -43,10 +44,14 @@ Br.SetTime(sim_time);
 
 % First, plot coverage measures for the case where we don't snap to grid
 Br_sys = Br.copy();
-if options.model==5
-    nbinputsig = 1
-else
-    nbinputsig = 1
+try
+    nbinputsig=numel(invalmin);
+catch
+    if options.model==5
+        nbinputsig = 3
+    else
+        nbinputsig = 1
+    end
 end
 nbctrpt = options.breach_segments;
 

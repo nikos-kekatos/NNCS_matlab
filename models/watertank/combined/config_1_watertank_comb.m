@@ -53,7 +53,7 @@ options.reference_type=3;
 options.plotting_sim=0;
 
 options.test_dataMatching=0;
-options.specs_file='specs_watertank.stl';
+options.specs_file='specs_watertank_comb_ctrl_1.stl';
 % added for Breach
 try
     block_name=strcat(SLX_model,'/Switch1');

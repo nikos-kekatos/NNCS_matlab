@@ -55,6 +55,7 @@ elseif model==4
     SLX_model='tank_reactor';
 elseif model==5
     SLX_model='QuadrotorSimulink_nk_test';
+    SLX_model='Quadrotor_rangeChecking';
 end
 load_system(SLX_model)
 % Uncomment next line if you want to open the model
@@ -82,6 +83,7 @@ options.save_sim=1;
 % options.no_traces=30;
 % options.breach_segments=2;
 options.coverage.points='r';
+warning off
 [data,options]=trace_generation_nncs(SLX_model,options);
 timer.trace_gen=toc(timer_trace_gen)
 %% 4b. Load previous saved traces
