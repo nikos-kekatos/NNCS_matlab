@@ -12,7 +12,7 @@ options.SLX_model=SLX_model;
 % Choose reference type: (1) for constant, (2) for time varying and (3) for
 % coverage and (4) for Breach
 
-options.reference_type=3;
+options.reference_type=4;
 
 % Select if you want to plot one simulation trace from training
 options.plotting_sim=1;
@@ -44,8 +44,8 @@ if options.reference_type==4
     options.sim_cov=0;
     options.sim_ref=0;
     options.no_traces=20;
-    options.breach_ref_min=[0.2 0 0.5];
-    options.breach_ref_max=[0.2 0 0.5];
+    options.breach_ref_min=[0.25 0 0.5];
+    options.breach_ref_max=[0.3 0 0.5];
     options.breach_segments=2;
 end
 % end of Breach additions

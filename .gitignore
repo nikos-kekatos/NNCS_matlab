@@ -21,6 +21,7 @@ Reviews.pdf
 *.png
 *.zip
 *.jpg
+!/models/MatlabQuadSimAP-master/simulation_fixed.png
 
 # Windows
 *.asv
