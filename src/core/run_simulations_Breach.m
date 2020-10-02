@@ -30,9 +30,9 @@ if options.input_choice~=4
 end
 % assert(options.input_choice,'4')
 if options.debug
-Br.Sim();
-figure;Br.PlotSignals();
-Br.PrintAll()
+    Br.Sim();
+    figure;Br.PlotSignals();
+    Br.PrintAll()
 end
 
 % sim_time = 20
@@ -97,24 +97,62 @@ figure; Br_sys.PlotSignals();
 
 % We need to get values and save them as a data structure
 
-index_REF=find(strcmp(Br_sys.P.ParamList,'In1'));
-index_U=find(strcmp(Br_sys.P.ParamList,'u'));
-index_Y=find(strcmp(Br_sys.P.ParamList,'y'));
-%{
+try
+    no_REF=size(data.REF,2);
+    no_U=size(data.U,2);
+    no_Y=size(data.Y,2);
+catch
+    no_REF=nbinputsig;
+    try
+        no_U=options.num_U;
+        no_Y=options.num_Y;
+    catch
+        try
+            param_id=[];
+            all_param=Br_sys.P.ParamList;
+            for ip=1:length(all_param)
+                param_id_temp=regexp(all_param{ip},"In");
+                if isempty(param_id_temp)
+                    param_id_temp=0;
+                end
+                param_id=[param_id,param_id_temp];
+            end
+            param_no_In=all_param(not(param_id));
+            for ipp=1:numel(param_no_In)
+                temp_u(ipp)=~isempty(regexp(param_no_In{ipp},"u"));
+            end
+            param_u=param_no_In(logical(temp_u));
+            for ipp=1:numel(param_no_In)
+                temp_y(ipp)=~isempty(regexp(param_no_In{ipp},"y"));
+            end
+            param_y=param_no_In(logical(temp_y));
+            no_U=length(param_u);
+            no_Y=length(param_y);
+        catch            
+            no_REF=1;
+            no_U=1;
+            no_Y=1;
+        end
+    end
+end
+
+index_REF=[];
+index_U=[];
+index_Y=[];
 % to be used for systems with more variables
 for i=1:no_REF
     ref_name=strcat('In',num2str(i));
-    index_REF=[index_REF;find(strcmp(cex.P.ParamList,ref_name))];
+    index_REF=[index_REF;find(strcmp(Br_sys.P.ParamList,ref_name))];
 end
 for i=1:no_U
     u_name=strcat('u_',num2str(i),'_');
-    index_U=[index_U;find(strcmp(cex.P.ParamList,u_name))];
+    index_U=[index_U;find(strcmp(Br_sys.P.ParamList,u_name))];
 end
 for i=1:no_Y
     y_name=strcat('y_',num2str(i),'_');
-    index_Y=[index_Y;find(strcmp(cex.P.ParamList,y_name))];
+    index_Y=[index_Y;find(strcmp(Br_sys.P.ParamList,y_name))];
 end
-%}
+
 REF_breach=[];
 U_breach=[];
 Y_breach=[];

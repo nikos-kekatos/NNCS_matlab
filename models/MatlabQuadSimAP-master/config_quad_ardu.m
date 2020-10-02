@@ -43,9 +43,9 @@ if options.reference_type==4
     options.simin_ref=0;
     options.sim_cov=0;
     options.sim_ref=0;
-    options.no_traces=20;
-    options.breach_ref_min=[0.25 0 0.5];
-    options.breach_ref_max=[0.3 0 0.5];
+    options.no_traces=50;
+    options.breach_ref_min=[0.2 0 0.2];
+    options.breach_ref_max=[0.4 0.1 0.3];
     options.breach_segments=2;
 end
 % end of Breach additions

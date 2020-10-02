@@ -27,15 +27,38 @@
 %%------------- BEGIN CODE --------------
 
 %% 0. Add files to MATLAB path
+%{
 try
-    run('../startup_nncs.m')
-    run('../../../startup_nncs.m')
+    run('startup_nncs.m')
+catch
+    try
+        run('../startup_nncs.m')
+    catch
+        try
+        run('../../startup_nncs.m')
+        catch
+            run('../../../startup_nncs.m')
+        end
+    end
 end
-rmpath('/Users/kekatos/Files/Projects/Gitlab/Matlab_Python_Interfacing/NNCS_matlab/modules/NIPS_submission')
+%}
+current_file = matlab.desktop.editor.getActiveFilename;
+current_path=fileparts(current_file);
+% current_file=which('main_nncs_combination.m');
+% current_path=fileparts(current_file);
+idcs   = strfind(current_path,filesep);
+module_dir = current_path(1:idcs(end-1)-1); % 2 steps back
+cd(current_path);
+addpath(genpath(module_dir));
+rmpath(genpath([module_dir filesep 'NIPS_submission']));
+% clear idcs current_file current_path module_dir
 addpath(genpath('/Users/kekatos/Files/Projects/Github/breach/'))
-InitBreach
+
+% rmpath('/Users/kekatos/Files/Projects/Gitlab/Matlab_Python_Interfacing/NNCS_matlab/modules/NIPS_submission')
+% addpath(genpath('/Users/kekatos/Files/Projects/Github/breach/'))
+% InitBreach
 %% 1. Initialization
-clear;close all;clc; bdclose all;
+clear all;close all;clc; bdclose all;
 try
     delete(findall(0)); % close Simulink scopes
 end
@@ -103,7 +126,7 @@ if options.trimming
 end
 %% 5b. Data Preprocessing
 display_ranges(data);
-options.preprocessing_bool=0;
+options.preprocessing_bool=1;
 options.preprocessing_eps=0.001;
 if options.preprocessing_bool==1
     [data,options]=preprocessing(data,options);
@@ -134,9 +157,9 @@ elseif model==4
     training_options.use_previous_y=3;
 elseif model==5
     training_options.use_error_dyn=0;       % watertank=1    %robotarm=0    %quadcopter=0
-    training_options.use_previous_u=2;      % waterank=2     %robotarm=2    %quadcopter=0
-    training_options.use_previous_ref=3;    % waterank=3     %robotarm=3    %quadcopter=0
-    training_options.use_previous_y=3;
+    training_options.use_previous_u=0;      % waterank=2     %robotarm=2    %quadcopter=0
+    training_options.use_previous_ref=0;    % waterank=3     %robotarm=3    %quadcopter=0
+    training_options.use_previous_y=0;
 end
 training_options.neurons=[30 30 ];
 % training_options.neurons=[50 ];
@@ -146,7 +169,7 @@ training_options.loss='mse';
 % training_options.loss='wmse';
 training_options.div='dividerand';
 % training_options.div='dividetrain';
-training_options.error=1e-7;
+training_options.error=1e-6;
 training_options.max_fail=50; % Validation performance has increased more than max_fail times since the last time it decreased (when using validation).
 training_options.regularization=0; %0-1
 training_options.param_ratio=0.5;
