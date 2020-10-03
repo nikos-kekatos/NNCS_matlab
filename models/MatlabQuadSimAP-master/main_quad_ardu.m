@@ -126,7 +126,7 @@ if options.trimming
 end
 %% 5b. Data Preprocessing
 display_ranges(data);
-options.preprocessing_bool=1;
+options.preprocessing_bool=0;
 options.preprocessing_eps=0.001;
 if options.preprocessing_bool==1
     [data,options]=preprocessing(data,options);
@@ -232,7 +232,8 @@ plot_NN_sim(data,options);
 [options]=create_NN_diagram(options,net);
 
 %% 8b. Integrate NN block in the Simulink model
-construct_SLX_with_NN(options,options.SLX_model);
+file_name='QuadrotorSimulink_no_memory';
+construct_SLX_with_NN(options,file_name);
 
 %% 9. Analyse NNCS in Simulink
 model_name=[];
@@ -283,12 +284,12 @@ elseif model==5
     options.sim_ref=3;
     options.ref_min=2;
     options.ref_max=5;
-    options.sim_cov=options.coverage.cells{3}.random_value;
+    options.sim_cov=[0.1;0.2];
     options.u_index_plot=1;
     options.y_index_plot=1;
     options.ref_index_plot=1;
 end
-run_simulation_nncs(options,model_name);
+run_simulation_nncs(options,file_name);
 
 %% 10. Data matching (analysis w/ training data)
 
