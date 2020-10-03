@@ -20,7 +20,9 @@ warning('Only works for 1D systems')
 if strcmp(options.SLX_model,'watertank_inport')|| strcmp(options.SLX_model,'watertank_inport_NN')
     Br.SetParam('In1_u0',11);
 else
-    disp('For each model, we should replace the default value for testing')
+    if options.debug
+        disp('For each model, we should replace the default value for testing')
+    end
 end
 
 if options.input_choice~=4
@@ -82,8 +84,8 @@ for ii = 1:nbinputsig
         end
     end
     
-    input_param
-    input_range
+    input_param;
+    input_range;
     
 end
 Br_sys.SetParamRanges(input_param, input_range);
@@ -128,7 +130,7 @@ catch
             param_y=param_no_In(logical(temp_y));
             no_U=length(param_u);
             no_Y=length(param_y);
-        catch            
+        catch
             no_REF=1;
             no_U=1;
             no_Y=1;
