@@ -77,8 +77,9 @@ elseif model==3
 elseif model==4
     SLX_model='tank_reactor';
 elseif model==5
-    SLX_model='QuadrotorSimulink_nk_test';
-    SLX_model='Quadrotor_rangeChecking';
+%     SLX_model='QuadrotorSimulink_nk_test';
+%     SLX_model='Quadrotor_rangeChecking';
+    SLX_model='Quadrotor_stable';
 end
 load_system(SLX_model)
 % Uncomment next line if you want to open the model
@@ -158,8 +159,8 @@ elseif model==4
 elseif model==5
     training_options.use_error_dyn=0;       % watertank=1    %robotarm=0    %quadcopter=0
     training_options.use_previous_u=0;      % waterank=2     %robotarm=2    %quadcopter=0
-    training_options.use_previous_ref=0;    % waterank=3     %robotarm=3    %quadcopter=0
-    training_options.use_previous_y=0;
+    training_options.use_previous_ref=3;    % waterank=3     %robotarm=3    %quadcopter=0
+    training_options.use_previous_y=3;
 end
 training_options.neurons=[30 30 ];
 % training_options.neurons=[50 ];
@@ -169,7 +170,7 @@ training_options.loss='mse';
 % training_options.loss='wmse';
 training_options.div='dividerand';
 % training_options.div='dividetrain';
-training_options.error=1e-6;
+training_options.error=1e-8;
 training_options.max_fail=50; % Validation performance has increased more than max_fail times since the last time it decreased (when using validation).
 training_options.regularization=0; %0-1
 training_options.param_ratio=0.5;
@@ -194,10 +195,10 @@ while true && iter<=training_options.iter_max_fail
         end
     end
 end
-fprintf('\n The requested training error was %f.\n',training_options.error);
+fprintf('\n The requested training error was %9f.\n',training_options.error);
 if reached
-    fprintf('The obtained training error is %f reached after %i random initializations.\n',tr_all{iter}.best_perf,iter);
-    fprintf('The validation error is %f.\n',tr_all{iter}.best_vperf);
+    fprintf('The obtained training error is %9f reached after %i random initializations.\n',tr_all{iter}.best_perf,iter);
+    fprintf('The validation error is %9f.\n',tr_all{iter}.best_vperf);
     net=net_all{iter};
     tr=tr_all{iter};
 else
@@ -206,8 +207,8 @@ else
         training_perf(ii)=tr_all{ii}.best_perf;
     end
     iter_best=find(training_perf==min(training_perf));
-    fprintf('\n The smallest training error was %f.\n',tr_all{iter_best}.best_vperf);
-    fprintf('\n The smallest validation error was %f.\n',tr_all{iter_best}.best_vperf);
+    fprintf('\n The smallest training error was %9f.\n',tr_all{iter_best}.best_vperf);
+    fprintf('\n The smallest validation error was %9f.\n',tr_all{iter_best}.best_vperf);
     net=net_all{iter_best};
     tr=tr_all{iter_best};
 end
@@ -233,6 +234,8 @@ plot_NN_sim(data,options);
 
 %% 8b. Integrate NN block in the Simulink model
 file_name='QuadrotorSimulink_no_memory';
+file_name='QuadrotorSimulink_w_memory';
+
 construct_SLX_with_NN(options,file_name);
 
 %% 9. Analyse NNCS in Simulink
@@ -286,11 +289,11 @@ elseif model==5
     options.ref_max=5;
     options.sim_cov=[0.1;0.2];
     options.u_index_plot=1;
-    options.y_index_plot=1;
+    options.y_index_plot=2;
     options.ref_index_plot=1;
 end
-run_simulation_nncs(options,file_name);
-
+run_simulation_nncs(options,file_name,1);
+return
 %% 10. Data matching (analysis w/ training data)
 
 warning('This code only works for coverage')

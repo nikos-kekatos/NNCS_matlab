@@ -20,7 +20,7 @@ references/
 Reviews.pdf
 *.png
 *.zip
-*.jpg
+#*.jpg
 !/models/MatlabQuadSimAP-master/simulation_fixed.png
 
 # Windows

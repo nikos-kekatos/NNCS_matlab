@@ -64,9 +64,9 @@ options.T_train=20; % for constant choose 5s
 
 options.reference_type=4;
 options.input_choice=options.reference_type;
-options.no_traces=2000;
-options.breach_ref_min=[0.2 0 0.2];
-options.breach_ref_max=[0.4 0.1 0.3];
+options.no_traces=100;
+options.breach_ref_min=[0.2 0 0.5];
+options.breach_ref_max=[0.4 0.1 0.5];
 options.breach_segments=2;
 
 % Select if you want prepropreccing
@@ -113,6 +113,10 @@ end
 %% 6. Train NN Controller
 % this is for testing that the data concatenation is done correctly and
 % training can be started.
+choice=input('Do you want to train an NN (press 0 for "no", or any number for "yes")? ');
+if ~choice
+   return
+end
 timer_train=tic;
 training_options.retraining=0;
 training_options.use_error_dyn=0;       % watertank=1    %robotarm=0    %quadcopter=0
@@ -135,8 +139,6 @@ training_options.algo= 'trainlm';%'trainlm'; % trainscg % trainrp
 training_options.replace_by_zeros=0;
 
 [net,data,tr]=nn_training(data,training_options,options);
-net_all{iter}=net;
-tr_all{iter}=tr;
 
 fprintf('\n The requested training error was %.9f.\n',training_options.error);
 fprintf('\n The smallest training error was %.9f.\n',tr.best_vperf);
