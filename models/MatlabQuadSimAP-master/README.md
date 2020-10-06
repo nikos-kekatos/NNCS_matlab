@@ -21,7 +21,7 @@ We use Breach for simulations and we have established a successful linking after
 | Parameter | Values  |   
 |:------------:|:-------:|
 | Simulations   | 2000 |
-|Reference X| \\[ x_{des} \in [0.2,0.4] \\]|
+|Reference X| $$ x_{des} \in [0.2,0.4] $$|
 | Original X| \\[x_{des}=0.25\\]|
 |Reference Y| \\[ y_{des} \in [0,0.1] \\]|
 | Original Y| \\[y_{des}=0 \\]|
