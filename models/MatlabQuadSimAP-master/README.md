@@ -22,7 +22,7 @@ We use Breach for simulations and we have established a successful linking after
 |:------------:|:-------:|
 | Simulations   | 2000 |
 |Reference X| $$ x_{des} \in [0.2,0.4] $$|
-| Original X| \\[x_{des}=0.25\\]|
+| Original X| $$ \begin{equation}x_{des}=0.25\end{equation} $$|
 |Reference Y| \\[ y_{des} \in [0,0.1] \\]|
 | Original Y| \\[y_{des}=0 \\]|
 |Reference Z| \\[z_{des} \in [0.2,0.4] \\]|

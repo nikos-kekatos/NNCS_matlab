@@ -7,7 +7,7 @@ options.model=5;
 addpath(genpath('utilities'))
 run('quad_variables.m')
 % Time horizon of simulation in Simulink
-options.T_train=20; % for constant choose 5s
+options.T_train=50; % for constant choose 5s
 options.SLX_model=SLX_model;
 % Choose reference type: (1) for constant, (2) for time varying and (3) for
 % coverage and (4) for Breach
@@ -43,9 +43,9 @@ if options.reference_type==4
     options.simin_ref=0;
     options.sim_cov=0;
     options.sim_ref=0;
-    options.no_traces=20;
+    options.no_traces=30;
     options.breach_ref_min=[0.2 0 ]%0.2];
-    options.breach_ref_max=[0.4 0.1] %0.3];
+    options.breach_ref_max=[0.25 0.05] %0.3];
     options.breach_segments=2;
 end
 % end of Breach additions
@@ -191,7 +191,7 @@ options.error_mean=0;
 options.error_sd=0.01;
 
 % Do NOT change this part
-options.dt=0.01; % PID sampling time
+options.dt=0.005; % PID sampling time
 if options.reference_type==1
     options.no_ref=numel(options.simin_ref);
 end

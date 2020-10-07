@@ -58,7 +58,7 @@ addpath(genpath('/Users/kekatos/Files/Projects/Github/breach/'))
 % addpath(genpath('/Users/kekatos/Files/Projects/Github/breach/'))
 % InitBreach
 %% 1. Initialization
-clear all;close all;clc; bdclose all;
+clear;close all;clc; bdclose all;
 try
     delete(findall(0)); % close Simulink scopes
 end
@@ -80,6 +80,7 @@ elseif model==5
 %     SLX_model='QuadrotorSimulink_nk_test';
 %     SLX_model='Quadrotor_rangeChecking';
     SLX_model='Quadrotor_stable';
+%     SLX_model='Quadrotor_stable_single';
 end
 load_system(SLX_model)
 % Uncomment next line if you want to open the model
@@ -161,6 +162,7 @@ elseif model==5
     training_options.use_previous_u=0;      % waterank=2     %robotarm=2    %quadcopter=0
     training_options.use_previous_ref=3;    % waterank=3     %robotarm=3    %quadcopter=0
     training_options.use_previous_y=3;
+    training_options.mixed=0;
 end
 training_options.neurons=[30 30 ];
 % training_options.neurons=[50 ];
@@ -235,6 +237,7 @@ plot_NN_sim(data,options);
 %% 8b. Integrate NN block in the Simulink model
 file_name='QuadrotorSimulink_no_memory';
 file_name='QuadrotorSimulink_w_memory';
+% file_name='QuadrotorSimulink_w_memory_error';
 
 construct_SLX_with_NN(options,file_name);
 
@@ -283,14 +286,15 @@ elseif model==4
     options.y_index_plot=1;
     options.ref_index_plot=1;
 elseif model==5
-    options.ref_Ts=10;             %tank_reactor
+    options.ref_Ts=15;             %tank_reactor
     options.sim_ref=3;
     options.ref_min=2;
     options.ref_max=5;
-    options.sim_cov=[0.1;0.2];
+    options.sim_cov=[data.REF(end,1)];
     options.u_index_plot=1;
     options.y_index_plot=2;
     options.ref_index_plot=1;
+    options.T_train=30;
 end
 run_simulation_nncs(options,file_name,1);
 return
