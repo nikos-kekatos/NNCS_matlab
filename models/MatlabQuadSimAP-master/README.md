@@ -21,17 +21,15 @@ We use Breach for simulations and we have established a successful linking after
 | Parameter | Values  |   
 |:------------:|:-------:|
 | Simulations   | 2000 |
-|Reference X| <img src="https://render.githubusercontent.com/render/math?math=e^{i \pi} = -1
- x_{des} \in [0.2,0.4] ">|
-| Original X| $$ \begin{equation}x_{des}=0.25\end{equation} $$|
+|Reference X|![formula](https://render.githubusercontent.com/render/math?math=x_{des}\in[0.2,0.4]) |
+| Original X| ![formula](https://render.githubusercontent.com/render/math?math=x_{des}=0.25)|
 |Reference Y| \\[ y_{des} \in [0,0.1] \\]|
 | Original Y| \\[y_{des}=0 \\]|
 |Reference Z| \\[z_{des} \in [0.2,0.4] \\]|
 | Original X| \\[z_{des}=0.5\\]|
-![formula](https://render.githubusercontent.com/render/math?math=e^{i\pi}=-1)
-![formula](https://render.githubusercontent.com/render/math?math=\left%20\{%20\right%20\})
 
-![formula](https://render.githubusercontent.com/render/math?math=\N\Z\R\Q\C)
+![formula](https://render.githubusercontent.com/render/math?math=x_{des}\in[0.2,0.4])
+
 
 
 We start by replacing only the high level controller. Note that the $z_{des}$ does not appear in this controller, as such the reference should not be used for training.
