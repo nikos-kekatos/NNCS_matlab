@@ -103,7 +103,7 @@ end
 %% 4a. Run simulations -- Generate training data
 options.error_mean=0%0.0001;
 options.error_sd=0%0.001;
-options.save_sim=1;
+options.save_sim=0;
 % Breach options
 % options.no_traces=30;
 % options.breach_segments=2;
@@ -129,7 +129,7 @@ end
 %% 5b. Data Preprocessing
 display_ranges(data);
 options.preprocessing_bool=0;
-options.preprocessing_eps=0.001;
+options.preprocessing_eps=1e-6;
 if options.preprocessing_bool==1
     [data,options]=preprocessing(data,options);
 end
@@ -160,12 +160,12 @@ elseif model==4
 elseif model==5
     training_options.use_error_dyn=0;       % watertank=1    %robotarm=0    %quadcopter=0
     training_options.use_previous_u=0;      % waterank=2     %robotarm=2    %quadcopter=0
-    training_options.use_previous_ref=3;    % waterank=3     %robotarm=3    %quadcopter=0
-    training_options.use_previous_y=3;
+    training_options.use_previous_ref=2;    % waterank=3     %robotarm=3    %quadcopter=0
+    training_options.use_previous_y=2;
     training_options.mixed=0;
 end
-training_options.neurons=[30 30 ];
-% training_options.neurons=[50 ];
+% training_options.neurons=[30 30 ];
+training_options.neurons=[50 ];
 training_options.input_normalization=0;
 training_options.loss='mse';
 % training_options.loss='custom_v1';
@@ -180,7 +180,7 @@ training_options.algo= 'trainlm'%'trainlm'; % trainscg % trainrp
 %add option for saved mat files
 training_options.iter_max_fail=2;
 iter=1;reached=0;
-training_options.replace_by_zeros=0;
+training_options.replace_by_zeros=1;
 while true && iter<=training_options.iter_max_fail
     fprintf('\n Iteration %i.\n',iter);
     [net,data,tr]=nn_training(data,training_options,options);
@@ -286,21 +286,19 @@ elseif model==4
     options.y_index_plot=1;
     options.ref_index_plot=1;
 elseif model==5
-    options.ref_Ts=15;             %tank_reactor
+    options.ref_Ts=25;             %tank_reactor
     options.sim_ref=3;
     options.ref_min=2;
     options.ref_max=5;
-    options.sim_cov=[data.REF(end,1)];
+    options.sim_cov=[0.35;0.200];%[data.REF(end,1)];
     options.u_index_plot=1;
     options.y_index_plot=2;
     options.ref_index_plot=1;
-    options.T_train=30;
+    options.T_train=50;
 end
 run_simulation_nncs(options,file_name,1);
-return
+options.input_choice=4
 %% 10. Data matching (analysis w/ training data)
-
-warning('This code only works for coverage')
 
 if options.reference_type~=3
     warning('It is not possible to perform data matching');
@@ -314,70 +312,29 @@ else
         [testing,options]=test_coverage(options,model_name);
     end
 end
-% The average MSE error over 49 simulations is 0.00031.
+%% 10B. Matching test against STL property
 
-% The maximum MSE error over 49 simulations is 0.00207.
+falsification_options_quad;
+options.input_choice=4
+[original_rob,In_Original] = check_cex_all_data(data,falsif,file_name,options);
+
 %% 11. Falsification with Breach
 
-%  delete(fullfile(which(strcat(options.SLX_model,'_breach.slx'))))
-get_param(Simulink.allBlockDiagrams(),'Name')
-bdclose all;
-clear Data_all data_cex Br falsif_pb net_all phi_1 phi_3 phi_4  phi_5 phi_all
-clear robustness_checks_all robustness_checks_false falsif falsif_pb_temp file_name
-clear rob_nominal robustness_check_temp block_name falsif_idx data_cex
-clear data_cex_cluster tr tr_all condition cluster_all check_nominal model_name
-clear data_backup i_f ii In1_dt0 In1_u0 In1_u1 inputs_cex iter iter_best num_cex
-clear reached seeds_all stop t__ tm training_perf tspan u__ idx_cluster falsif_pb_zero
-clear timer
+
 %%% ------------------------------------------ %%
 %%% ----- 11-A: Falsification with Breach ---- %%
 %%% ------------------------------------------ %%
 
-options.testing_breach=1;
-training_options.combining_old_and_cex=1; % 1: combine old and cex
 falsif.iterations_max=3;
 falsif.method='quasi';
 falsif.num_samples=100;
-falsif.num_corners=25;
 falsif.max_obj_eval=100;
-falsif.max_obj_eval_local=20;
-falsif.seed=100;
-falsif.num_inputs=1;
 
-falsif.property_file=options.specs_file;
-falsif.property_file='specs_robotarm_overshoot.stl';
-[~,falsif.property_all]=STL_ReadFile(falsif.property_file);
-falsif.property=falsif.property_all{2};%// TO-DO automatically specify the file
-falsif.property_cex=falsif.property_all{3};
-falsif.property_nom=falsif.property_all{4};
-if model==1
-    falsif.breach_ref_min=8;            %watertank 8 % quadcopter -1 %robotarm -0.5
-    falsif.breach_ref_max=12;           % watertank 12 % quadcopter 3  % robotarm 0.5
-elseif model==2
-    falsif.breach_ref_min=-0.5;            %watertank 8 % quadcopter -1 %robotarm -0.5
-    falsif.breach_ref_max=0.5;
-elseif model==3
-    falsif.breach_ref_min=-1;            %watertank 8 % quadcopter -1 %robotarm -0.5
-    falsif.breach_ref_max=3;
-elseif model==4
-    falsif.breach_ref_min=2;            %watertank 8 % quadcopter -1 %robotarm -0.5
-    falsif.breach_ref_max=5;
-end
-falsif.stop_at_false=false;
-falsif.T=options.T_train;
-falsif.input_template='fixed';
-try
-    falsif.breach_segments=options.breach_segments;
-catch
-    falsif.breach_segments=2;
-    options.breach_segments=falsif.breach_segments;
-end
 stop=0;
 i_f=1;
 
-% file_name=strcat(options.SLX_NN_model,'_cex');
-file_name=strcat(options.SLX_model);
-
+% file_name=strcat(options.SLX_model);
+file_name='QuadrotorSimulink_w_memory_cex';
 options.input_choice=4;
 net_all{1}=net;
 seeds_all=falsif.seed*(1:falsif.iterations_max);
@@ -390,7 +347,7 @@ while i_f<=falsif.iterations_max && ~stop
     %         fprintf('The number of CEX is now %i.\n',length(falsif_pb.obj_false));
     %     end
     fprintf('\n Beginning falsification with Breach.\n')
-    fprintf('\n We use the model %s for falsification.\n',options.SLX_model);
+    fprintf('\n We use the model %s for falsification.\n',file_name);
     %     if i_f==1
     %         model_name=options.SLX_NN_model;
     %     else
@@ -531,7 +488,7 @@ while i_f<=falsif.iterations_max && ~stop
         %%% ----------------------------------------------- %%
         %
         options.input_choice=3
-        num_cex=2;options.plotting_sim=1;
+        num_cex=5;options.plotting_sim=1;
         run_and_plot_cex_nncs(options,file_name,inputs_cex,num_cex); %4th input number of counterexamples
         options.input_choice=4;
     end

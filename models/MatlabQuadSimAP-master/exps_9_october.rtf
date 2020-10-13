@@ -1,0 +1,1423 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2513
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \
+>> data\
+\
+data = \
+\
+  struct with fields:\
+\
+       REF: [36000\'d71 double]\
+         U: [36000\'d71 double]\
+         Y: [36000\'d71 double]\
+        in: [6\'d736000 double]\
+       out: [1\'d736000 double]\
+    out_NN: [1\'d736000 double]\
+\
+\
+ans =\
+\
+  2\'d71 cell array\
+\
+    \{'watertank_multPID_2018a_v3_falsif_breach'\}\
+    \{'simulink'                                \}\
+\
+\
+options = \
+\
+  struct with fields:\
+\
+                 model: 10\
+           combination: 1\
+           controllers: [1\'d71 struct]\
+    combination_matlab: 2\
+            T_segments: 10\
+    time_step_segments: 5\
+                     Q: 0.2500\
+                     R: 0.1000\
+           y_index_lqr: 1\
+                 u_des: 0\
+        falsif_nominal: 0\
+      training_nominal: 0\
+                 debug: 1\
+               T_train: 10\
+             SLX_model: 'watertank_multPID_2018a_v3'\
+      SLX_model_falsif: 'watertank_multPID_2018a_v3_falsif'\
+            SLX_folder: 'watertank'\
+        reference_type: 3\
+          plotting_sim: 1\
+     test_dataMatching: 0\
+            specs_file: 'specs_watertank_comb_ctrl_1.stl'\
+          input_choice: 4\
+             simin_ref: 0\
+               ref_min: 8.5000\
+               ref_max: 11.5000\
+                ref_Ts: 5\
+                no_ref: 1\
+               testing: [1\'d71 struct]\
+              coverage: [1\'d71 struct]\
+                 no_x0: 1\
+        no_x0_repeated: 1\
+              simin_x0: 0\
+    preprocessing_bool: 0\
+     preprocessing_eps: 1.0000e-04\
+              trimming: 0\
+              save_sim: 0\
+                  load: 0\
+            error_mean: 0\
+              error_sd: 0\
+                    dt: 0.0100\
+             no_traces: 36\
+               num_REF: 1\
+                 num_U: 1\
+                 num_Y: 1\
+                sim_x0: 0\
+               sim_ref: 11\
+               sim_cov: [2\'d71 double]\
+             workspace: [1\'d71 struct]\
+              property: [1\'d71 STL_Formula]\
+                   req: [1\'d71 BreachRequirement]\
+              req_vars: \{'In1'  'y'\}\
+          u_index_plot: 1\
+          y_index_plot: 1\
+        ref_index_plot: 1\
+               extra_y: 0\
+             extra_ref: 0\
+    SLX_model_combined: 'watertank_multPID_2018a_v3_comb'\
+              NN_model: 'nn_gensim'\
+        testing_breach: 1\
+       breach_segments: 2\
+\
+\
+Missing check if reference remains the same across the segments\
+\
+To-DO: need to generalize\
+\
+Computed 36/36 simulations of watertank_multPID_2018a_v3_falsif_breach\
+Original - The last NN has 1 CEX out of 36.\
+\
+\
+ans =\
+\
+    'watertank_multPID_2018a_v3_falsif_breach'\
+\
+\
+ Iteration 1.\
+\
+ Beginning falsification with Breach.\
+\
+ We use the model watertank_multPID_2018a_v3_falsif for falsification.\
+Open/loaded Simulink files\
+\
+ans =\
+\
+  0\'d71 empty cell array\
+\
+Found var A in model workspace used by watertank_multPID_2018a_v3_falsif_breach/Water-Tank System/a//A.\
+Found var a in model workspace used by watertank_multPID_2018a_v3_falsif_breach/Water-Tank System/a//A.\
+Found var b in model workspace used by watertank_multPID_2018a_v3_falsif_breach/Water-Tank System/b//A.\
+Found var options in base workspace used by watertank_multPID_2018a_v3_falsif_breach/Constant.\
+\
+((((In1[t] > 0)) => (alw_[T_1,T_2] ((y_nn[t]-In1[t]<In1[t]*ov)))) and ((((In1[t] <= 0)) => (alw_[T_1,T_2] ((In1[t]-y_nn[t]<In1[t]*ov)))) and ((alw_[0,sim_time] (((In1[t+dt]-In1[t] > d)) => (alw_[T_1,T_2] ((y_nn[t]-In1[t]<In1[t]*ov))))) and (alw_[0,sim_time] (((In1[t]-In1[t+dt] > d)) => (alw_[T_1,T_2] ((In1[t]-y_nn[t]<In1[t]*ov)))))))) and (alw_[0,sim_time] (((abs(In1[t+dt]-In1[t])>d) or ([t]==0)) => (ev_[0,3.5] (alw_[0,1.5] ((abs(y_nn[t]-In1[t])<e))))))\
+\
+\
+\
+++++++++++++++++++++++++++++++++++++++++++++\
+Running 100 random samples with seed 100\
+#calls (max:  100)        time spent (max: Inf)     [current  obj]     (current best) \
+         1                        9.6               [+1.00000e-02]     (+1.00000e-02)\
+         2                       15.7               [+1.00000e-02]     (+1.00000e-02)\
+         3                       21.9               [+1.85751e-02]     (+1.00000e-02)\
+         4                       28.2               [+1.83962e-02]     (+1.00000e-02)\
+         5                       35.1               [+1.00000e-02]     (+1.00000e-02)\
+         6                       42.1               [+1.48158e-02]     (+1.00000e-02)\
+         7                       48.8               [+1.00000e-02]     (+1.00000e-02)\
+         8                       55.5               [+1.00000e-02]     (+1.00000e-02)\
+         9                       61.7               [+1.00000e-02]     (+1.00000e-02)\
+        10                       67.7               [+1.82699e-02]     (+1.00000e-02)\
+        11                       73.9               [+1.78695e-02]     (+1.00000e-02)\
+        12                       80.7               [+1.00000e-02]     (+1.00000e-02)\
+        13                       87.4               [+1.00000e-02]     (+1.00000e-02)\
+        14                       93.9               [+1.00000e-02]     (+1.00000e-02)\
+        15                      100.6               [+1.00000e-02]     (+1.00000e-02)\
+        16                      107.1               [+1.00000e-02]     (+1.00000e-02)\
+        17                      113.8               [+1.81953e-02]     (+1.00000e-02)\
+        18                      120.3               [+1.00000e-02]     (+1.00000e-02)\
+        19                      126.5               [+1.00000e-02]     (+1.00000e-02)\
+        20                      132.6               [+1.73954e-02]     (+1.00000e-02)\
+        21                      138.8               [+1.00000e-02]     (+1.00000e-02)\
+        22                      144.8               [+1.00000e-02]     (+1.00000e-02)\
+        23                      150.8               [-1.08274e-02]     (-1.08274e-02)\
+        24                      157.1               [+1.00000e-02]     (-1.08274e-02)\
+        25                      163.2               [+1.00000e-02]     (-1.08274e-02)\
+        26                      169.4               [+1.00000e-02]     (-1.08274e-02)\
+        27                      175.5               [+1.00000e-02]     (-1.08274e-02)\
+        28                      181.7               [+1.00000e-02]     (-1.08274e-02)\
+        29                      187.8               [+1.00000e-02]     (-1.08274e-02)\
+        30                      194.0               [-1.02442e+00]     (-1.02442e+00)\
+        31                      200.0               [+1.00000e-02]     (-1.02442e+00)\
+        32                      206.0               [+1.00000e-02]     (-1.02442e+00)\
+        33                      212.1               [+1.00000e-02]     (-1.02442e+00)\
+        34                      218.2               [+1.00000e-02]     (-1.02442e+00)\
+        35                      224.2               [+1.00000e-02]     (-1.02442e+00)\
+        36                      230.4               [-4.75674e-02]     (-1.02442e+00)\
+        37                      236.6               [+1.00000e-02]     (-1.02442e+00)\
+        38                      242.6               [+1.55550e-02]     (-1.02442e+00)\
+        39                      249.0               [-4.46850e-02]     (-1.02442e+00)\
+        40                      256.0               [+1.00000e-02]     (-1.02442e+00)\
+        41                      263.0               [+1.00000e-02]     (-1.02442e+00)\
+        42                      269.7               [+1.98514e-02]     (-1.02442e+00)\
+        43                      278.0               [+1.00000e-02]     (-1.02442e+00)\
+        44                      285.2               [+1.00000e-02]     (-1.02442e+00)\
+        45                      292.8               [+1.69357e-02]     (-1.02442e+00)\
+        46                      299.4               [+1.00000e-02]     (-1.02442e+00)\
+        47                      305.6               [+1.89412e-02]     (-1.02442e+00)\
+        48                      311.7               [+1.00000e-02]     (-1.02442e+00)\
+        49                      317.4               [+1.00000e-02]     (-1.02442e+00)\
+        50                      323.2               [+1.00000e-02]     (-1.02442e+00)\
+        51                      328.9               [+1.00000e-02]     (-1.02442e+00)\
+        52                      334.5               [+1.00000e-02]     (-1.02442e+00)\
+        53                      340.2               [+1.00000e-02]     (-1.02442e+00)\
+        54                      345.9               [+1.00000e-02]     (-1.02442e+00)\
+        55                      351.6               [+1.00000e-02]     (-1.02442e+00)\
+        56                      357.3               [+1.61728e-02]     (-1.02442e+00)\
+        57                      363.0               [+1.00000e-02]     (-1.02442e+00)\
+        58                      368.8               [+1.00000e-02]     (-1.02442e+00)\
+        59                      374.4               [+1.00000e-02]     (-1.02442e+00)\
+        60                      380.1               [+1.75452e-02]     (-1.02442e+00)\
+        61                      385.8               [+1.00000e-02]     (-1.02442e+00)\
+        62                      391.6               [+1.93374e-02]     (-1.02442e+00)\
+        63                      397.4               [+1.00000e-02]     (-1.02442e+00)\
+        64                      403.2               [+1.00000e-02]     (-1.02442e+00)\
+        65                      409.0               [+1.79852e-02]     (-1.02442e+00)\
+        66                      414.8               [+1.00000e-02]     (-1.02442e+00)\
+        67                      420.5               [+1.00000e-02]     (-1.02442e+00)\
+        68                      426.2               [+1.00000e-02]     (-1.02442e+00)\
+        69                      431.9               [+1.00000e-02]     (-1.02442e+00)\
+        70                      437.6               [+1.00000e-02]     (-1.02442e+00)\
+        71                      443.3               [+1.00000e-02]     (-1.02442e+00)\
+        72                      449.0               [+1.00000e-02]     (-1.02442e+00)\
+        73                      454.7               [+1.65173e-02]     (-1.02442e+00)\
+        74                      460.4               [+1.78101e-02]     (-1.02442e+00)\
+        75                      466.1               [+1.00000e-02]     (-1.02442e+00)\
+        76                      471.8               [+1.00000e-02]     (-1.02442e+00)\
+        77                      477.5               [+1.00000e-02]     (-1.02442e+00)\
+        78                      483.4               [+1.00000e-02]     (-1.02442e+00)\
+        79                      489.2               [+1.59413e-02]     (-1.02442e+00)\
+        80                      494.9               [+1.00000e-02]     (-1.02442e+00)\
+        81                      500.6               [+1.00000e-02]     (-1.02442e+00)\
+        82                      506.4               [+1.00000e-02]     (-1.02442e+00)\
+        83                      512.3               [+1.00000e-02]     (-1.02442e+00)\
+        84                      518.1               [-1.50391e-02]     (-1.02442e+00)\
+        85                      523.8               [+1.71404e-02]     (-1.02442e+00)\
+        86                      529.6               [+1.00000e-02]     (-1.02442e+00)\
+        87                      535.3               [+1.00000e-02]     (-1.02442e+00)\
+        88                      541.2               [+1.00000e-02]     (-1.02442e+00)\
+        89                      547.4               [+1.00000e-02]     (-1.02442e+00)\
+        90                      553.5               [+1.00000e-02]     (-1.02442e+00)\
+        91                      559.2               [+1.00000e-02]     (-1.02442e+00)\
+        92                      565.0               [+1.00000e-02]     (-1.02442e+00)\
+        93                      570.8               [+1.00000e-02]     (-1.02442e+00)\
+        94                      576.5               [+1.00000e-02]     (-1.02442e+00)\
+        95                      582.3               [+1.00000e-02]     (-1.02442e+00)\
+        96                      588.1               [+1.00000e-02]     (-1.02442e+00)\
+        97                      593.8               [+1.63712e-02]     (-1.02442e+00)\
+        98                      599.6               [+1.00000e-02]     (-1.02442e+00)\
+        99                      605.4               [+1.00000e-02]     (-1.02442e+00)\
+       100                      611.1               [+1.00000e-02]     (-1.02442e+00)\
+\
+ Stopped after max_obj_eval was reached (maximum number of objective function evaluations).\
+Falsified with obj = -1.02442\
+\
+ ---- Best value -1.02442 found with\
+        In1_u0 = 8.06102\
+        In1_dt0 = 5\
+        In1_u1 = 11.8668\
+\
+\
+\
+ The NN produces 5 falsifying traces out of 100 total traces.\
+\
+timer = \
+\
+  struct with fields:\
+\
+    trace_gen: 7.0644e+03\
+        train: 929.2588\
+       falsif: \{[666.4268]\}\
+\
+\
+ End falsification with Breach.\
+-----------------------------------\
+Beginning of iteration 1\
+\
+timeId_span =\
+\
+     0     5    10\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -2.9223\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -2.9215\
+\
+For the 1-segment, the Controller 2 has the smallest cost.\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -2.9233\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -2.9215\
+\
+For the 2-segment, the Controller 2 has the smallest cost.\
+\
+\
+Jcurrent =\
+\
+   -2.9223   -2.9215\
+   -2.9233   -2.9215\
+\
+End of iteration 1\
+\
+Beginning of iteration 2\
+\
+timeId_span =\
+\
+     0     5    10\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.7869\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.7858\
+\
+For the 1-segment, the Controller 2 has the smallest cost.\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.7880\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.7858\
+\
+For the 2-segment, the Controller 2 has the smallest cost.\
+\
+\
+Jcurrent =\
+\
+   -3.7869   -3.7858\
+   -3.7880   -3.7858\
+\
+End of iteration 2\
+\
+Beginning of iteration 3\
+\
+timeId_span =\
+\
+     0     5    10\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.4419\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.4410\
+\
+For the 1-segment, the Controller 2 has the smallest cost.\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.4430\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.4410\
+\
+For the 2-segment, the Controller 2 has the smallest cost.\
+\
+\
+Jcurrent =\
+\
+   -3.4419   -3.4410\
+   -3.4430   -3.4410\
+\
+End of iteration 3\
+\
+Beginning of iteration 4\
+\
+timeId_span =\
+\
+     0     5    10\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.2996\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.2986\
+\
+For the 1-segment, the Controller 2 has the smallest cost.\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.3006\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.2986\
+\
+For the 2-segment, the Controller 2 has the smallest cost.\
+\
+\
+Jcurrent =\
+\
+   -3.2996   -3.2986\
+   -3.3006   -3.2986\
+\
+End of iteration 4\
+\
+Beginning of iteration 5\
+\
+timeId_span =\
+\
+     0     5    10\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.7637\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.7625\
+\
+For the 1-segment, the Controller 2 has the smallest cost.\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.7648\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.7625\
+\
+For the 2-segment, the Controller 2 has the smallest cost.\
+\
+\
+Jcurrent =\
+\
+   -3.7637   -3.7625\
+   -3.7648   -3.7625\
+\
+End of iteration 5\
+\
+Last point of all traces will be deleted.\
+Equally sized variables U and Y for iteration 1.\
+Equally sized variables U and Y for iteration 2.\
+Equally sized variables U and Y for iteration 3.\
+Equally sized variables U and Y for iteration 4.\
+Equally sized variables U and Y for iteration 5.\
+\
+timer = \
+\
+  struct with fields:\
+\
+        trace_gen: 7.0644e+03\
+            train: 929.2588\
+           falsif: \{[666.4268]\}\
+    trace_gen_cex: 1.1562e+04\
+\
+ This is the 1 iteration/loop with a number of 4 clusters.\
+\
+In cluster 1, there is/are 4 total CEX and 4 different ones (tol=0.666667).\
+In cluster 2, there is/are 1 total CEX and 1 different ones (tol=0.666667).\
+ \
+In cluster 1, there is/are 4 total CEX and 4 different ones (tol=0.100000).\
+In cluster 2, there is/are 1 total CEX and 1 different ones (tol=0.100000).\
+\
+ We will keep 3 points out of 4 in cluster 1.\
+\
+ We will keep all points in cluster 2.\
+We will keep 4 CEX out of total 5.\
+\
+timer = \
+\
+  struct with fields:\
+\
+        trace_gen: 7.0644e+03\
+            train: 929.2588\
+           falsif: \{[666.4268]\}\
+    trace_gen_cex: 1.1562e+04\
+          cluster: \{[2.2212]\}\
+\
+\
+Beginning retraining with cex.\
+Re-training started\
+Re-training finished\
+\
+ End retraining with cex.\
+-----------------------------------\
+\
+timer = \
+\
+  struct with fields:\
+\
+        trace_gen: 7.0644e+03\
+            train: 929.2588\
+           falsif: \{[666.4268]\}\
+    trace_gen_cex: 1.1562e+04\
+          cluster: \{[2.2212]\}\
+          retrain: \{[168.0925]\}\
+\
+\
+ Beginning Simulink construction with cex.\
+\
+ans =\
+\
+    'untitled'\
+\
+Please note that we have not deleted the NN model.\
+\
+ End Simulink construction with cex.\
+-----------------------------------\
+\
+ Testing the NN on the training data.\
+The number of original CEX was 5.\
+\
+The number of CEX after clustering is 4.\
+Found var A in model workspace used by watertank_multPID_2018a_v3_falsif_breach/Water-Tank System/a//A.\
+Found var a in model workspace used by watertank_multPID_2018a_v3_falsif_breach/Water-Tank System/a//A.\
+Found var b in model workspace used by watertank_multPID_2018a_v3_falsif_breach/Water-Tank System/b//A.\
+Found var options in base workspace used by watertank_multPID_2018a_v3_falsif_breach/Constant.\
+Computed 4/4 simulations of watertank_multPID_2018a_v3_falsif_breach\
+Computed 100/100 simulations of watertank_multPID_2018a_v3_falsif_breach\
+The retrained has 3 CEX out of 100.\
+\
+The last NN has 5 CEX out of 100.\
+\
+The nominal  has 16 CEX out of 100.\
+\
+ \
+ The new robustness values are 0.01   -0.057944   -0.025622    -0.12196.\
+\
+robustness_checks_false =\
+\
+  1\'d72 cell array\
+\
+    \{1\'d75 double\}    \{1\'d74 double\}\
+\
+\
+robustness_checks_all =\
+\
+  1\'d73 cell array\
+\
+    \{1\'d7100 double\}    \{0\'d70 double\}    \{1\'d7100 double\}\
+\
+ \
+ The original CEX were 5, CEX after cluster, 4 and with the new CEX are 3.\
+\
+ We have 4 CEX after clustering and after retraining we have 3.\
+\
+ We have tested the same inputs with CheckSpec.\
+\
+options = \
+\
+  struct with fields:\
+\
+                 model: 10\
+           combination: 1\
+           controllers: [1\'d71 struct]\
+    combination_matlab: 2\
+            T_segments: 10\
+    time_step_segments: 5\
+                     Q: 0.2500\
+                     R: 0.1000\
+           y_index_lqr: 1\
+                 u_des: 0\
+        falsif_nominal: 0\
+      training_nominal: 0\
+                 debug: 1\
+               T_train: 10\
+             SLX_model: 'watertank_multPID_2018a_v3'\
+      SLX_model_falsif: 'watertank_multPID_2018a_v3_falsif'\
+            SLX_folder: 'watertank'\
+        reference_type: 3\
+          plotting_sim: 1\
+     test_dataMatching: 0\
+            specs_file: 'specs_watertank_comb_ctrl_1.stl'\
+          input_choice: 3\
+             simin_ref: 0\
+               ref_min: 8.5000\
+               ref_max: 11.5000\
+                ref_Ts: 5\
+                no_ref: 1\
+               testing: [1\'d71 struct]\
+              coverage: [1\'d71 struct]\
+                 no_x0: 1\
+        no_x0_repeated: 1\
+              simin_x0: 0\
+    preprocessing_bool: 0\
+     preprocessing_eps: 1.0000e-04\
+              trimming: 0\
+              save_sim: 0\
+                  load: 0\
+            error_mean: 0\
+              error_sd: 0\
+                    dt: 0.0100\
+             no_traces: 36\
+               num_REF: 1\
+                 num_U: 1\
+                 num_Y: 1\
+                sim_x0: 0\
+               sim_ref: 11\
+               sim_cov: [2\'d71 double]\
+             workspace: [1\'d71 struct]\
+              property: [1\'d71 STL_Formula]\
+                   req: [1\'d71 BreachRequirement]\
+              req_vars: \{'In1'  'y'\}\
+          u_index_plot: 1\
+          y_index_plot: 1\
+        ref_index_plot: 1\
+               extra_y: 0\
+             extra_ref: 0\
+    SLX_model_combined: 'watertank_multPID_2018a_v3_comb'\
+              NN_model: 'nn_gensim'\
+        testing_breach: 1\
+       breach_segments: 2\
+\
+\
+ End of Iteration 1.\
+\
+ Iteration 2.\
+\
+ Beginning falsification with Breach.\
+\
+ We use the model watertank_multPID_2018a_v3_falsif for falsification.\
+Open/loaded Simulink files\
+\
+ans =\
+\
+  3\'d71 cell array\
+\
+    \{'watertank_multPID_2018a_v3_falsif'       \}\
+    \{'watertank_multPID_2018a_v3_falsif_breach'\}\
+    \{'simulink'                                \}\
+\
+\
+((((In1[t] > 0)) => (alw_[T_1,T_2] ((y_nn_cex_1[t]-In1[t]<In1[t]*ov)))) and ((((In1[t] <= 0)) => (alw_[T_1,T_2] ((In1[t]-y_nn_cex_1[t]<In1[t]*ov)))) and ((alw_[0,sim_time] (((In1[t+dt]-In1[t] > d)) => (alw_[T_1,T_2] ((y_nn_cex_1[t]-In1[t]<In1[t]*ov))))) and (alw_[0,sim_time] (((In1[t]-In1[t+dt] > d)) => (alw_[T_1,T_2] ((In1[t]-y_nn_cex_1[t]<In1[t]*ov)))))))) and (alw_[0,sim_time] (((abs(In1[t+dt]-In1[t])>d) or ([t]==0)) => (ev_[0,3.5] (alw_[0,1.5] ((abs(y_nn_cex_1[t]-In1[t])<e))))))\
+\
+\
+\
+++++++++++++++++++++++++++++++++++++++++++++\
+Running 100 random samples with seed 200\
+#calls (max:  100)        time spent (max: Inf)     [current  obj]     (current best) \
+         1                        9.9               [+1.00000e-02]     (+1.00000e-02)\
+         2                       15.6               [+1.00000e-02]     (+1.00000e-02)\
+         3                       21.3               [+1.00000e-02]     (+1.00000e-02)\
+         4                       26.9               [+1.00000e-02]     (+1.00000e-02)\
+         5                       32.7               [+1.00000e-02]     (+1.00000e-02)\
+         6                       38.4               [+1.00000e-02]     (+1.00000e-02)\
+         7                       44.1               [+1.00000e-02]     (+1.00000e-02)\
+         8                       49.8               [+1.00000e-02]     (+1.00000e-02)\
+         9                       55.5               [+1.00000e-02]     (+1.00000e-02)\
+        10                       61.2               [-7.85716e-02]     (-7.85716e-02)\
+        11                       66.8               [+1.00000e-02]     (-7.85716e-02)\
+        12                       72.5               [+1.00000e-02]     (-7.85716e-02)\
+        13                       78.1               [+1.00000e-02]     (-7.85716e-02)\
+        14                       83.7               [+1.00000e-02]     (-7.85716e-02)\
+        15                       89.4               [-3.71755e-02]     (-7.85716e-02)\
+        16                       95.1               [+1.00000e-02]     (-7.85716e-02)\
+        17                      100.9               [+1.00000e-02]     (-7.85716e-02)\
+        18                      106.5               [+1.00000e-02]     (-7.85716e-02)\
+        19                      112.2               [+1.00000e-02]     (-7.85716e-02)\
+        20                      117.9               [+1.00000e-02]     (-7.85716e-02)\
+        21                      123.5               [+1.00000e-02]     (-7.85716e-02)\
+        22                      129.2               [+1.00000e-02]     (-7.85716e-02)\
+        23                      134.9               [-4.73497e-02]     (-7.85716e-02)\
+        24                      140.6               [+1.00000e-02]     (-7.85716e-02)\
+        25                      146.2               [+1.00000e-02]     (-7.85716e-02)\
+        26                      151.9               [+1.00000e-02]     (-7.85716e-02)\
+        27                      157.6               [+1.00000e-02]     (-7.85716e-02)\
+        28                      163.3               [+1.00000e-02]     (-7.85716e-02)\
+        29                      168.9               [+1.92857e-02]     (-7.85716e-02)\
+        30                      174.7               [+1.00000e-02]     (-7.85716e-02)\
+        31                      180.4               [-3.98700e-02]     (-7.85716e-02)\
+        32                      186.1               [+1.00000e-02]     (-7.85716e-02)\
+        33                      191.8               [+1.00000e-02]     (-7.85716e-02)\
+        34                      197.5               [+1.00000e-02]     (-7.85716e-02)\
+        35                      203.3               [+1.00000e-02]     (-7.85716e-02)\
+        36                      209.0               [+1.86854e-02]     (-7.85716e-02)\
+        37                      214.7               [+1.00000e-02]     (-7.85716e-02)\
+        38                      220.4               [+1.00000e-02]     (-7.85716e-02)\
+        39                      226.1               [+1.00000e-02]     (-7.85716e-02)\
+        40                      231.8               [+1.00000e-02]     (-7.85716e-02)\
+        41                      237.4               [+1.00000e-02]     (-7.85716e-02)\
+        42                      243.2               [+1.00000e-02]     (-7.85716e-02)\
+        43                      248.8               [+1.00000e-02]     (-7.85716e-02)\
+        44                      254.7               [+1.94035e-02]     (-7.85716e-02)\
+        45                      260.4               [+1.00000e-02]     (-7.85716e-02)\
+        46                      266.1               [+1.00000e-02]     (-7.85716e-02)\
+        47                      271.8               [+1.00000e-02]     (-7.85716e-02)\
+        48                      277.5               [+1.00000e-02]     (-7.85716e-02)\
+        49                      283.1               [+1.00000e-02]     (-7.85716e-02)\
+        50                      288.8               [+1.00000e-02]     (-7.85716e-02)\
+        51                      294.4               [+1.00000e-02]     (-7.85716e-02)\
+        52                      300.2               [-1.14055e-01]     (-1.14055e-01)\
+        53                      305.9               [+1.00000e-02]     (-1.14055e-01)\
+        54                      311.5               [+1.00000e-02]     (-1.14055e-01)\
+        55                      319.2               [+1.00000e-02]     (-1.14055e-01)\
+        56                      326.1               [+1.00000e-02]     (-1.14055e-01)\
+        57                      332.5               [+1.00000e-02]     (-1.14055e-01)\
+        58                      339.1               [+1.00000e-02]     (-1.14055e-01)\
+        59                      345.5               [+1.00000e-02]     (-1.14055e-01)\
+        60                      351.9               [+1.00000e-02]     (-1.14055e-01)\
+        61                      358.4               [+1.00000e-02]     (-1.14055e-01)\
+        62                      364.7               [+1.94251e-02]     (-1.14055e-01)\
+        63                      371.0               [+1.96686e-02]     (-1.14055e-01)\
+        64                      377.3               [+1.00000e-02]     (-1.14055e-01)\
+        65                      383.3               [+1.00000e-02]     (-1.14055e-01)\
+        66                      389.4               [-6.21253e-02]     (-1.14055e-01)\
+        67                      395.8               [+1.00000e-02]     (-1.14055e-01)\
+        68                      401.9               [+1.00000e-02]     (-1.14055e-01)\
+        69                      408.1               [+1.00000e-02]     (-1.14055e-01)\
+        70                      414.6               [+1.00000e-02]     (-1.14055e-01)\
+        71                      420.7               [+1.98555e-02]     (-1.14055e-01)\
+        72                      426.9               [-8.69222e-02]     (-1.14055e-01)\
+        73                      432.9               [+1.00000e-02]     (-1.14055e-01)\
+        74                      438.9               [+1.00000e-02]     (-1.14055e-01)\
+        75                      444.9               [+1.00000e-02]     (-1.14055e-01)\
+        76                      451.3               [+1.95776e-02]     (-1.14055e-01)\
+        77                      457.9               [+1.90195e-02]     (-1.14055e-01)\
+        78                      464.3               [+1.00000e-02]     (-1.14055e-01)\
+        79                      470.1               [+1.00000e-02]     (-1.14055e-01)\
+        80                      475.8               [+1.00000e-02]     (-1.14055e-01)\
+        81                      481.6               [+1.00000e-02]     (-1.14055e-01)\
+        82                      488.0               [+1.00000e-02]     (-1.14055e-01)\
+        83                      494.3               [+1.00000e-02]     (-1.14055e-01)\
+        84                      500.5               [+1.00000e-02]     (-1.14055e-01)\
+        85                      507.0               [+1.00000e-02]     (-1.14055e-01)\
+        86                      513.1               [+1.00000e-02]     (-1.14055e-01)\
+        87                      519.4               [+1.00000e-02]     (-1.14055e-01)\
+        88                      525.8               [+1.00000e-02]     (-1.14055e-01)\
+        89                      532.2               [+1.00000e-02]     (-1.14055e-01)\
+        90                      538.6               [+1.00000e-02]     (-1.14055e-01)\
+        91                      545.0               [+1.93967e-02]     (-1.14055e-01)\
+        92                      551.7               [+1.00000e-02]     (-1.14055e-01)\
+        93                      558.0               [+1.00000e-02]     (-1.14055e-01)\
+        94                      564.2               [+1.00000e-02]     (-1.14055e-01)\
+        95                      570.1               [+1.00000e-02]     (-1.14055e-01)\
+        96                      576.0               [+1.00000e-02]     (-1.14055e-01)\
+        97                      581.9               [+1.91235e-02]     (-1.14055e-01)\
+        98                      588.0               [+1.00000e-02]     (-1.14055e-01)\
+        99                      593.9               [+1.00000e-02]     (-1.14055e-01)\
+       100                      600.2               [+1.00000e-02]     (-1.14055e-01)\
+\
+ Stopped after max_obj_eval was reached (maximum number of objective function evaluations).\
+Falsified with obj = -0.114055\
+\
+ ---- Best value -0.114055 found with\
+        In1_u0 = 11.9492\
+        In1_dt0 = 5\
+        In1_u1 = 8.19954\
+\
+\
+\
+ The NN produces 7 falsifying traces out of 100 total traces.\
+\
+timer = \
+\
+  struct with fields:\
+\
+        trace_gen: 7.0644e+03\
+            train: 929.2588\
+           falsif: \{[666.4268]  [616.8713]\}\
+    trace_gen_cex: 1.1562e+04\
+          cluster: \{[2.2212]\}\
+          retrain: \{[168.0925]\}\
+       rechecking: \{[642.4405]\}\
+\
+\
+ End falsification with Breach.\
+-----------------------------------\
+Beginning of iteration 1\
+\
+timeId_span =\
+\
+     0     5    10\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.5896\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.5884\
+\
+For the 1-segment, the Controller 2 has the smallest cost.\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.5906\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.5884\
+\
+For the 2-segment, the Controller 2 has the smallest cost.\
+\
+\
+Jcurrent =\
+\
+   -3.5896   -3.5884\
+   -3.5906   -3.5884\
+\
+End of iteration 1\
+\
+Beginning of iteration 2\
+\
+timeId_span =\
+\
+     0     5    10\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.3185\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.3177\
+\
+For the 1-segment, the Controller 2 has the smallest cost.\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.3197\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.3177\
+\
+For the 2-segment, the Controller 2 has the smallest cost.\
+\
+\
+Jcurrent =\
+\
+   -3.3185   -3.3177\
+   -3.3197   -3.3177\
+\
+End of iteration 2\
+\
+Beginning of iteration 3\
+\
+timeId_span =\
+\
+     0     5    10\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.3839\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.3830\
+\
+For the 1-segment, the Controller 2 has the smallest cost.\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.3850\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.3830\
+\
+For the 2-segment, the Controller 2 has the smallest cost.\
+\
+\
+Jcurrent =\
+\
+   -3.3839   -3.3830\
+   -3.3850   -3.3830\
+\
+End of iteration 3\
+\
+Beginning of iteration 4\
+\
+timeId_span =\
+\
+     0     5    10\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.4178\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.4167\
+\
+For the 1-segment, the Controller 2 has the smallest cost.\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.4187\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.4167\
+\
+For the 2-segment, the Controller 2 has the smallest cost.\
+\
+\
+Jcurrent =\
+\
+   -3.4178   -3.4167\
+   -3.4187   -3.4167\
+\
+End of iteration 4\
+\
+Beginning of iteration 5\
+\
+timeId_span =\
+\
+     0     5    10\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.7308\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.7297\
+\
+For the 1-segment, the Controller 2 has the smallest cost.\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.7319\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.7297\
+\
+For the 2-segment, the Controller 2 has the smallest cost.\
+\
+\
+Jcurrent =\
+\
+   -3.7308   -3.7297\
+   -3.7319   -3.7297\
+\
+End of iteration 5\
+\
+Beginning of iteration 6\
+\
+timeId_span =\
+\
+     0     5    10\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.5031\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.5020\
+\
+For the 1-segment, the Controller 2 has the smallest cost.\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.5041\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.5020\
+\
+For the 2-segment, the Controller 2 has the smallest cost.\
+\
+\
+Jcurrent =\
+\
+   -3.5031   -3.5020\
+   -3.5041   -3.5020\
+\
+End of iteration 6\
+\
+Beginning of iteration 7\
+\
+timeId_span =\
+\
+     0     5    10\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.5802\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.5792\
+\
+For the 1-segment, the Controller 2 has the smallest cost.\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.5813\
+\
+\
+ Searching variable name of the requirement 1.\
+\
+ Searching variable name of the requirement 2.\
+\
+J =\
+\
+   -3.5792\
+\
+For the 2-segment, the Controller 2 has the smallest cost.\
+\
+\
+Jcurrent =\
+\
+   -3.5802   -3.5792\
+   -3.5813   -3.5792\
+\
+End of iteration 7\
+\
+Last point of all traces will be deleted.\
+Equally sized variables U and Y for iteration 1.\
+Equally sized variables U and Y for iteration 2.\
+Equally sized variables U and Y for iteration 3.\
+Equally sized variables U and Y for iteration 4.\
+Equally sized variables U and Y for iteration 5.\
+Equally sized variables U and Y for iteration 6.\
+Equally sized variables U and Y for iteration 7.\
+\
+timer = \
+\
+  struct with fields:\
+\
+        trace_gen: 7.0644e+03\
+            train: 929.2588\
+           falsif: \{[666.4268]  [616.8713]\}\
+    trace_gen_cex: 1.3049e+04\
+          cluster: \{[2.2212]\}\
+          retrain: \{[168.0925]\}\
+       rechecking: \{[642.4405]\}\
+\
+ This is the 1 iteration/loop with a number of 4 clusters.\
+\
+In cluster 1, there is/are 3 total CEX and 3 different ones (tol=0.666667).\
+In cluster 2, there is/are 4 total CEX and 4 different ones (tol=0.666667).\
+ \
+In cluster 1, there is/are 3 total CEX and 3 different ones (tol=0.100000).\
+In cluster 2, there is/are 4 total CEX and 4 different ones (tol=0.100000).\
+\
+ We will keep all points in cluster 1.\
+\
+ We will keep 3 points out of 4 in cluster 2.\
+We will keep 6 CEX out of total 7.\
+\
+timer = \
+\
+  struct with fields:\
+\
+        trace_gen: 7.0644e+03\
+            train: 929.2588\
+           falsif: \{[666.4268]  [616.8713]\}\
+    trace_gen_cex: 1.3049e+04\
+          cluster: \{[2.2212]  [0.6298]\}\
+          retrain: \{[168.0925]\}\
+       rechecking: \{[642.4405]\}\
+\
+\
+Beginning retraining with cex.\
+Re-training started\
+Re-training finished\
+\
+ End retraining with cex.\
+-----------------------------------\
+\
+timer = \
+\
+  struct with fields:\
+\
+        trace_gen: 7.0644e+03\
+            train: 929.2588\
+           falsif: \{[666.4268]  [616.8713]\}\
+    trace_gen_cex: 1.3049e+04\
+          cluster: \{[2.2212]  [0.6298]\}\
+          retrain: \{[168.0925]  [107.1051]\}\
+       rechecking: \{[642.4405]\}\
+\
+\
+ Beginning Simulink construction with cex.\
+\
+ans =\
+\
+    'untitled'\
+\
+Please note that we have not deleted the NN model.\
+\
+ End Simulink construction with cex.\
+-----------------------------------\
+\
+ Testing the NN on the training data.\
+The number of original CEX was 7.\
+\
+The number of CEX after clustering is 6.\
+Found var A in model workspace used by watertank_multPID_2018a_v3_falsif_breach/Water-Tank System/a//A.\
+Found var a in model workspace used by watertank_multPID_2018a_v3_falsif_breach/Water-Tank System/a//A.\
+Found var b in model workspace used by watertank_multPID_2018a_v3_falsif_breach/Water-Tank System/b//A.\
+Found var options in base workspace used by watertank_multPID_2018a_v3_falsif_breach/Constant.\
+Computed 6/6 simulations of watertank_multPID_2018a_v3_falsif_breach\
+Computed 100/100 simulations of watertank_multPID_2018a_v3_falsif_breach\
+The retrained has 7 CEX out of 100.\
+\
+The last NN has 8 CEX out of 100.\
+\
+The nominal  has 13 CEX out of 100.\
+\
+ \
+ The new robustness values are -0.062247   -0.034122   -0.041948   -0.088154   -0.050731   -0.072545.\
+\
+robustness_checks_false =\
+\
+  2\'d72 cell array\
+\
+    \{1\'d75 double\}    \{1\'d74 double\}\
+    \{1\'d77 double\}    \{1\'d76 double\}\
+\
+\
+robustness_checks_all =\
+\
+  2\'d73 cell array\
+\
+    \{1\'d7100 double\}    \{0\'d70 double\}    \{1\'d7100 double\}\
+    \{1\'d7100 double\}    \{0\'d70 double\}    \{1\'d7100 double\}\
+\
+ \
+ The original CEX were 7, CEX after cluster, 6 and with the new CEX are 7.\
+\
+ We have 6 CEX after clustering and after retraining we have 6.\
+\
+ We have tested the same inputs with CheckSpec.\
+\
+options = \
+\
+  struct with fields:\
+\
+                 model: 10\
+           combination: 1\
+           controllers: [1\'d71 struct]\
+    combination_matlab: 2\
+            T_segments: 10\
+    time_step_segments: 5\
+                     Q: 0.2500\
+                     R: 0.1000\
+           y_index_lqr: 1\
+                 u_des: 0\
+        falsif_nominal: 0\
+      training_nominal: 0\
+                 debug: 1\
+               T_train: 10\
+             SLX_model: 'watertank_multPID_2018a_v3'\
+      SLX_model_falsif: 'watertank_multPID_2018a_v3_falsif'\
+            SLX_folder: 'watertank'\
+        reference_type: 3\
+          plotting_sim: 1\
+     test_dataMatching: 0\
+            specs_file: 'specs_watertank_comb_ctrl_1.stl'\
+          input_choice: 3\
+             simin_ref: 0\
+               ref_min: 8.5000\
+               ref_max: 11.5000\
+                ref_Ts: 5\
+                no_ref: 1\
+               testing: [1\'d71 struct]\
+              coverage: [1\'d71 struct]\
+                 no_x0: 1\
+        no_x0_repeated: 1\
+              simin_x0: 0\
+    preprocessing_bool: 0\
+     preprocessing_eps: 1.0000e-04\
+              trimming: 0\
+              save_sim: 0\
+                  load: 0\
+            error_mean: 0\
+              error_sd: 0\
+                    dt: 0.0100\
+             no_traces: 36\
+               num_REF: 1\
+                 num_U: 1\
+                 num_Y: 1\
+                sim_x0: 0\
+               sim_ref: 11\
+               sim_cov: [2\'d71 double]\
+             workspace: [1\'d71 struct]\
+              property: [1\'d71 STL_Formula]\
+                   req: [1\'d71 BreachRequirement]\
+              req_vars: \{'In1'  'y'\}\
+          u_index_plot: 1\
+          y_index_plot: 1\
+        ref_index_plot: 1\
+               extra_y: 0\
+             extra_ref: 0\
+    SLX_model_combined: 'watertank_multPID_2018a_v3_comb'\
+              NN_model: 'nn_gensim'\
+        testing_breach: 1\
+       breach_segments: 2\
+\
+\
+ End of Iteration 2.\
+\
+\
+------------\
+\
+Reached maximum number of iterations.}

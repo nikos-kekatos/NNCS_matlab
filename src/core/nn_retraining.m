@@ -102,79 +102,9 @@ elseif training_options.retraining_method==6 %weighted
 end
 
 if training_options.retraining_method~=4
-    no_REF_test=size(REF_test,2);
-    no_U_test=size(U_test,2);
-    no_Y_test=size(Y_test,2);
+    fprintf('\nOriginal traces: ')
+[in,out]=prepare_NN_structure(REF_test,Y_test,U_test,training_options,options);
 end
-
-if training_options.retraining_method~=4
-    if training_options.use_error_dyn
-        if training_options.use_previous_y
-            if training_options.use_previous_u
-                in=[REF_test-Y_test [0;REF_test(1:end-1)-Y_test(1:end-1)] [0;0;REF_test(1:end-2)-Y_test(1:end-2)]...
-                    [0;0;0;REF_test(1:end-3)-Y_test(1:end-3)] [0;U_test(1:end-1)] [0;0;U_test(1:end-2)]...
-                    ]';
-                if options.model==4
-                if options.extra_y
-                in=[in; Y_test'];             
-                disp('Added y(k) as a separate input')
-                end
-                if options.extra_ref
-                    in=[in;REF_test'];
-                end
-            end
-            else
-                in=[REF_test-Y_test [0;REF_test(1:end-1)-Y_test(1:end-1)] [0;0;REF_test(1:end-2)-Y_test(1:end-2)]...
-                    [0;0;0;REF_test(1:end-3)-Y_test(1:end-3)]]';
-            end
-        else
-            in=[REF_test-Y_test]';
-        end
-    else
-        if training_options.use_previous_y
-            if training_options.use_previous_ref
-                if training_options.use_previous_u
-                    %                     in=[[REF_test] [0;REF_test(1:end-1)] [0;0;REF_test(1:end-2)] [0;0;0;REF_test(1:end-3)]...
-                    %                         [Y_test] [0;Y_test(1:end-1)] [0;0;Y_test(1:end-2)] [0;0;0;Y_test(1:end-3)]...
-                    %                         [0;U_test(1:end-1)] [0;0;U_test(1:end-2)]...
-                    %                         ]';
-                    in=[[REF_test] [zeros(1,no_REF_test);REF_test(1:end-1,:)] [zeros(2,no_REF_test);REF_test(1:end-2,:)] [zeros(3,no_REF_test);REF_test(1:end-3,:)]...
-                        [Y_test] [zeros(1,no_Y_test);Y_test(1:end-1,:)] [zeros(2,no_Y_test);Y_test(1:end-2,:)] [zeros(3,no_Y_test);Y_test(1:end-3,:)]...
-                        [zeros(1,no_U_test);U_test(1:end-1,:)] [zeros(2,no_U_test);U_test(1:end-2,:)]...
-                        ]';
-                else
-                    in=[[REF_test] [0;REF_test(1:end-1)] [0;0;REF_test(1:end-2)] [0;0;0;REF_test(1:end-3)]...
-                        [Y_test] [0;Y_test(1:end-1)] [0;0;Y_test(1:end-2)] [0;0;0;Y_test(1:end-3)]...
-                        ]';
-                end
-            else
-                if training_options.use_previous_u
-                    in=[REF_test Y_test [0;Y_test(1:end-1)] [0;0;Y_test(1:end-2)]...
-                        [0;0;0;Y_test(1:end-3)] [0;U_test(1:end-1)] [0;0;U_test(1:end-2)]...
-                        ]';
-                else
-                    in=[[REF_test] ...
-                        [Y_test] [0;Y_test(1:end-1)] [0;0;Y_test(1:end-2)] [0;0;0;Y_test(1:end-3)]...
-                        ]';
-                end
-            end
-        else
-            if training_options.use_previous_u
-                in=[REF_test Y_test...
-                    [0;U_test(1:end-1)] [0;0;U_test(1:end-2)]...
-                    ]';
-            else
-                in=[[REF_test] ...
-                    [Y_test] ...
-                    ]';
-            end
-        end
-    end
-    
-    % Output
-    out=U_test';
-end
-
 % Input normalization
 if training_options.input_normalization==1
     in=mapminmax(in);

@@ -74,12 +74,14 @@ end
 %  Controller -- 2
 % We ran 100 scenarios and found 3 and 0 CEX.
 %% 4a. Run simulations -- Generate training data (combined)
-options.error_mean=0%0.0001;
-options.error_sd=0%0.001;
+options.error_mean=0;%0.0001;
+options.error_sd=0;%0.001;
 % options.save_sim=1;
 % options.coverage.points='r';
 % options.plotting_sim=1
-options.load=1
+options.load=0;
+options.combination_matlab=2; %use robustness
+clear compute_robustness
 if ~options.load
 [data,options]=trace_generation_nncs(SLX_model,options);
 timer.trace_gen=toc(timer_trace_gen)
@@ -240,8 +242,8 @@ end
 %% 9B. Matching test against STL property
 
 falsification_options;
-
-[original_rob,In_Original] = check_cex_all_data([],falsif,file_name,options);
+options.input_choice=4
+[original_rob,In_Original] = check_cex_all_data(data,falsif,file_name,options);
 
 %% 10. Individual Controller---Simulate, generate traces, create NN, plot, etc.
 

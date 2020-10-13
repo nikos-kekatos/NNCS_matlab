@@ -56,26 +56,54 @@ if falsif.test_only_original
     
         %test on original data
         In_Original=[];
-        for i=1:options.coverage.no_traces_ref
-            In_Original=[In_Original,options.coverage.cells{i}.random_value];
-        end
-        In_Original(3,:)=In_Original(2,:);
-        In_Original(2,:)=options.ref_Ts;
-        try
-            In_Original(4,:)=[];
+        if options.input_choice==3
+            for i=1:options.coverage.no_traces_ref
+                In_Original=[In_Original,options.coverage.cells{i}.random_value];
+            end
+            In_Original(3,:)=In_Original(2,:);
+            In_Original(2,:)=options.ref_Ts;
+            try
+                In_Original(4,:)=[];
+            end
+        elseif options.input_choice==4            
+            no_points=size(Data.REF,1)/options.no_traces;
+            REF_Original=[];In_Original=[];%REF_comb=zeros((options.breach_segments+options.breach_segments-1)*options.num_REF,1)
+            REF_comb=[];
+            for i=1:options.no_traces
+                ref_temp=unique(Data.REF(1+(i-1)*no_points:i*no_points,:),'rows','stable');
+                if i==1
+                    fprintf('\nMissing check if reference remains the same across the segments\n\n');
+                end
+                REF_Original=ref_temp;
+%                 REF_comb=REF_Original;
+%                 for j=1:2:options.breach_segments
+%                     REF_comb(j)=options.ref_Ts;
+%                 end
+%                 REF_comb(1:2:(options.breach_segments+1)*options.num_REF)=REF_Original;
+%                 In_Original=[In_Original REF_comb];
+                REF_comb(2,1:options.num_REF)=options.ref_Ts;
+                REF_comb([1,3],:)=REF_Original;
+                In_Original=[In_Original REF_comb(:)];
+            end
+            fprintf('To-DO: need to generalize\n\n')
         end
         Br_check_original.SetParam(input_param, In_Original);
         Br_check_original.Sim(sim_time);
         original_rob_all_nn=Br_check_original.CheckSpec(falsif.property);
-        figure;Br_check_original.PlotRobustSat(falsif.property_nom)
+        figure;Br_check_original.PlotRobustSat(falsif.property)
         fprintf('Original - The last NN has %i CEX out of %i.\n\n',numel(find(original_rob_all_nn<0)),numel(original_rob_all_nn));
         
         all_rob.orig_nn=original_rob_all_nn;
-        
+        if options.debug
+            figure;Br_check_original.PlotRobustMap(falsif.property);
+            figure;Br_check_original.PlotSignals(falsif.property);
+        end
+
 else
     if nargin<=4
         
         %test on original data
+        fprintf('\n\n Add case for Breach!!!\n\n')
         In_Original=[];
         for i=1:options.coverage.no_traces_ref
             In_Original=[In_Original,options.coverage.cells{i}.random_value];

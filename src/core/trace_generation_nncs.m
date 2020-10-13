@@ -50,7 +50,7 @@ if options.reference_type~=4
         tic;
         warning off
         if ~iscell(model)
-            [ref,y,u]=sim_SLX(model,options);
+            [ref,y,u,options]=sim_SLX(model,options);
             if options.debug
                 plot_single_trace(ref,y,u,options)
             end

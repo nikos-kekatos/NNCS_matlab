@@ -1,4 +1,4 @@
-function [ref,y,u,y_nn,u_nn] = sim_SLX(model_name,options)
+function [ref,y,u,options,y_nn,u_nn] = sim_SLX(model_name,options)
 % sim_SLX simulate once the Simulink model
 %   This is to resolve problems with references between base and local
 %   workspaces.
@@ -44,13 +44,16 @@ if options.combination
         timeId_span=[timeId_span, timeNb];
     end
     if options.debug
-    timeId_span
+        timeId_span
     end
     segment_Id=0;
     for timeId = timeId_span(1:end-1)
         segment_Id=segment_Id+1;
-        Jopt= 1e9;
-        
+        if options.combination_matlab==1 || options.combination_matlab==0 %cost function, find the minimum
+            Jopt= 1e9;
+        elseif options.combination_matlab==2
+            Jopt= -1e9;
+        end
         starttime=timeId;
         stoptime=timeId+timeNb_step;
         if stoptime>timeNb % the case when the intervals are not equal
@@ -91,30 +94,42 @@ if options.combination
                 
             elseif options.combination_matlab==0 % use Simulink and existing cost function
                 Jcurrent(segment_Id,contID) = J.Data(end);
-                
+            elseif options.combination_matlab==2
+                [Jcurrent(segment_Id,contID),options] = compute_robustness(ref,u,y,options);
             end
-            if (Jcurrent(segment_Id,contID)<=Jopt)
-                Jopt=Jcurrent(segment_Id,contID);
-                SimStateopt = SimState;
-                min_cost(segment_Id)=contID;
-                ref_opt{segment_Id}=ref;
-                y_opt{segment_Id}=y;
-                u_opt{segment_Id}=u;
+            if options.combination_matlab==1||options.combination_matlab==0
+                if (Jcurrent(segment_Id,contID)<=Jopt)
+                    Jopt=Jcurrent(segment_Id,contID);
+                    SimStateopt = SimState;
+                    min_cost(segment_Id)=contID;
+                    ref_opt{segment_Id}=ref;
+                    y_opt{segment_Id}=y;
+                    u_opt{segment_Id}=u;
+                end
+            elseif options.combination_matlab==2
+                if (Jcurrent(segment_Id,contID)>=Jopt)
+                    Jopt=Jcurrent(segment_Id,contID);
+                    SimStateopt = SimState;
+                    min_cost(segment_Id)=contID;
+                    ref_opt{segment_Id}=ref;
+                    y_opt{segment_Id}=y;
+                    u_opt{segment_Id}=u;
+                end
             end
         end
         if options.debug
-        if options.plotting_sim
-            fprintf('For the %i-segment, the Controller %i has the smallest cost.\n\n',segment_Id,min_cost(segment_Id));
-        else
-            if segment_Id==1
+            if options.plotting_sim
                 fprintf('For the %i-segment, the Controller %i has the smallest cost.\n\n',segment_Id,min_cost(segment_Id));
+            else
+                if segment_Id==1
+                    fprintf('For the %i-segment, the Controller %i has the smallest cost.\n\n',segment_Id,min_cost(segment_Id));
+                end
             end
-        end
         end
         SimState_previous=SimStateopt;
     end
     if options.debug
-    Jcurrent
+        Jcurrent
     end
     % ref_opt is the combined structure
     clearvars ref y u
@@ -163,12 +178,12 @@ if options.combination
         ylabel('contoller choice -- 1, 2, ...')
     else
         if options.debug
-        if timeId==1
-            plot_single_trace(ref,y,u,options)
-            figure;plot(min_cost,'o-')
-            xlabel('no time segments')
-            ylabel('contoller choice -- 1, 2, ...')
-        end
+            if timeId==1
+                plot_single_trace(ref,y,u,options)
+                figure;plot(min_cost,'o-')
+                xlabel('no time segments')
+                ylabel('contoller choice -- 1, 2, ...')
+            end
         end
     end
     

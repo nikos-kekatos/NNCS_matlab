@@ -339,7 +339,7 @@ close_system(strcat(options.SLX_model,'_breach'),0)
         for ii = 1:nbinputsig
             for jj = 0:(nbctrpt-1)
                 input_param{end+1} = ['In' num2str(ii) '_u' num2str(jj)];
-                input_range = [input_range; invalmin invalmax];
+                input_range = [input_range; invalmin(ii) invalmax(ii)];
                 if (jj<(nbctrpt-1))
                     input_param{end+1} = ['In' num2str(ii) '_dt' num2str(jj)];
                     input_range = [input_range; jj*sim_time/nbctrpt  (jj*sim_time/nbctrpt + eps_time) ];
@@ -364,10 +364,10 @@ close_system(strcat(options.SLX_model,'_breach'),0)
         for ii = 1:nbinputsig
             for jj = 0:(nbctrpt-1)
                 input_param{end+1} = ['In' num2str(ii) '_u' num2str(jj)];
-                input_range = [input_range; invalmin invalmax];
+                input_range = [input_range; invalmin(ii) invalmax(ii)];
                         if (jj<(nbctrpt-1))
                             input_param{end+1} = ['In' num2str(ii) '_dt' num2str(jj)];
-                            input_range = [input_range; (jj+1)*sim_time/nbctrpt  (jj+1)*sim_time/nbctrpt ];
+                            input_range = [input_range; (jj+1)*sim_time/nbctrpt  (jj+1)*sim_time/nbctrpt];
                         end
             end
             

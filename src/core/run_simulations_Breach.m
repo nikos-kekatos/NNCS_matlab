@@ -159,11 +159,21 @@ REF_breach=[];
 U_breach=[];
 Y_breach=[];
 
+%delete last point of each trace/ it is common to have a step change at the
+%very end of the time horizon. As such, there is an instantaneous step
+%change which also causes large changes in the controller.
 for ix=1:options.no_traces
-    REF_breach=[REF_breach,Br_sys.P.traj{ix}.X(index_REF,:)];
-    U_breach=[U_breach,Br_sys.P.traj{ix}.X(index_U,:)];
-    Y_breach=[Y_breach,Br_sys.P.traj{ix}.X(index_Y,:)];
+    REF_breach=[REF_breach,Br_sys.P.traj{ix}.X(index_REF,1:(end-1))];
+    U_breach=[U_breach,Br_sys.P.traj{ix}.X(index_U,1:(end-1))];
+    Y_breach=[Y_breach,Br_sys.P.traj{ix}.X(index_Y,1:(end-1))];
 end
+
+% for ix=1:options.no_traces
+%     REF_breach=[REF_breach,Br_sys.P.traj{ix}.X(index_REF,:)]; keep old
+%     U_breach=[U_breach,Br_sys.P.traj{ix}.X(index_U,:)];
+%     Y_breach=[Y_breach,Br_sys.P.traj{ix}.X(index_Y,:)];
+% end
+
 data_breach.REF=REF_breach';
 data_breach.U=U_breach';
 data_breach.Y=Y_breach';

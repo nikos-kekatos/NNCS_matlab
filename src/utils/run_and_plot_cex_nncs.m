@@ -60,6 +60,8 @@ for i=1:num_cex
         Ki=0.0131;
         Kd=3.3894e-004;
         N=9.9135;
+    elseif options.model==5
+        run('quad_variables.m')
     end
     options.workspace = simset('SrcWorkspace','current');
     sim(model_name,[],options.workspace);
