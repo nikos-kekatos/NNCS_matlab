@@ -1,4 +1,4 @@
-function [ref,y,u,options,y_nn,u_nn] = sim_SLX(model_name,options)
+function [ref,y,u,options,y_nn,u_nn,J_current] = sim_SLX(model_name,options)
 % sim_SLX simulate once the Simulink model
 %   This is to resolve problems with references between base and local
 %   workspaces.
@@ -190,6 +190,15 @@ if options.combination
 else
     options.workspace = simset('SrcWorkspace','current');
     sim(model_name,[],options.workspace);
+end
+if ~exist('y_nn','var')
+    y_nn=[];
+end
+if ~exist('u_nn','var')
+    u_nn=[];
+end
+if ~exist('J_current','var')
+    J_current=[];
 end
 end
 

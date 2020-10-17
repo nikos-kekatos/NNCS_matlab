@@ -1,4 +1,4 @@
-function  [ref,y,u]=run_simulation_nncs_comb(options,model_name,plot_cex)
+function  [ref,y,u,options]=run_simulation_nncs_comb(options,model_name,plot_cex)
 %UNTITLED5 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -38,8 +38,16 @@ elseif options.model==7
 end
 options.workspace = simset('SrcWorkspace','current');
 sim(model_name,[],options.workspace);
-
-if plot_cex==0 %plot only nominal
+if plot_cex=='rob'
+    load_system(options.SLX_model)
+    if options.combination~=1
+        warning('options.combination is not set correctly!')
+        options.combination=1;
+    end
+    [ref_comb,y_comb,u_comb,options,~,~,J]=sim_SLX(options.SLX_model,options);
+%     [J,options]=compute_robustness(ref,u,y,options)
+    fprintf('\nThe robustness of trace i is %.5f.\n\n',J)
+elseif plot_cex==0 %plot only nominal
     
 elseif plot_cex==1
     load_system(options.SLX_model)

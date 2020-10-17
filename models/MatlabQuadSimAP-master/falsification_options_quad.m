@@ -24,8 +24,11 @@ falsif.num_corners=25;
 falsif.max_obj_eval=100;
 falsif.max_obj_eval_local=20;
 falsif.seed=100;
+try
 falsif.num_inputs=options.num_REF;
-
+catch
+ falsif.num_inputs=2
+end
 falsif.property_file=options.specs_file;
 falsif.property_file='specs_quad_track.stl';
 %'specs_watertank_stabilization_ctrl_1.stl'

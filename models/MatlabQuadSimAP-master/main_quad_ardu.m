@@ -241,6 +241,10 @@ file_name='QuadrotorSimulink_w_memory';
 
 construct_SLX_with_NN(options,file_name);
 
+% use different models
+[options]=create_NN_diagram(options,net);
+construct_SLX_with_NN(options,'QuadrotorSimulink_w_memory_cex');
+
 %% 9. Analyse NNCS in Simulink
 model_name=[];
 % model_name='watertank_comp_design_mod_NN';
@@ -319,8 +323,9 @@ options.input_choice=4
 [original_rob,In_Original] = check_cex_all_data(data,falsif,file_name,options);
 
 %% 11. Falsification with Breach
-
-
+if ~exist('falsif')
+    falsification_options_quad
+end
 %%% ------------------------------------------ %%
 %%% ----- 11-A: Falsification with Breach ---- %%
 %%% ------------------------------------------ %%
@@ -432,7 +437,7 @@ while i_f<=falsif.iterations_max && ~stop
             % 2: keep old net and use all data,  3: keep old net and use only new data
             % 4: blend/mix old and new data,  5: weighted MSE
             training_options.loss='mse';
-            training_options.error=1e-6;
+%             training_options.error=1e-6;
             training_options.max_fail=50;
             % net.performParam.ratio=0.5;
             % Data_all contains the data from all cases (training, cex) and
@@ -486,11 +491,12 @@ while i_f<=falsif.iterations_max && ~stop
         %%% ----------------------------------------------- %%
         %%% ------       11-F: Plotting CEX     ----------- %%
         %%% ----------------------------------------------- %%
-        %
+        %%
         options.input_choice=3
         num_cex=5;options.plotting_sim=1;
         run_and_plot_cex_nncs(options,file_name,inputs_cex,num_cex); %4th input number of counterexamples
         options.input_choice=4;
+        %%
     end
     %
     fprintf('\n End of Iteration %i.\n',i_f)

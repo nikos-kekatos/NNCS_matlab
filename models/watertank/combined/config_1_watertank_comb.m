@@ -10,9 +10,9 @@ if options.combination
     ctrl_configuration='watertank_controllers';
     run(ctrl_configuration)
 end
-options.combination_matlab=1;
+options.combination_matlab=2;
 options.T_segments=10;
-options.time_step_segments=5;
+options.time_step_segments=2.5;
 
 options.Q=[1/4]; % should be diagonal
 options.R=[1/10]; %should be diagonal

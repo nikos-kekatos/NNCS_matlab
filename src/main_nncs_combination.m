@@ -120,8 +120,9 @@ for i=1:floor(options.no_traces)%/10
     options.u_index_plot=1;
     options.y_index_plot=1;
     options.ref_index_plot=1;
-    
-    run_simulation_nncs_comb(options,model_name,1); % 3 for combined (with nominal NN) %4 for combined (no nominal)
+    clear compute_robustness
+% global options
+    [~,~,~,options]=run_simulation_nncs_comb(options,model_name,'rob'); %'rob': nominal robust, %1: for traces wo/ NN, % 3 for combined (with nominal NN) %4 for combined (no nominal)
     options.input_choice=4;
     
 end

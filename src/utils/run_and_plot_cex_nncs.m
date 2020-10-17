@@ -76,7 +76,11 @@ for i=1:num_cex
         xlabel(AX, '$t$', 'Interpreter', 'latex', 'FontSize', 20);
         ylabel(AX, '$\ y(k)$', 'Interpreter', 'latex', 'FontSize', 20);
         
-        plot(ref.time(1:end-1),ref.signals.values(1:end-1,ref_idx),'r',y_nn.time,y_nn.signals.values(:,y_idx),'b-.',y_nn_cex_1.time,y_nn_cex_1.signals.values(:,y_idx),'m.-.','Linewidth',0.75);
+        try
+            plot(ref.time(1:end-1),ref.signals.values(1:end-1,ref_idx),'r',y_nn.time,y_nn.signals.values(:,y_idx),'b-.',y_nn_cex_1.time,y_nn_cex_1.signals.values(:,y_idx),'m.-.','Linewidth',0.75);
+        catch
+            plot(ref.time(1:end-1),ref.signals.values(1:end-1,ref_idx),'r',y_nn.time,y_nn.signals.values(:,y_idx),'b-.',y_nn_cex.time,y_nn_cex.signals.values(:,y_idx),'m.-.','Linewidth',0.75);
+        end
         % xlabel('time (s)')
         % ylabel('plant output')
         % legend('reference',' NN original','NN with cex','FontSize',14)
@@ -93,7 +97,11 @@ for i=1:num_cex
     set(AX, 'FontSize', 12);
     xlabel(AX, '$t$', 'Interpreter', 'latex', 'FontSize', 20);
     ylabel(AX, '$\ y(k)$', 'Interpreter', 'latex', 'FontSize', 20);
-    plot(ref.time(1:end-1),ref.signals.values(1:end-1,ref_idx),'r',y.time,y.signals.values(:,y_idx),'g--',y_nn.time,y_nn.signals.values(:,y_idx),'b-.',y_nn_cex_1.time,y_nn_cex_1.signals.values(:,y_idx),'m.-.','Linewidth',0.75);
+    try
+        plot(ref.time(1:end-1),ref.signals.values(1:end-1,ref_idx),'r',y.time,y.signals.values(:,y_idx),'g--',y_nn.time,y_nn.signals.values(:,y_idx),'b-.',y_nn_cex_1.time,y_nn_cex_1.signals.values(:,y_idx),'m.-.','Linewidth',0.75);
+    catch
+        plot(ref.time(1:end-1),ref.signals.values(1:end-1,ref_idx),'r',y.time,y.signals.values(:,y_idx),'g--',y_nn.time,y_nn.signals.values(:,y_idx),'b-.',y_nn_cex.time,y_nn_cex.signals.values(:,y_idx),'m.-.','Linewidth',0.75);
+    end
     % xlabel('time (s)')
     % ylabel('plant output')
     legend('reference', 'PID', 'NN original','NN with cex','FontSize',14)

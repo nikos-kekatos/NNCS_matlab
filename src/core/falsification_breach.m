@@ -154,12 +154,18 @@ if options.plotting_sim
     elseif model_type==2
         figure;falsif_pb.BrSet_Logged.PlotSignals({'In1', 'y_3_','y_nn_3_)'});
     elseif model_type==5
-        figure;falsif_pb.BrSet_Logged.PlotSignals({'In1', 'y','y_nn'});
+        figure;falsif_pb.BrSet_Logged.PlotSignals({'In1', 'y_2_','y_nn_2_'});
+        figure;falsif_pb.BrSet_Logged.PlotSignals({'In2', 'y_3_','y_nn_3_'});
     end
 end
 Br_False = falsif_pb.GetFalse(); % AFC_False contains the falsifying trace
-try
-    Br_False.PlotSignals({'In1','y','y_nn'});
+if model_type~=5
+    try
+     Br_False.PlotSignals({'In1','y','y_nn'});
+    end
+elseif model_type==5
+        Br_False.PlotSignals({'In1','y_2_','y_nn_2_'});
+        Br_False.PlotSignals({'In2','y_3_','y_nn_3_'});
 end
 
 % we need to find out which traces violate the STL property
@@ -197,7 +203,8 @@ if check_nominal
     inputs_tested=falsif_pb.X_log;
     Br_check_nom.SetParam(input_param, inputs_tested);
     Br_check_nom.Sim(sim_time);
-    % robustness_check{1} = Br_check.CheckSpec(falsif.property);
+    rob_nn = Br_check_nom.CheckSpec(falsif.property);
+    fprintf('With CheckSpec: the NN has %i falsifiying traces out of %i.\n\n',length(find(rob_nn<0)),length(rob_nn));
     % robustness_check{2}=Br_check.CheckSpec(falsif.property_cex);
     rob_nominal=Br_check_nom.CheckSpec(falsif.property_nom);
     if ~exist('rob_nominal','var')
@@ -211,9 +218,15 @@ try
     no_U=size(data.U,2);
     no_Y=size(data.Y,2);
 catch
+    try
     no_REF=options.num_REF;
     no_U=options.num_U;
     no_Y=options.num_Y;
+    catch
+        no_REF=2;
+        no_U=2;
+        no_Y=3;
+    end
 end
 %then we need to find indexes for REF
 index_REF=[];
@@ -281,7 +294,12 @@ for i=falsif_idx
     end
     try % problem appears if the segments are not equal
         for i_ref=1:options.breach_segments
-            REF_cex_breach_values_temp=[REF_cex_breach_values_temp;unique(ref_values_all(1+(i_ref-1)*no_ref_points:i_ref*no_ref_points),'stable')];
+            if size(ref_values_all,1)==1 % 1 reference, unique works just fine
+                REF_cex_breach_values_temp=[REF_cex_breach_values_temp;unique(ref_values_all(1+(i_ref-1)*no_ref_points:i_ref*no_ref_points),'stable')];
+            else %unique rows is needed
+                REF_cex_breach_values_temp=[REF_cex_breach_values_temp;unique(ref_values_all(:,1+(i_ref-1)*no_ref_points:i_ref*no_ref_points)','rows','stable')];
+            end
+                
         end
     catch
         REF_cex_breach_values_temp=unique(ref_values_all,'stable')';
