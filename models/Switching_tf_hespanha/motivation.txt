@@ -1,0 +1,6 @@
+Here is one of the "classical" papers on combining controllers ("Switching Between Stabilizing Controllers"). 
+The paper nicely states that designing a single controller with multiple performance requirements (noise rejection, fast response) is hard
+but it is possible with switching controller, but the switching law should satisfy some condition for stability to be preserved.
+See the attached paper, where there is an example at the end that we can use.
+
+

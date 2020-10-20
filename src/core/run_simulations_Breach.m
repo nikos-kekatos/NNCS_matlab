@@ -89,11 +89,11 @@ for ii = 1:nbinputsig
     
 end
 Br_sys.SetParamRanges(input_param, input_range);
- Br_sys.QuasiRandomSample(options.no_traces);
-figure; Br_sys.PlotParams();
-set(gca,'View', [45 45]);
-figure;Br_sys.PlotDomain();
+Br_sys.QuasiRandomSample(options.no_traces);
 if options.trace_gen_via_sim
+    figure; Br_sys.PlotParams();
+    set(gca,'View', [45 45]);
+    figure;Br_sys.PlotDomain();
     Br_sys.Sim();
     figure; Br_sys.PlotSignals();
 else
