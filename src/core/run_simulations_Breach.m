@@ -89,14 +89,26 @@ for ii = 1:nbinputsig
     
 end
 Br_sys.SetParamRanges(input_param, input_range);
-Br_sys.QuasiRandomSample(options.no_traces);
+ Br_sys.QuasiRandomSample(options.no_traces);
 figure; Br_sys.PlotParams();
 set(gca,'View', [45 45]);
 figure;Br_sys.PlotDomain();
-
-Br_sys.Sim();
-figure; Br_sys.PlotSignals();
-
+if options.trace_gen_via_sim
+    Br_sys.Sim();
+    figure; Br_sys.PlotSignals();
+else
+    [~,property_all]=STL_ReadFile(options.specs_file);
+    property=property_all{1};
+    R = BreachRequirement(property);
+    falsif_pb = FalsificationProblem(Br_sys, R);
+    falsif_pb.max_obj_eval = options.no_traces; % 1000
+    falsif_pb.setup_random('rand_seed',1,'num_rand_samples',options.no_traces); % 100
+    falsif_pb.StopAtFalse=false;
+    falsif_pb.solve();
+    Rlog = falsif_pb.GetLog();
+    figure;BreachSamplesPlot(Rlog);
+    fprintf('\nThere are %i violations out of %i traces.\n\n',falsif_pb.num_constraints_failed,falsif_pb.nb_obj_eval);
+end
 % We need to get values and save them as a data structure
 
 try
@@ -138,6 +150,10 @@ catch
     end
 end
 
+if ~options.trace_gen_via_sim %falsification
+    Br_sys=falsif_pb.BrSet_Logged;
+end
+
 index_REF=[];
 index_U=[];
 index_Y=[];
@@ -147,11 +163,11 @@ for i=1:no_REF
     index_REF=[index_REF;find(strcmp(Br_sys.P.ParamList,ref_name))];
 end
 for i=1:no_U
-    u_name=strcat('u_',num2str(i),'_');
+    u_name=strcat('u_',num2str(i),'_'); % test with param_u
     index_U=[index_U;find(strcmp(Br_sys.P.ParamList,u_name))];
 end
 for i=1:no_Y
-    y_name=strcat('y_',num2str(i),'_');
+    y_name=strcat('y_',num2str(i),'_'); % replace and test by param_y
     index_Y=[index_Y;find(strcmp(Br_sys.P.ParamList,y_name))];
 end
 

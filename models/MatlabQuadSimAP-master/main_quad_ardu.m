@@ -107,6 +107,7 @@ options.save_sim=0;
 % Breach options
 % options.no_traces=30;
 % options.breach_segments=2;
+options.trace_gen_via_sim=0;
 options.coverage.points='r';
 warning off
 [data,options]=trace_generation_nncs(SLX_model,options);
@@ -235,13 +236,13 @@ plot_NN_sim(data,options);
 [options]=create_NN_diagram(options,net);
 
 %% 8b. Integrate NN block in the Simulink model
-file_name='QuadrotorSimulink_no_memory';
+% file_name='QuadrotorSimulink_no_memory';
 file_name='QuadrotorSimulink_w_memory';
 % file_name='QuadrotorSimulink_w_memory_error';
 
 construct_SLX_with_NN(options,file_name);
 
-% use different models
+%% 8c. Use different models for CEX
 [options]=create_NN_diagram(options,net);
 construct_SLX_with_NN(options,'QuadrotorSimulink_w_memory_cex');
 
@@ -319,7 +320,7 @@ end
 %% 10B. Matching test against STL property
 
 falsification_options_quad;
-options.input_choice=4
+options.input_choice=4;
 [original_rob,In_Original] = check_cex_all_data(data,falsif,file_name,options);
 
 %% 11. Falsification with Breach
@@ -510,6 +511,7 @@ while i_f<=falsif.iterations_max && ~stop
     
 end
 
+%{
 %% 12a. Checking CEX against SLX
 fprintf('\n\n------------\n\n');
 fprintf('\nHere we check if there are any problems with the way we store the data.\n');
@@ -564,7 +566,7 @@ plot_coverage_boxes(options,1)
 hold on
 plot(REF_previous(1,:),REF_previous(2,:),'ms')
 plot(REF(1,:),REF(2,:),'bx')
-
+%}
 %% 12b. Check NN-cex on original training data
 
 [original_rob,In_Original] = check_cex_all_data(Data_all,falsif,file_name,options);

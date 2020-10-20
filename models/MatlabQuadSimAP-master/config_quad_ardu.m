@@ -2,6 +2,8 @@
 % we store all the specifications in a structure named options.
 % clear options
 
+options.trace_gen_via_sim=1; % trace generation via Simulation or via falsification
+
 options.debug=0;
 options.model=5;
 addpath(genpath('utilities'))
