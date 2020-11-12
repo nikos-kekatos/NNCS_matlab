@@ -16,7 +16,6 @@ clear reached seeds_all stop t__ tm training_perf tspan u__ idx_cluster falsif_p
 falsif.test_only_original=1;
 
 options.testing_breach=1;
-training_options.combining_old_and_cex=1; % 1: combine old and cex
 falsif.iterations_max=3;
 falsif.method='quasi';
 falsif.num_samples=20;
@@ -30,7 +29,7 @@ catch
  falsif.num_inputs=2
 end
 falsif.property_file=options.specs_file;
-falsif.property_file='specs_quad_track.stl';
+% falsif.property_file='specs_quad_z_desired.stl';
 %'specs_watertank_stabilization_ctrl_1.stl'
 %'specs_watertank_stabilization_comb.stl';
 

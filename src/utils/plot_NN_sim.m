@@ -4,25 +4,34 @@ function  plot_NN_sim(data,options)
 %   data.
 if options.plotting_sim
     figure;
-    plot(1:length(data.out),data.out,'rx',1:length(data.out_NN),data.out_NN,'bs')
-    xlabel('no of points')
-    ylabel('output values $u$')
-    legend('nominal','NN')
-    title('Output of PID vs NN -- all points')
+    for i=1:size(data.out,1)
+        subplot(size(data.out,1),1,i)
+        plot(1:length(data.out),data.out(i,:),'rx',1:length(data.out_NN),data.out_NN(i,:),'bs')
+        xlabel('no of points')
+        ylabel('output values $u$')
+        legend('nominal','NN')
+        title('Output of PID vs NN -- all points')
+    end
     try
     figure;
-    plot(1:5000,data.out(1:5000),'rx',1:5000,data.out_NN(1:5000),'bs')
-    xlabel('no of points')
-    ylabel('output values $u$')
-    legend('nominal','NN')
-    title('Output of PID vs NN -- first 5000 points')
+    for i=1:size(data.out,1)
+        subplot(size(data.out,1),1,i)
+        plot(1:5000,data.out(i,1:5000),'rx',1:5000,data.out_NN(i,1:5000),'bs')
+        xlabel('no of points')
+        ylabel('output values $u$')
+        legend('nominal','NN')
+        title('Output of PID vs NN -- first 5000 points')
+    end
     catch
-       figure;
-    plot(1:500,data.out(1:500),'rx',1:500,data.out_NN(1:500),'bs')
-    xlabel('no of points')
-    ylabel('output values $u$')
-    legend('nominal','NN')
-    title('Output of PID vs NN -- first 500 points') 
+        for i=1:size(data.out,1)
+            figure;
+            subplot(size(data.out,1),1,i)
+            plot(1:500,data.out(i,1:500),'rx',1:500,data.out_NN(i,1:500),'bs')
+            xlabel('no of points')
+            ylabel('output values $u$')
+            legend('nominal','NN')
+            title('Output of PID vs NN -- first 500 points')
+        end
     end
 end
 

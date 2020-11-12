@@ -5,18 +5,20 @@ options.SLX_model_nominal='watertank_multPID_2018a_v3_nom_c1';
 % options.testing_breach=1;
 % training_options.combining_old_and_cex=1; % 1: combine old and cex
 falsif.iterations_max=1;
-falsif.method='quasi';
+falsif.method='GNM';
 falsif.num_samples=100;
-falsif.num_corners=25;
+falsif.num_corners=10;
 falsif.max_obj_eval=100;
-falsif.max_obj_eval_local=20;
-falsif.seed=100;
+falsif.max_obj_eval_local=100;
+falsif.seed=200;
 falsif.num_inputs=1;
 
 falsif.property_file=options.specs_file;
-falsif.property_file='specs_watertank_comb_ctrl_1.stl';
-% falsif.property_file='specs_watertank_stabilization_ctrl_1.stl';
-% falsif.property_file='specs_watertank_overshoot_ctrl_1.stl';
+falsif.property_file='specs_watertank_comb_ctrl_2.stl';
+
+falsif.property_file='specs_watertank_comb_ctrl_3.stl';
+% falsif.property_file='specs_watertank_stabilization_ctrl_2.stl';
+% falsif.property_file='specs_watertank_overshoot_ctrl_2.stl';
 
 % falsif.property_file='specs_watertank_stabilization_comb.stl';
 [~,falsif.property_all]=STL_ReadFile(falsif.property_file);

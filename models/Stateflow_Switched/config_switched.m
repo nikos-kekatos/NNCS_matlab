@@ -2,6 +2,9 @@
 % we store all the specifications in a structure named options.
 % clear options
 
+options.combination=0;
+options.debug=0;
+
 options.model=6;
 % addpath(genpath('utilities'))
 % run('quad_variables.m')

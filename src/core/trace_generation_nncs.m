@@ -197,7 +197,11 @@ if options.reference_type~=4
         delete([options.SLX_model,'.slxc'])
     end
 elseif options.reference_type==4
-    data=run_simulations_Breach(options);
+    if strcmp(options.SLX_model,'Quadrotor_stable_z_desired_inzemam')
+        data=run_simulations_Breach_z_desired_inzemam(options)
+    else
+        data=run_simulations_Breach(options);
+    end
     try
         delete([options.SLX_model,'_breach.slxc']);
     end

@@ -119,8 +119,8 @@ if options.trimming
 end
 %% 5b. Data Preprocessing
 display_ranges(data);
-options.preprocessing_bool=0;
-options.preprocessing_eps=0.001;
+options.preprocessing_bool=1;
+options.preprocessing_eps=0%.001;
 if options.preprocessing_bool==1
     [data,options]=preprocessing(data,options);
 end
@@ -174,7 +174,7 @@ training_options.loss='mse';
 % training_options.loss='wmse';
 training_options.div='dividerand';
 % training_options.div='dividetrain';
-training_options.error=1e-5;
+training_options.error=1e-7;
 training_options.max_fail=50; % Validation performance has increased more than max_fail times since the last time it decreased (when using validation).
 training_options.regularization=0; %0-1
 training_options.param_ratio=0.5;
@@ -182,7 +182,7 @@ training_options.algo= 'trainlm'%'trainlm'; % trainscg % trainrp
 %add option for saved mat files
 training_options.iter_max_fail=1;
 iter=1;reached=0;
-training_options.replace_by_zeros=1; %% very important to use 1. 
+training_options.replace_by_zeros=2; %% very important to use 1. 
 % probably due to scaling factor and ranges.
 
 while true && iter<=training_options.iter_max_fail
@@ -290,7 +290,7 @@ elseif model==5
     options.sim_ref=3;
     options.ref_min=2;
     options.ref_max=5;
-    options.sim_cov=options.coverage.cells{2}.random_value;
+    options.sim_cov=options.coverage.cells{1}.random_value;
     options.u_index_plot=1;
     options.y_index_plot=1;
     options.ref_index_plot=1;
@@ -311,6 +311,7 @@ elseif model==7
     options.ref_min=0;
     options.ref_max=2;
     options.sim_cov=[2200;2100];
+    options.sim_cov=options.coverage.cells{1}.random_value;
     options.u_index_plot=1;
     options.y_index_plot=1;
     options.ref_index_plot=1;
@@ -329,7 +330,8 @@ else
         plot_coverage_boxes(options,1);
     end
     options.testing.plotting=1;
-    options.testing.train_data=0;% 0: for centers, 1: random points
+    options.testing.train_data=1;% 0: for centers, 1: random points
+    options.test_dataMatching=1
     if options.test_dataMatching
         [testing,options]=test_coverage(options,model_name);
     end

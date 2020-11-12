@@ -27,7 +27,7 @@ falsif.seed=100;
 falsif.num_inputs=1;
 
 falsif.property_file=options.specs_file;
-falsif.property_file='specs_watertank_comb_ctrl_1.stl';
+% falsif.property_file='specs_watertank_comb_ctrl_1.stl';
 %'specs_watertank_stabilization_ctrl_1.stl'
 %'specs_watertank_stabilization_comb.stl';
 

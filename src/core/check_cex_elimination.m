@@ -40,6 +40,8 @@ no_cex=size(inputs_cex,2);
 %3. Create Breach object
 % Br_check = BreachSimulinkSystem(file_name,'all',[],var_names_list);
 Br_check = BreachSimulinkSystem(file_name,'all');
+load_system(strcat(file_name,'_breach'))
+set_param(strcat(file_name,'_breach'),'FastRestart','on')
 
 nbinputsig = falsif.num_inputs;
 nbctrpt = falsif.breach_segments;
@@ -81,9 +83,8 @@ Br_check.Sim(sim_time);
 % robustness_check{1} = Br_check.CheckSpec(falsif.property);
 % robustness_check{2}=Br_check.CheckSpec(falsif.property_cex);
 robustness_check=Br_check.CheckSpec(falsif.property_cex);
-
 inputs_all=falsif_pb.X_log;
-if ~isequal(inputs_all,inputs_cex)
+if ~isequal(inputs_all,inputs_cex) && falsif.test_previous_nn
 Br_check_all.SetParam(input_param, inputs_all);
 % Br_check_all.Sim(sim_time-options.dt);
 Br_check_all.Sim(sim_time);
@@ -97,9 +98,12 @@ fprintf('The last NN has %i CEX out of %i.\n\n',numel(find(new_rob_all_nn<0)),nu
 fprintf('The nominal  has %i CEX out of %i.\n\n',numel(find(new_rob_all_nom<0)),numel(new_rob_all_nom));
 robustness_check_all=new_rob_all_cex;
 else
-    robustness_check_all=robustness_check;
+    robustness_check_all=[];
 end
 close_system(strcat(options.SLX_model,'_breach'),0);
+set_param(strcat(file_name,'_breach'),'FastRestart','off')
+close_system(strcat(file_name,'_breach'),0);
+
 % delete(fullfile(which(strcat(options.SLX_model,'_breach.slx'))))
 % delete(fullfile(which(strcat(options.SLX_model,'_breach.slxc'))))
 

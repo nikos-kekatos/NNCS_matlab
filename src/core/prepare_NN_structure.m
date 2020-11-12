@@ -220,8 +220,11 @@ if isempty(old_error)||old_error==0
     end
 else % error dynamics
     index_error=1:no_REF_array;
-    index_error_past=(index_error+1):(index_error*no_REF_array*old_error);
-    index_u_past=(index_error_past+1):(index_error_past+no_U_array);
+    index_error_past=[no_REF_array+1:(no_REF_array+no_REF_array*old_ref)];
+    index_u_past=[max(index_error_past)+1:(max(index_error_past)+no_U_array*old_u)];
+
+%     index_error_past=(index_error+1):(index_error*no_REF_array*old_error);
+ %   index_u_past=(index_error_past+1):(index_error_past+no_U_array);
     if training_options.replace_by_zeros==0
         disp('There is no special treatment for the time shift operations')
     elseif training_options.replace_by_zeros==1
@@ -243,5 +246,10 @@ else % error dynamics
     
 end
 
+if training_options.use_time
+    t=0:options.dt:(options.T_train-options.dt);
+    t_array=repmat(t,1,no_traces);
+    in=[in;t_array];
 end
 
+end

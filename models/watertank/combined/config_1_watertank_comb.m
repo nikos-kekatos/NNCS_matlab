@@ -12,7 +12,7 @@ if options.combination
 end
 options.combination_matlab=2;
 options.T_segments=10;
-options.time_step_segments=2.5;
+options.time_step_segments=5;
 
 options.Q=[1/4]; % should be diagonal
 options.R=[1/10]; %should be diagonal
@@ -53,7 +53,7 @@ options.reference_type=3;
 options.plotting_sim=0;
 
 options.test_dataMatching=0;
-options.specs_file='specs_watertank_comb_ctrl_1.stl';
+options.specs_file='specs_watertank_comb_ctrl_2.stl';
 % added for Breach
 try
     block_name=strcat(SLX_model,'/Switch1');
@@ -120,7 +120,7 @@ if options.reference_type==3
     options.ref_Ts=5;
     options.coverage.ref_min=8;
     options.coverage.ref_max=12;
-    options.coverage.delta_resolution=4/6; %0.5; %0.1
+    options.coverage.delta_resolution=1; %0.5; %0.1
 %     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution-1;
     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution;
 

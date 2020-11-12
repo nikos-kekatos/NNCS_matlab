@@ -42,11 +42,22 @@ elseif strcmp(model_name,'robotarm')||strcmp(model_name,'robotarm_NN') ||strcmp(
 elseif strcmp(model_name,'tank_reactor')||strcmp(model_name,'tank_reactor_NN') ||strcmp(model_name,'robotarm_NN_cex')
     var_names_list={};
     model_type=4;
+elseif strcmp(model_name,'controller1')||strcmp(model_name,'controller2') 
+    var_names_list={};
+    model_type=1;
+elseif strcmp(model_name,'watertank_multPID_2018a_v3_nom_c2_values')||strcmp(model_name,'watertank_multPID_2018a_v3_nom_c1')
+    var_names_list={};
+    model_type=10;
 else 
     model_type=5;
 end
 % Br_falsif = BreachSimulinkSystem(model_name,'all',[],var_names_list);
+% set_param(strcat(model_name,'_breach'),'FastRestart','on')
+
+
 Br_falsif = BreachSimulinkSystem(model_name,'all');
+load_system(strcat(model_name,'_breach'))
+set_param(strcat(model_name,'_breach'),'FastRestart','on')
 % Br_falsif = BreachSimulinkSystem(model_name);
 
 warning('Only works for 1D systems')
@@ -149,13 +160,16 @@ falsif_pb.solve();
 Rlog = falsif_pb.GetLog();
 figure;BreachSamplesPlot(Rlog);
 if options.plotting_sim
-    if model_type==1
+    if model_type==1 ||model_type==10
         figure;falsif_pb.BrSet_Logged.PlotSignals({'In1', 'y','y_nn'});
     elseif model_type==2
         figure;falsif_pb.BrSet_Logged.PlotSignals({'In1', 'y_3_','y_nn_3_)'});
     elseif model_type==5
         figure;falsif_pb.BrSet_Logged.PlotSignals({'In1', 'y_2_','y_nn_2_'});
         figure;falsif_pb.BrSet_Logged.PlotSignals({'In2', 'y_3_','y_nn_3_'});
+        try
+            figure;falsif_pb.BrSet_Logged.PlotSignals({'In3', 'z_nom','z_nn'});
+        end
     end
 end
 Br_False = falsif_pb.GetFalse(); % AFC_False contains the falsifying trace
@@ -164,10 +178,19 @@ if model_type~=5
      Br_False.PlotSignals({'In1','y','y_nn'});
     end
 elseif model_type==5
+    try
         Br_False.PlotSignals({'In1','y_2_','y_nn_2_'});
         Br_False.PlotSignals({'In2','y_3_','y_nn_3_'});
+    end
 end
-
+if model_type==10
+    try
+    figure;Br_False.PlotRobustSat(property);
+    figure;Br_False.PlotRobustMap(property);
+    end
+    figure;falsif_pb.BrSet_Logged.PlotRobustSat(property)
+    figure;falsif_pb.BrSet_Logged.PlotRobustMap(property)
+end
 % we need to find out which traces violate the STL property
 
 % if the objective is negative the property is not satisfied
@@ -198,7 +221,7 @@ fprintf('The total number of traces is %i.\n\n',no_cex_2);
 % options.
 
 % we evaluate the STL property on the nominal controller
-if check_nominal
+if check_nominal && ~isempty(falsif_idx)
     Br_check_nom=Br_falsif.copy();
     inputs_tested=falsif_pb.X_log;
     Br_check_nom.SetParam(input_param, inputs_tested);
@@ -207,6 +230,8 @@ if check_nominal
     fprintf('With CheckSpec: the NN has %i falsifiying traces out of %i.\n\n',length(find(rob_nn<0)),length(rob_nn));
     % robustness_check{2}=Br_check.CheckSpec(falsif.property_cex);
     rob_nominal=Br_check_nom.CheckSpec(falsif.property_nom);
+    fprintf('With CheckSpec: the nominal has %i falsifiying traces out of %i.\n\n',length(find(rob_nominal<0)),length(rob_nominal));
+
     if ~exist('rob_nominal','var')
         rob_nominal=[];
     end
@@ -342,6 +367,9 @@ try
     current_coverage_value = Br_falsif.ComputeLogCellOccupancyCoverage
 end
 close_system(strcat(options.SLX_model,'_breach'),0)
+set_param(strcat(model_name,'_breach'),'FastRestart','off')
+close_system(strcat(model_name,'_breach'),0)
+
 % delete(fullfile(which(strcat(options.SLX_model,'_breach.slx'))))
 % delete(fullfile(which(strcat(options.SLX_model,'_breach.slxc'))))
 

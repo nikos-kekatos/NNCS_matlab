@@ -59,7 +59,16 @@ for i=1:options.no_traces
     options.sim_cov=options.testing.sim_cov;
     options.ref_Ts=options.testing.ref_Ts;
     options.workspace = simset('SrcWorkspace','current');
+    if options.model==7
+        Kp=0.0055;
+        Ki=0.0131;
+        Kd=3.3894e-004;
+        N=9.9135;
+    end
     sim(model_name,[],options.workspace);
+    
+%     [ref,y,u,options,y_nn,u_nn]=sim_SLX(model_name,options)
+    
     if options.combination
         clear u y ref
         test_model=options.SLX_model;

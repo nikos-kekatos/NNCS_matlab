@@ -73,6 +73,7 @@ end
 % 
 %  Controller -- 2
 % We ran 100 scenarios and found 3 and 0 CEX.
+
 %% 4a. Run simulations -- Generate training data (combined)
 options.error_mean=0;%0.0001;
 options.error_sd=0;%0.001;
@@ -100,7 +101,7 @@ if options.load==1
 end
 %% 4c. Plot all traces w/ combined
 if options.debug
-for i=1:floor(options.no_traces)%/10
+for i=1:floor(options.no_traces)/10
     fprintf('Testing controllers -- Trace %i.\n\n',i)
     model_name=options.SLX_model_falsif;
     % model_name='watertank_comp_design_mod_NN';
@@ -150,6 +151,7 @@ training_options.use_error_dyn=1;       % watertank=1    %robotarm=0    %quadcop
 training_options.use_previous_u=2;      % waterank=2     %robotarm=2    %quadcopter=0
 training_options.use_previous_ref=3;    % waterank=3     %robotarm=3    %quadcopter=0
 training_options.use_previous_y=3;
+training_options.use_time=0;
 options.extra_y=0;
 options.extra_ref=0;
 training_options.neurons=[30 30];
@@ -208,8 +210,9 @@ if options.plotting_sim
 end
 
 %% 7. Evaluate NN
-% options.plotting_sim=1
+options.plotting_sim=1
 plot_NN_sim(data,options);
+options.plotting_sim=0
 
 %% 8a. Create Simulink block for NN
 options.SLX_model_combined=strcat(options.SLX_model,'_comb')
@@ -234,7 +237,7 @@ if options.reference_type==3
         plot_coverage_boxes(options,1);
     end
     options.testing.plotting=0;
-    options.test_dataMatching=1;
+    options.test_dataMatching=0;
     options.testing.train_data=1;% 0: for centers, 1: random points
     if options.test_dataMatching
         [testing,options]=test_coverage(options,file_name);
@@ -277,21 +280,18 @@ options.input_choice=4;
 %  delete(fullfile(which(strcat(options.SLX_model,'_breach.slx'))))
 get_param(Simulink.allBlockDiagrams(),'Name')
 bdclose all;
-clear Data_all data_cex Br falsif_pb net_all phi_1 phi_3 phi_4  phi_5 phi_all
-clear robustness_checks_all robustness_checks_false  falsif_pb_temp file_name
-clear rob_nominal robustness_check_temp block_name falsif_idx data_cex
-clear data_cex_cluster tr tr_all condition cluster_all check_nominal model_name
-clear data_backup i_f ii In1_dt0 In1_u0 In1_u1 inputs_cex iter iter_best num_cex
-clear reached seeds_all stop t__ tm training_perf tspan u__ idx_cluster falsif_pb_zero
 
+if ~exist('falsif','var')
+    falsification_options
+end
 %%% ------------------------------------------ %%
 %%% ----- 11-A: Falsification with Breach ---- %%
 %%% ------------------------------------------ %%
 falsif.max_obj_eval_local=100;
-falsif.num_samples=100;
-falsif.seed=100;
-falsif.iterations_max=2;
-falsif.property_file='specs_watertank_comb_ctrl_1.stl';
+% falsif.num_samples=100;
+% falsif.seed=200;
+falsif.iterations_max=4;
+% falsif.property_file='specs_watertank_comb_ctrl_1.stl';
 %'specs_watertank_stabilization_ctrl_1.stl'
 %'specs_watertank_stabilization_comb.stl';
 
@@ -459,7 +459,7 @@ while i_f<=falsif.iterations_max && ~stop
         %%% ------ 11-E: Testing if CEX disappeared   ----- %%
         %%% ----------------------------------------------- %%
         timer_rechecking=tic;
-        
+        falsif.test_previous_nn=0;
         fprintf('\n Testing the NN on the training data.\n')
         fprintf('The number of original CEX was %i.\n',length(falsif_pb{i_f}.obj_false));
         [rob_temp_false,rob_temp_all,inputs_cex,inputs_all,options]=check_cex_elimination(falsif_pb{i_f},falsif,data_cex,file_name,idx_cluster,options);

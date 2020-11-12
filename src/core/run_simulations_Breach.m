@@ -15,6 +15,7 @@ else
 end
 Br = BreachSimulinkSystem(options.SLX_model,'all',[],var_names_list);
 warning('Only works for 1D systems')
+% set_param(strcat(options.SLX_model,'_breach'),'FastRestart','on')
 
 % Test with constant
 if strcmp(options.SLX_model,'watertank_inport')|| strcmp(options.SLX_model,'watertank_inport_NN')
@@ -88,6 +89,8 @@ for ii = 1:nbinputsig
     input_range;
     
 end
+% attempts to store specific values, not enough
+% Br_sys.SetTime(0:1:sim_time);
 Br_sys.SetParamRanges(input_param, input_range);
 Br_sys.QuasiRandomSample(options.no_traces);
 if options.trace_gen_via_sim
@@ -106,8 +109,13 @@ else
     falsif_pb.StopAtFalse=false;
     falsif_pb.solve();
     Rlog = falsif_pb.GetLog();
+    Rlog.GetStatement
     figure;BreachSamplesPlot(Rlog);
-    fprintf('\nThere are %i violations out of %i traces.\n\n',falsif_pb.num_constraints_failed,falsif_pb.nb_obj_eval);
+    % num_constraints_evaluations returns 0
+    % use num_traces_vi0lations:
+    %fprintf('\nThere are %i violations out of %i traces.\n\n',falsif_pb.num_constraints_failed,falsif_pb.nb_obj_eval);
+    fprintf('\nThere are %i violations out of %i traces.\n\n',Rlog.GetStatement.num_traces_violations,falsif_pb.nb_obj_eval);
+
 end
 % We need to get values and save them as a data structure
 

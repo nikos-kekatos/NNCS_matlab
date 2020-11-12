@@ -29,7 +29,12 @@
 %% 0. Add files to MATLAB path
 try
     run('../startup_nncs.m')
+catch
+    try 
+    run('../../startup_nncs.m')
+    catch
     run('../../../startup_nncs.m')
+    end
 end
 rmpath(genpath('/Users/kekatos/Files/Projects/Gitlab/Matlab_Python_Interfacing/NNCS_matlab/modules/NIPS_submission'))
 addpath(genpath('/Users/kekatos/Files/Projects/Github/breach/'))
@@ -105,7 +110,7 @@ if options.trimming
 end
 %% 5b. Data Preprocessing
 display_ranges(data);
-options.preprocessing_bool=1;
+options.preprocessing_bool=0;
 options.preprocessing_eps=0.00005;
 if options.preprocessing_bool==1
     [data,options]=preprocessing(data,options);
@@ -141,13 +146,13 @@ elseif model==5
     training_options.use_previous_y=3;
 elseif model==6
     training_options.use_error_dyn=1;       % watertank=1    %robotarm=0    %quadcopter=0
-    training_options.use_previous_u=2;      % waterank=2     %robotarm=2    %quadcopter=0
-    training_options.use_previous_ref=3;    % waterank=3     %robotarm=3    %quadcopter=0
-    training_options.use_previous_y=3;
+    training_options.use_previous_u=0;      % waterank=2     %robotarm=2    %quadcopter=0
+    training_options.use_previous_ref=2;    % waterank=3     %robotarm=3    %quadcopter=0
+    training_options.use_previous_y=2;
     options.extra_y=0;
 end
-training_options.neurons=[30 16 8];
-% training_options.neurons=[50 ];
+% training_options.neurons=[30 16 8];
+training_options.neurons=[50 ];
 training_options.input_normalization=0;
 training_options.loss='mse';
 % training_options.loss='custom_v1';
@@ -162,7 +167,7 @@ training_options.algo= 'trainlm'%'trainlm'; % trainscg % trainrp
 %add option for saved mat files
 training_options.iter_max_fail=1;
 iter=1;reached=0;
-training_options.replace_by_zeros=0;
+training_options.replace_by_zeros=1;
 while true && iter<=training_options.iter_max_fail
     fprintf('\n Iteration %i.\n',iter);
     [net,data,tr]=nn_training(data,training_options,options);
@@ -277,15 +282,15 @@ elseif model==6
     options.sim_ref=1.2;
     options.ref_min=0;
     options.ref_max=2;
-    options.sim_cov=options.coverage.cells{30}.random_value;
+    options.sim_cov=options.coverage.cells{40}.random_value;
 %      temp=(unique(data.REF));
 %      options.sim_cov=temp(6)
     options.u_index_plot=1;
     options.y_index_plot=1;
     options.ref_index_plot=1;
 end
-run_simulation_nncs(options,model_name);
-
+run_simulation_nncs(options,model_name,1);
+options.input_choice=4;
 %% 10. Data matching (analysis w/ training data)
 
 warning('This code only works for coverage')

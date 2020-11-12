@@ -42,7 +42,7 @@ disp('==============================')
 disp('Model and configuration done')
 
 model=5;
-options.SLX_model='Quadrotor_rangeChecking';
+options.SLX_model='Quadrotor_rangeChecking_R2017a';
 
 load_system(options.SLX_model)
 options.model=model;
@@ -79,6 +79,7 @@ options.trimming=0;
 % Do NOT change this part
 options.dt=0.01; % PID sampling time
 
+options.trace_gen_via_sim=1
 fprintf('The total number of traces is %i.\n\n',options.no_traces);
 
 %% 4a. Run simulations -- Generate training data

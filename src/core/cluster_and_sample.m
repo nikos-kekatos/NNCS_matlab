@@ -54,7 +54,7 @@ else
     no_clusters=floor(no_cex/4);
 end
 
-no_clusters=4;
+% no_clusters=4;
 iteration=1;
 
 

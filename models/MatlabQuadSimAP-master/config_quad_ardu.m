@@ -45,10 +45,12 @@ if options.reference_type==4
     options.simin_ref=0;
     options.sim_cov=0;
     options.sim_ref=0;
-    options.no_traces=30;
+    options.no_traces=15;
     options.breach_ref_min=[0.2 0 ]%0.2];
-    options.breach_ref_max=[0.4 0.1] %0.3];
+    options.breach_ref_max=[0.3 0.1] %0.3];
     options.breach_segments=2;
+    options.ref_Ts=options.T_train/options.breach_segments;
+
 end
 % end of Breach additions
 % CONSTANT references (Specify the values here)
@@ -192,8 +194,9 @@ options.load=0;
 options.error_mean=0;
 options.error_sd=0.01;
 
+options.dt=0.025; % PID sampling time
 % Do NOT change this part
-options.dt=0.01; % PID sampling time
+
 if options.reference_type==1
     options.no_ref=numel(options.simin_ref);
 end
