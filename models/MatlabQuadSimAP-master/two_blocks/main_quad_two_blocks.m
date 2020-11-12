@@ -34,13 +34,15 @@ elseif model==4
 elseif model==5
 %     SLX_model='QuadrotorSimulink_nk_test';
 %     SLX_model='Quadrotor_rangeChecking';
-    SLX_model='Quadrotor_two_blocks';
+    SLX_model='Quadrotor_two_blocks_v2';
 %     SLX_model='Quadrotor_stable_single';
 end
 load_system(SLX_model)
 % Uncomment next line if you want to open the model
 % open(SLX_model)
 options.model=model;
+set_param(SLX_model, 'fastrestart', 'on');
+
 %% 3. Input: specify configuration parameters
 % run('configuration_1.m'),('config_quad_1_ref.m')
 timer_trace_gen=tic;
@@ -62,7 +64,7 @@ options.save_sim=0;
 % Breach options
 % options.no_traces=30;
 % options.breach_segments=2;
-options.trace_gen_via_sim=1;
+options.trace_gen_via_sim=0;
 options.coverage.points='r';
 warning off
 [data,options]=trace_generation_nncs(SLX_model,options);
