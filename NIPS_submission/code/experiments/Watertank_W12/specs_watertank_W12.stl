@@ -1,8 +1,0 @@
-param sim_time=9.99, r=0.1, dt=0.01, T=10, d=0.01, T_1=6, T_2=4,e=0.025,tau=3,ov=0.07
-
-phi_3:= (alw_[0,sim_time]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,3.5] alw_[0,1.5] (abs(y_nn[t]-In1[t])<e)))) and (alw_[0,sim_time] ( (abs(In1[t+dt]-In1[t])>d or [t]==0) => (alw_[tau,4] (abs(y_nn[t]-In1[t])<0.05)))) and (((In1[t] > 0) => (alw_[0.8,T_2](y_nn[t]-In1[t]<In1[t]*ov))) and ((In1[t] <= 0) => (alw_[0.8,T_2](In1[t]-y_nn[t]<In1[t]*ov))) and (alw_[0,sim_time] ((In1[t+dt]-In1[t] > d) => (alw_[0.8,T_2](y_nn[t]-In1[t]<In1[t]*ov)))) and (alw_[0,sim_time] ((In1[t]-In1[t+dt] > d) => (alw_[0.8,T_2](In1[t]-y_nn[t]<In1[t]*ov)))))
-
-phi_4:= (alw_[0,sim_time] ((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,3.5] alw_[0,1.5] (abs(y_nn_cex_1[t]-In1[t])<e)))) and (alw_[0,sim_time] ( (abs(In1[t+dt]-In1[t])>d or [t]==0) => (alw_[tau,4] (abs(y_nn_cex_1[t]-In1[t])<0.05)))) and ( ((In1[t] > 0) => (alw_[0.8,T_2](y_nn_cex_1[t]-In1[t]<In1[t]*ov))) and ((In1[t] <= 0) => (alw_[0.8,T_2](In1[t]-y_nn_cex_1[t]<In1[t]*ov))) and (alw_[0,sim_time] ((In1[t+dt]-In1[t] > d) => (alw_[0.8,T_2](y_nn_cex_1[t]-In1[t]<In1[t]*ov)))) and (alw_[0,sim_time] ((In1[t]-In1[t+dt] > d) => (alw_[0.8,T_2](In1[t]-y_nn_cex_1[t]<In1[t]*ov)))))
-
-
-phi_5:= (alw_[0,sim_time]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,3.5] alw_[0,1.5] (abs(y[t]-In1[t])<e)))) and (alw_[0,sim_time] ( (abs(In1[t+dt]-In1[t])>d or [t]==0) => (alw_[tau,4] (abs(y[t]-In1[t])<0.05)))) and (((In1[t] > 0) => (alw_[0.8,T_2](y[t]-In1[t]<In1[t]*ov))) and ((In1[t] <= 0) => (alw_[0.8,T_2](In1[t]-y[t]<In1[t]*ov))) and (alw_[0,sim_time] ((In1[t+dt]-In1[t] > d) => (alw_[0.8,T_2](y[t]-In1[t]<In1[t]*ov)))) and (alw_[0,sim_time] ((In1[t]-In1[t+dt] > d) => (alw_[0.8,T_2](In1[t]-y[t]<In1[t]*ov)))))
