@@ -4,14 +4,16 @@
 
 options.model=4;
 load PIDGainSchedExample
-
+options.num_REF=1;
+options.num_U=1;
+options.num_Y=1;
 % Time horizon of simulation in Simulink
-options.T_train=10; % for constant choose 5s
+options.T_train=20; % for constant choose 5s
 options.SLX_model=SLX_model;
 % Choose reference type: (1) for constant, (2) for time varying and (3) for
 % coverage and (4) for Breach
 
-options.reference_type=3;
+options.reference_type=4;
 
 % Select if you want to plot one simulation trace from training
 options.plotting_sim=1;
@@ -40,10 +42,10 @@ if options.reference_type==4
     options.simin_ref=0;
     options.sim_cov=0;
     options.sim_ref=0;
-    options.no_traces=50;
-    options.breach_ref_min=7;
-    options.breach_ref_max=12;
-    options.breach_segments=3;
+    options.no_traces=40;
+    options.breach_ref_min=6;
+    options.breach_ref_max=7;
+    options.breach_segments=2;
 end
 % end of Breach additions
 % CONSTANT references (Specify the values here)
@@ -81,10 +83,10 @@ end
 options.testing.train_data=0; %0 for testing centers, 1 for testing training data
 if options.reference_type==3
     options.coverage.m=2;
-    options.ref_Ts=5;
+    options.ref_Ts=10;
     options.coverage.ref_min=8;
-    options.coverage.ref_max=9;
-    options.coverage.delta_resolution=0.1; %0.1
+    options.coverage.ref_max=10;
+    options.coverage.delta_resolution=0.2; %0.1
 %     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution-1;
     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution;
 

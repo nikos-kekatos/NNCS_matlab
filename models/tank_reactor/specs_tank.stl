@@ -1,6 +1,6 @@
-param sim_time=19.9, r=0.1, dt=0.01, T=10, d=0.01, T_1=6, T_2=4,e=0.3, ov=0.05
+param sim_time=19.9, r=0.1, dt=0.01, T=10, d=0.01, T_1=6, T_2=4,e=0.05, ov=0.05
 
-phi_1:=   alw_[0,sim_time] (abs(y_nn[t]-y[t])<0.2)
+phi_1:= alw_[0,sim_time]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,7] alw_[0,3] (abs(y[t]-In1[t])<e)))
 #phi_2:=   alw_[0,sim_time] (y_nn_3_[t]-In1[t]<0.2*In1[t])
 
 phi_3:= alw_[0,sim_time]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,7] alw_[0,3] (abs(y_nn[t]-In1[t])<e)))
