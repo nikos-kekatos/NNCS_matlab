@@ -115,6 +115,7 @@ options.preprocessing_eps=0.00005;
 if options.preprocessing_bool==1
     [data,options]=preprocessing(data,options);
 end
+options.trimming_steady_state=0;
 %% 6. Train NN Controller
 %the assignments could go a function/file
 timer_train=tic;
@@ -145,14 +146,15 @@ elseif model==5
     training_options.use_previous_ref=3;    % waterank=3     %robotarm=3    %quadcopter=0
     training_options.use_previous_y=3;
 elseif model==6
-    training_options.use_error_dyn=1;       % watertank=1    %robotarm=0    %quadcopter=0
+    training_options.use_error_dyn=0;       % watertank=1    %robotarm=0    %quadcopter=0
     training_options.use_previous_u=0;      % waterank=2     %robotarm=2    %quadcopter=0
     training_options.use_previous_ref=2;    % waterank=3     %robotarm=3    %quadcopter=0
     training_options.use_previous_y=2;
     options.extra_y=0;
+    training_options.use_time=0;
 end
 % training_options.neurons=[30 16 8];
-training_options.neurons=[50 ];
+training_options.neurons=[20 10 ];
 training_options.input_normalization=0;
 training_options.loss='mse';
 % training_options.loss='custom_v1';
@@ -221,7 +223,7 @@ plot_NN_sim(data,options);
 % gensim(net)
 [options]=create_NN_diagram(options,net);
 
-%% 8b. Integrate NN block in the Simulink model
+% 8b. Integrate NN block in the Simulink model
 construct_SLX_with_NN(options,options.SLX_model);
 
 %% 9. Analyse NNCS in Simulink
@@ -282,7 +284,7 @@ elseif model==6
     options.sim_ref=1.2;
     options.ref_min=0;
     options.ref_max=2;
-    options.sim_cov=options.coverage.cells{40}.random_value;
+    options.sim_cov=options.coverage.cells{3}.random_value;
 %      temp=(unique(data.REF));
 %      options.sim_cov=temp(6)
     options.u_index_plot=1;
@@ -307,67 +309,21 @@ else
         [testing,options]=test_coverage(options,model_name);
     end
 end
-% The average MSE error over 49 simulations is 0.00031.
+%% 10B. testing on training data
+file_name=options.SLX_model;
+falsification_options_quad;
+options.input_choice=4;
+[original_rob,In_Original] = check_cex_all_data(data,falsif,file_name,options);
 
-% The maximum MSE error over 49 simulations is 0.00207.
 %% 11. Falsification with Breach
 
-%  delete(fullfile(which(strcat(options.SLX_model,'_breach.slx'))))
-get_param(Simulink.allBlockDiagrams(),'Name')
-bdclose all;
-clear Data_all data_cex Br falsif_pb net_all phi_1 phi_3 phi_4  phi_5 phi_all
-clear robustness_checks_all robustness_checks_false falsif falsif_pb_temp file_name
-clear rob_nominal robustness_check_temp block_name falsif_idx data_cex
-clear data_cex_cluster tr tr_all condition cluster_all check_nominal model_name
-clear data_backup i_f ii In1_dt0 In1_u0 In1_u1 inputs_cex iter iter_best num_cex
-clear reached seeds_all stop t__ tm training_perf tspan u__ idx_cluster falsif_pb_zero
-% clear timer
-%%% ------------------------------------------ %%
-%%% ----- 11-A: Falsification with Breach ---- %%
-%%% ------------------------------------------ %%
-
-options.testing_breach=1;
-training_options.combining_old_and_cex=1; % 1: combine old and cex
-falsif.iterations_max=1;
+if ~exist('falsif')
+    falsification_options_quad
+end
 falsif.method='quasi';
-falsif.num_samples=25;
-falsif.num_corners=25;
-falsif.max_obj_eval=25;
-falsif.max_obj_eval_local=20;
-falsif.seed=100;
-falsif.num_inputs=1;
+falsif.num_samples=100;
+falsif.max_obj_eval=100;
 
-falsif.property_file=options.specs_file;
-falsif.property_file='specs_switched.stl';
-[~,falsif.property_all]=STL_ReadFile(falsif.property_file);
-falsif.property=falsif.property_all{2};%// TO-DO automatically specify the file
-falsif.property_cex=falsif.property_all{3};
-falsif.property_nom=falsif.property_all{4};
-if model==1
-    falsif.breach_ref_min=8;            %watertank 8 % quadcopter -1 %robotarm -0.5
-    falsif.breach_ref_max=12;           % watertank 12 % quadcopter 3  % robotarm 0.5
-elseif model==2
-    falsif.breach_ref_min=-0.5;            %watertank 8 % quadcopter -1 %robotarm -0.5
-    falsif.breach_ref_max=0.5;
-elseif model==3
-    falsif.breach_ref_min=-1;            %watertank 8 % quadcopter -1 %robotarm -0.5
-    falsif.breach_ref_max=3;
-elseif model==4
-    falsif.breach_ref_min=2;            %watertank 8 % quadcopter -1 %robotarm -0.5
-    falsif.breach_ref_max=5;
-elseif model==6
-    falsif.breach_ref_min=0;
-    falsif.breach_ref_max=1;
-end
-falsif.stop_at_false=false;
-falsif.T=options.T_train;
-falsif.input_template='fixed';
-try
-    falsif.breach_segments=options.breach_segments;
-catch
-    falsif.breach_segments=1;
-    options.breach_segments=falsif.breach_segments;
-end
 stop=0;
 i_f=1;
 
@@ -417,8 +373,10 @@ while i_f<=falsif.iterations_max && ~stop
         if any(structfun(@isempty,data_cex))
             stop=1;
             fprintf('\n\n The NN produces %i falsifying traces out of %i total traces.\n',length(find(falsif_pb_temp.obj_false<0)),length(falsif_pb_temp.obj_log));
+            if check_nominal
             fprintf('\n\n The nominal produces %i falsifying traces out of %i total traces.\n',length(find(rob_nominal<0)),length(falsif_pb_temp.obj_log));
-             falsif_temp=toc(timer_falsif);
+            end
+            falsif_temp=toc(timer_falsif);
             timer.falsif{i_f}=falsif_temp
             break;
         else
@@ -428,14 +386,18 @@ while i_f<=falsif.iterations_max && ~stop
             robustness_checks_false{i_f,1}=falsif_pb{i_f}.obj_false;
         end
     end
-    try
+  try
         figure;falsif_pb{i_f}.BrSet_Logged.PlotRobustSat(phi_3)
     end
-    fprintf('\n\n The NN produces %i falsifying traces out of %i total traces.\n',length(find(falsif_pb_temp.obj_false<0)),length(falsif_pb_temp.obj_log));
-    fprintf('\n\n The nominal produces %i falsifying traces out of %i total traces.\n',length(find(rob_nominal<0)),length(falsif_pb_temp.obj_log));
+    try
+        figure;falsif_pb{i_f}.BrSet_Logged.PlotSignals({'In1', 'y','y_nn'});
+    end
+    fprintf('\n\n The NN produces %i falsifying traces out of %i total traces.\n',length(find(falsif_pb{i_f}.obj_false<0)),length(falsif_pb{i_f}.obj_log));
+    if check_nominal
+        fprintf('\n\n The nominal produces %i falsifying traces out of %i total traces.\n',length(find(rob_nominal<0)),length(falsif_pb{i_f}.obj_log));
+    end
     falsif_temp=toc(timer_falsif);
     timer.falsif{i_f}=falsif_temp
-    
     fprintf('\n End falsification with Breach.\n')
     disp('-----------------------------------')
     %%% ------------------------------------ %%
@@ -462,6 +424,7 @@ while i_f<=falsif.iterations_max && ~stop
     %%% ----- 11-C: Retraining with CEX ---- %%
     %%% ------------------------------------ %%
     %
+    training_options.combining_old_and_cex=1;
     if stop~=1
         for tm = 1%[2 3 1] % or we choose the preference/order
             timer_retrain=tic;
@@ -507,6 +470,7 @@ while i_f<=falsif.iterations_max && ~stop
         %%% ------ 11-E: Testing if CEX disappeared   ----- %%
         %%% ----------------------------------------------- %%
         timer_rechecking=tic;
+        falsif.test_previous_nn=1
 
         fprintf('\n Testing the NN on the training data.\n')
         fprintf('The number of original CEX was %i.\n',length(falsif_pb{i_f}.obj_false));

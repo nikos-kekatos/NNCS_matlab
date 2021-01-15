@@ -87,7 +87,7 @@ if options.reference_type==3
     options.coverage.m=2;options.breach_segments=options.coverage.m;
     options.ref_Ts=20;
     options.coverage.ref_min=0;
-    options.coverage.ref_max=1.4;
+    options.coverage.ref_max=1;
     options.coverage.delta_resolution=0.2; %0.1
 %     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution-1;
     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution;
