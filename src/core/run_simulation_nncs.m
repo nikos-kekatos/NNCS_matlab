@@ -65,6 +65,8 @@ elseif options.model==6
     ss1=ss(K1);
     ss2=ss(K2);
     sysP=ss(P);
+elseif options.model==8
+    load('initialize.mat')
 elseif options.model==10
     ic=2;
 end

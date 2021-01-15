@@ -82,7 +82,11 @@ options.error_sd=0;%0.001;
 % options.plotting_sim=1
 options.load=0;
 options.combination_matlab=2; %use robustness
+options.debug=1;
+options.plotting_sim=1;
 clear compute_robustness
+options.specs_file='specs_watertank_comb_ctrl_3.stl'
+options.input_choice=3;
 if ~options.load
 [data,options]=trace_generation_nncs(SLX_model,options);
 timer.trace_gen=toc(timer_trace_gen)
@@ -142,6 +146,7 @@ options.preprocessing_eps=0.0001;
 if options.preprocessing_bool==1
     [data,options]=preprocessing(data,options);
 end
+options.trimming_steady_state=0
 %% 6. Train NN Controller
 %the assignments could go a function/file
 timer_train=tic;
@@ -237,14 +242,14 @@ if options.reference_type==3
         plot_coverage_boxes(options,1);
     end
     options.testing.plotting=0;
-    options.test_dataMatching=0;
+    options.test_dataMatching=1;
     options.testing.train_data=1;% 0: for centers, 1: random points
     if options.test_dataMatching
         [testing,options]=test_coverage(options,file_name);
     end
 end
 %% 9B. Matching test against STL property
-
+load_system(file_name)
 falsification_options;
 options.input_choice=4
 [original_rob,In_Original] = check_cex_all_data(data,falsif,file_name,options);
@@ -287,9 +292,10 @@ end
 %%% ------------------------------------------ %%
 %%% ----- 11-A: Falsification with Breach ---- %%
 %%% ------------------------------------------ %%
-falsif.max_obj_eval_local=100;
-% falsif.num_samples=100;
-% falsif.seed=200;
+falsif.max_obj_eval_local=150;
+ falsif.num_samples=1000;
+ falsif.num_corners=50;
+falsif.seed=200;
 falsif.iterations_max=4;
 % falsif.property_file='specs_watertank_comb_ctrl_1.stl';
 %'specs_watertank_stabilization_ctrl_1.stl'
@@ -481,6 +487,9 @@ while i_f<=falsif.iterations_max && ~stop
         %
         options.input_choice=3
         num_cex=2;
+        options.ref_index_plot=1;
+        options.y_index_plot=1;
+        options.u_index_plot=1;
         run_and_plot_cex_nncs(options,file_name,inputs_cex,num_cex); %4th input number of counterexamples
         options.input_choice=4;
     end

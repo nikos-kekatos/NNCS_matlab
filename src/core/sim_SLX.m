@@ -19,6 +19,8 @@ P=-1000/(s*(s+.875)*(s+50));
 ss1=ss(K1);
 ss2=ss(K2);
 sysP=ss(P);
+elseif options.model==8 % lookuptable
+    load('initialize.mat')
 end
 get_param(Simulink.allBlockDiagrams(),'Name');
 load_system(model_name)

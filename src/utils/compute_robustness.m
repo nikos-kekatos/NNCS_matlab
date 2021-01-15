@@ -14,7 +14,7 @@ counter=counter+1;
 if counter==1
 [~,property_all]=STL_ReadFile(options.specs_file);
 if options.combination
-    options.property=property_all{1};
+    options.property=property_all{4};
 else
     index=input('Which is the right STL property? (choose 1,2 or 3)');
     options.property=property_all{index};
@@ -26,7 +26,7 @@ end
 req_vars=options.req_vars;
 for i=1:length(req_vars)
     if options.debug
-        fprintf('\n Searching variable name of the requirement %i.\n',i);
+        fprintf('\n Searching variable name %i of the requirement.\n',i);
     end
     req_temp=req_vars{i};
     % assumptions: references are named as In1, In2, ... outputs: y, y_nn,
@@ -67,8 +67,16 @@ end
 % should take the first element of Y.signals.values
 
 t_traces=ref.time;
+if t_traces(1)>0
+    t_traces=t_traces-t_traces(1);
+    fprintf('Changed starting time back to 0.\n')
+end
 X_traces=cell2mat(var_trace);
+% original 
 J=options.req.Eval(t_traces',X_traces');
+% attempt 2-- delete last point
+J=options.req.Eval(t_traces(1:end-1)',X_traces(1:end-1,:)');
+
 if options.debug
     J
 end

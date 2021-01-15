@@ -16,6 +16,8 @@ slprj/
 # Personal
 models/HSCC_2020_part_1/
 models/useful Simulink code/
+src/core/Examples/
+src/core/MATLAB
 references/
 Reviews.pdf
 *.png

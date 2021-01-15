@@ -2,7 +2,12 @@ function [robustness_check,robustness_check_all,inputs_cex,inputs_all,options] =
 %check_cex_elimination Extract CEX and check in new Simulink model
 %   This should work for single and multiple CEX.
 
+try
 close_system(strcat(options.SLX_model,'_breach'),0)
+catch
+    set_param(strcat(options.SLX_model,'_breach'),'FastRestart','off')
+    close_system(strcat(options.SLX_model,'_breach'),0)
+end
 % delete(fullfile(which(strcat(options.SLX_model,'_breach.slx'))))
 options.input_choice=4;
 if strcmp(file_name,'watertank_inport_NN_cex')
@@ -100,10 +105,12 @@ robustness_check_all=new_rob_all_cex;
 else
     robustness_check_all=[];
 end
-close_system(strcat(options.SLX_model,'_breach'),0);
 set_param(strcat(file_name,'_breach'),'FastRestart','off')
 close_system(strcat(file_name,'_breach'),0);
-
+try
+set_param(strcat(options.SLX_mode,'_breach'),'FastRestart','off')
+close_system(strcat(options.SLX_model,'_breach'),0);
+end
 % delete(fullfile(which(strcat(options.SLX_model,'_breach.slx'))))
 % delete(fullfile(which(strcat(options.SLX_model,'_breach.slxc'))))
 

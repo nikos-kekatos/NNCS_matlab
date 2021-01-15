@@ -76,6 +76,8 @@ options.save_sim=0;
 % options.no_traces=30;
 % options.breach_segments=2;
 options.coverage.points='r';
+options.combination=0
+options.debug=0
 [data,options]=trace_generation_nncs(SLX_model,options);
 timer.trace_gen=toc(timer_trace_gen)
 %% 4b. Load previous saved traces
@@ -107,6 +109,8 @@ end
 %the assignments could go a function/file
 timer_train=tic;
 training_options.retraining=0;
+options.trimming_steady_state=0
+training_options.use_time=0
 % data=data_combined;
 if model==1
     training_options.use_error_dyn=1;       % watertank=1    %robotarm=0    %quadcopter=0

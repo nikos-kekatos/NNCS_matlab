@@ -22,7 +22,7 @@ falsif.property_file='specs_watertank_comb_ctrl_3.stl';
 
 % falsif.property_file='specs_watertank_stabilization_comb.stl';
 [~,falsif.property_all]=STL_ReadFile(falsif.property_file);
-falsif.property=falsif.property_all{1};%// TO-DO automatically specify the file
+falsif.property=falsif.property_all{4};%// TO-DO automatically specify the file
 
 falsif.breach_ref_min=8;            %watertank 8 % quadcopter -1 %robotarm -0.5
 falsif.breach_ref_max=12;           % watertank 12 % quadcopter 3  % robotarm 0.5

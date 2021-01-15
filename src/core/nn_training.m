@@ -7,7 +7,7 @@ if options.preprocessing_bool==1
     U_array=data.U_new;
     Y_array=data.Y_new;
 else
-    if options.trimming
+    if options.trimming || options.trimming_steady_state
         REF_array=data.REF_trim;
         U_array=data.U_trim;
         Y_array=data.Y_trim;
@@ -23,7 +23,7 @@ if training_options.retraining
     Y_array=data.Y_combined;
 end
 
-[in,out]=prepare_NN_structure(REF_array,Y_array,U_array,training_options,options);
+[in,out]=prepare_NN_structure(REF_array,Y_array,U_array,training_options,options,data);
 
 % [in,out]=replace_zeros(in,out,training_options,options);
 

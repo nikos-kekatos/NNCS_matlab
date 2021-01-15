@@ -1,4 +1,4 @@
-function [in,out] = prepare_NN_structure(REF_array,Y_array,U_array,training_options,options)
+function [in,out] = prepare_NN_structure(REF_array,Y_array,U_array,training_options,options,data)
 %prepare_NN_structure Given traces and memory blocks, find NN inputs and
 %outputs.
 %   The number of memory blocks is user defined. The options include past
@@ -174,11 +174,17 @@ catch
     no_traces=options.coverage.no_traces_ref;
 end
 % problems in retraining
+if ~options.trimming_steady_state && ~options.trimming && ~options.preprocessing_bool
 no_points=options.T_train/options.dt;
 no_traces=size(in,2)/no_points;
-
+end
+if options.trimming_steady_state
+    no_traces=options.no_traces
+    no_points=size(data.REF_trim,1)/options.no_traces
+end
+try
 fprintf('\nThere are %i traces and each trace contains %i points.\n\n',no_traces,no_points);
-
+end
 
 
 
@@ -230,7 +236,7 @@ else % error dynamics
     elseif training_options.replace_by_zeros==1
         
         index_temp_error=index_error_past;
-        for ik=1:no_REF_array
+        for ik=1:old_ref
             in(index_temp_error,ik:no_points:end)=0;
             index_temp_error=index_temp_error(1+no_REF_array:end);
         end

@@ -357,7 +357,7 @@ data_cex.Y=Y_cex_breach_all';
 data_cex.U_NN=U_NN_cex_breach_all';
 data_cex.Y_NN=Y_NN_cex_breach_all';
 data_cex.REF_values=REF_cex_breach_values_all;
-close_system(strcat(options.SLX_model,'_breach'),0)
+% close_system(strcat(options.SLX_model,'_breach'),0)
 
 try
     new_pts = falsif_pb.X_log; % the points that were explored by Breach */
@@ -366,7 +366,7 @@ try
     current_coverage_value = Br_False.ComputeLogCellOccupancyCoverage
     current_coverage_value = Br_falsif.ComputeLogCellOccupancyCoverage
 end
-close_system(strcat(options.SLX_model,'_breach'),0)
+% close_system(strcat(options.SLX_model,'_breach'),0)
 set_param(strcat(model_name,'_breach'),'FastRestart','off')
 close_system(strcat(model_name,'_breach'),0)
 

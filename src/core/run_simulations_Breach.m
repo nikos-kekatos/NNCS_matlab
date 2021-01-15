@@ -91,8 +91,24 @@ for ii = 1:nbinputsig
 end
 % attempts to store specific values, not enough
 % Br_sys.SetTime(0:1:sim_time);
-Br_sys.SetParamRanges(input_param, input_range);
-Br_sys.QuasiRandomSample(options.no_traces);
+if isfield(options,'Breach_user_defined')
+    input_gen      = fixed_cp_signal_gen({'In1','In2'}, ... % signal name
+        4,...                % number of control points
+        {'spline'});        % interpolation method
+    InputGen = BreachSignalGen({input_gen});   
+    InputGen.SetParamRanges(input_gen.params,...%input_param,...
+        [0.22 0.26;  0.20 0.25; 0.2 0.23;0.28 0.3; 0 0.1; 0.020 0.075; 0.04 0.06; 0 0.1; 0 0.1]);
+    InputGen.SetParamRanges(input_gen.params,...%input_param,...
+        [repmat([options.breach_ref_min(1) options.breach_ref_max(1)],4,1);  repmat([options.breach_ref_min(2) options.breach_ref_max(2)],4,1) ]);
+  
+    InputGen.PrintParams();    
+    Br_sys.SetInputGen(InputGen);
+    Br_sys.QuasiRandomSample(options.no_traces);
+%     Br_sys.CornerSample
+else
+    Br_sys.SetParamRanges(input_param, input_range);
+    Br_sys.QuasiRandomSample(options.no_traces);
+end
 if options.trace_gen_via_sim
     figure; Br_sys.PlotParams();
     set(gca,'View', [45 45]);
@@ -115,7 +131,7 @@ else
     % use num_traces_vi0lations:
     %fprintf('\nThere are %i violations out of %i traces.\n\n',falsif_pb.num_constraints_failed,falsif_pb.nb_obj_eval);
     fprintf('\nThere are %i violations out of %i traces.\n\n',Rlog.GetStatement.num_traces_violations,falsif_pb.nb_obj_eval);
-
+    
 end
 % We need to get values and save them as a data structure
 
@@ -174,11 +190,16 @@ for i=1:no_U
     u_name=strcat('u_',num2str(i),'_'); % test with param_u
     index_U=[index_U;find(strcmp(Br_sys.P.ParamList,u_name))];
 end
+if isempty(index_U) % one dimension and var saved as "u"
+    index_U=find(strcmp(Br_sys.P.ParamList,'u'))
+end
 for i=1:no_Y
     y_name=strcat('y_',num2str(i),'_'); % replace and test by param_y
     index_Y=[index_Y;find(strcmp(Br_sys.P.ParamList,y_name))];
 end
-
+if isempty(index_Y) % one dimension and var saved as "y"
+    index_Y=find(strcmp(Br_sys.P.ParamList,'y'));
+end
 REF_breach=[];
 U_breach=[];
 Y_breach=[];
