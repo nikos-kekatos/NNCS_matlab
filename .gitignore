@@ -20,6 +20,9 @@ src/core/Examples/
 src/core/MATLAB
 references/
 Reviews.pdf
+NIPS_submission/
+
+#File types
 *.png
 *.zip
 #*.jpg
