@@ -8,10 +8,14 @@ Download
 The files can be downloaded via *ssh/https* or as a *zip* file. 
 
 To clone the repository, (i) open your terminal, (ii) navigate to your desired directory, and (iii) write:
-``git clone git@github.com:nikos-kekatos/NNCS_matlab.git``
+``git clone git@github.com:nikos-kekatos/NNCS_matlab.git``.
 
 To test the latest updates, you can only download the ``nikos_comb`` branch.
 ``git clone -b nikos_comb --single-branch git@github.com:nikos-kekatos/NNCS_matlab.git``
+
+If you have a problem with `ssh`, try
+``git clone https://github.com/nikos-kekatos/NNCS_matlab.git`` or
+``git clone -b nikos_comb --single-branch https://github.com/nikos-kekatos/NNCS_matlab.git``.
 
 
 Requirements 
@@ -76,7 +80,7 @@ Once the user has added the corresponding files to the MATLAB path and has initi
 - Navigate to `models/tank_reactor` and run `main_tank_reactor.m`.
 - Navigate to `models/LookupTable` and run `main_lookup_table.m`.
 - Navigate to `models/Switching_tf_hespanha` and run `main_hespanha.m`.
-- Navigate to `models/PID Control/PID Control` and run `main_engine.m`.
+- Navigate to `models/EngineSpeedControl` and run `main_engine.m`.
 - Navigate to `models/MatlabQuadSimAP-master` and run `main_quad_ardu.m`.
 
 > Model Inputs
@@ -96,7 +100,7 @@ Note that each model might contain additional files or there might be small diff
 - Selection of Data, Neural Network structure and parametrization, Preprocessing, Trimming.
 - **Neural Network Training**
 - Open loop testing and Simulink block generation
-- **Matchin error test** against STL properties.
+- **Matching error test** against STL properties.
 - Falsification/retraining Loop 
 	- Falsification with quasi random samples-- **Generalization Test**
 	- If no cex, falsification with optimization-based techniques.
@@ -108,5 +112,21 @@ Note that each model might contain additional files or there might be small diff
 		- Plotting, additional tests, etc.
 
 		
+		
+> Creating new Case Study
+
+There is a number of steps that should be followed once we want to create a new case study. We are hereby talking about *Simulink models*.
+
+1. We obtain/construct the nominal closed loop; most of our experiments come from Mathwork examples/demos/case studies.
+2. We need to be able to change/manipulate the inputs to the entire closed-loop system, e.g. references. As such, 
+	- We need to delete whatever input block is provided by the designer.
+	- Add our own input block subsystem. There are two cases:
+		1. In case we choose to use Breach for data generation, we should simply add inports. For example, for a reference tracking problem with 3 references, we should add an inport block for each reference and name them as `In1`, `In2`, `In3`. Check the `models/MatlabQuadSim-master/Quadrotor_stable.slx`.
+		2. If we want to use user-defined ways to perform data generation, we should replace each input blocks by the input template (multiport switch). It can be found at `templates/input_block_template`. See below![input](templates/input_template.png).
+3. Add `Save to Workspace` blocks	to specify the relevant signals/variables. The common notation used contains `ref` for references, `u` for control signals, and `y` for relevant plant outputs. It is important to specify the `sample time` block (typically defined as `options.dt`). 
+4. (Optional) specify additive noise in one or multiple plant outputs. This is currently done via a `random number` block. ![a](templates/noise.png)
+	
+	.... To_do how to add duplicates with NN.
+	
 More information regarding the code structure will be added. There are several options, features in the code which might be unclear in the beginning. 
 
