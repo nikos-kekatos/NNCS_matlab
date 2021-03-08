@@ -105,7 +105,7 @@ Experiments
 For the following experiments, we have assumed that (i) initial
 conditions *x*<sub>0</sub> = \[7;  − 10; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0\];, and (ii)
 there is a nominal control that keeps the quadrotor floating
-*n**l**o**p**t**i**o**n**s*.*M**V**T**a**r**g**e**t* = \[4.9; 4.9; 4.9; 4.9\];
+*nloptions*.*MVTarget* = \[4.9; 4.9; 4.9; 4.9\];
 
 
 [//]: #(https://pandoc.org/try/?text=&from=markdown&to=gfm&standalone=0)
@@ -197,3 +197,4 @@ Remark: the Simulink and the Matlab control systems are not matching each other.
 > Testing
 
 Run the `quad_mpc.slx` model in Simulink and inspect the scopes. The reference (x, y,z) and the actual values of x, y, z states are not matching. Especially, for sinusoidal-like references the mismatch is large.
+
