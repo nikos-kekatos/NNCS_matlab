@@ -63,7 +63,7 @@ We have to modify the model to match our framework for trace generation, coverag
 	- Save NN as a Simulink block via `gensim`.
 3. Closed-loop analysis in Simulink
 	-  The NN is saved in Simulink and the plant has to be modelled in Simulink as well via an `Interpreted MATLAB Function`. The reference signals have to be modelled as well, see Figure below for the default/nominal reference signals. 
-	![figure](testing/reference_Simulink.png)
+	![figure](./testing/reference_Simulink.png)
 	- After the interconnections are done, the closed-loop system is designed, see `quad_mpc_nn.slx`.
 4. Continue with falsification (not implemented yet)
 
