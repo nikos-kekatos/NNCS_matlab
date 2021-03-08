@@ -43,18 +43,18 @@ We have to modify the model to match our framework for trace generation, coverag
         outputs parametric sinusoidal references for states
         \[*x*, *y*, *z*\]. Specifically, the references that we
         generated with a coverage approach in mind were of the form:
-        *r*<sub>*x*</sub> = *I**n*<sub>1</sub> ⋅ sin (*t*/3),
-        *r*<sub>*y*</sub> = *I**n*2 ⋅ sin (*t*/3) ⋅ cos (*t*/3),
-        *r*<sub>*z*</sub> = *I**n*<sub>3</sub> ⋅ sin (*t*/3), with
-        5.5 ≤ *I**n*<sub>1</sub> ≤ 6.5, − 6.6 ≤ *I**n*<sub>2</sub> ≤ 5.6
-        and 5.5 ≤ *I**n*<sub>3</sub> ≤ 6.5.
-	- choose grid resolution for *I**n*<sub>1</sub>,
-        *I**n*<sub>2</sub> and *I**n*<sub>3</sub>.
+        *r*<sub>*x*</sub> = *In*<sub>1</sub> ⋅ sin (*t*/3),
+        *r*<sub>*y*</sub> = *In*2 ⋅ sin (*t*/3) ⋅ cos (*t*/3),
+        *r*<sub>*z*</sub> = *In*<sub>3</sub> ⋅ sin (*t*/3), with
+        5.5 ≤ *In*<sub>1</sub> ≤ 6.5, − 6.6 ≤ *In*<sub>2</sub> ≤ 5.6
+        and 5.5 ≤ *In*<sub>3</sub> ≤ 6.5.
+	- choose grid resolution for *In*<sub>1</sub>,
+        *In*<sub>2</sub> and *In*<sub>3</sub>.
 	- run the nominal controller for each combination of reference values.
 	- store and concatenate all the generated traces in the structure `data` which can be accessed via `data.REF`, `data.Y` and `data.U`. 	
 2. Data selection and Neural Network Training
-	- Choose which are the inputs/outputs of the Neural Network.  *I*<sub>*N**N*</sub> = {*r*, *y*}, and
-        *O*<sub>*N**N*</sub> = {*u*}.
+	- Choose which are the inputs/outputs of the Neural Network.  *I*<sub>*NN*</sub> = {*r*, *y*}, and
+        *O*<sub>*NN*</sub> = {*u*}.
 
 		**Questions:** Do we need all 6 references (three are always zero)? Do we need all 12 plant outputs or only the ones that are tracked? Do we need memory, i.e. previous/delayed values? 
 	
