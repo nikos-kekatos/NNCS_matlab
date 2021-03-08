@@ -9,15 +9,15 @@ This folder contains our efforts towards replacing an MPC controller by an NN. T
 
 This example shows how to design a nonlinear model predictive controller for trajectory tracking of a quadrotor. The plant is a standard 12-dimensional dynamical system and the controller is designed in MATLAB as a nonlinear MPC with a quadratic cost function. There are 12 states, 12 plant outputs, and 4 control ouputs.
 
-In the nominal expriment, six states/plant outputs are being tracked. Three ($x_{des}$,$y_{des}$,$z_{des}$) follow sinusoidal references while the rest three (Euler angles) get desired values of zero.
+In the nominal expriment, six states/plant outputs are being tracked. Three (*x*<sub>*d**e**s*</sub>, *y*<sub>*d**e**s*</sub>, *z*<sub>*d**e**s*</sub>)follow sinusoidal references while the rest three (Euler angles) get desired values of zero.
 
 > Objective
 
 According to Mathworks, the "quadrotor tracks the reference trajectory closely." More specifically, this relates to 
 
-- The states $[x,y,z]$ matching the reference trajectory very closely within 7 seconds.
+- The states \[*x*, *y*, *z*\] matching the reference trajectory very closely within 7 seconds.
 
-- The states $[\phi,\theta,\psi]$ are driven to the neighborhood of zeros within 9 seconds.
+- The states \[*ϕ*, *θ*, *ψ*\] are driven to the neighborhood of zeros within 9 seconds.
 
 
 >Code
@@ -39,21 +39,31 @@ We have to modify the model to match our framework for trace generation, coverag
 > Steps
 
 1. Perform trace generation in Matlab
-	- Create a function `QuadrotorReferenceTrajectory_param.m` that outputs parametric sinusoidal references for states $[x,y,z]$. Specifically, the references that we generated with a coverage approach in mind were of the form:   $r_x=In_1\cdot \sin(t/3)$, $r_y=In2\cdot \sin(t/3)* \cos(t/3)$, $r_z=In_3\cdot \sin(t/3)$, with $5.5\leq In_1\leq6.5$,$-6.6\leq In_2\leq5.6$ and $5.5\leq In_3\leq6.5$. 
-	- choose grid resolution for $In_1$, $In_2$ and $In_3$.
+	- Create a function `QuadrotorReferenceTrajectory_param.m` that
+        outputs parametric sinusoidal references for states
+        \[*x*, *y*, *z*\]. Specifically, the references that we
+        generated with a coverage approach in mind were of the form:
+        *r*<sub>*x*</sub> = *I**n*<sub>1</sub> ⋅ sin (*t*/3),
+        *r*<sub>*y*</sub> = *I**n*2 ⋅ sin (*t*/3) ⋅ cos (*t*/3),
+        *r*<sub>*z*</sub> = *I**n*<sub>3</sub> ⋅ sin (*t*/3), with
+        5.5 ≤ *I**n*<sub>1</sub> ≤ 6.5, − 6.6 ≤ *I**n*<sub>2</sub> ≤ 5.6
+        and 5.5 ≤ *I**n*<sub>3</sub> ≤ 6.5.
+	- choose grid resolution for *I**n*<sub>1</sub>,
+        *I**n*<sub>2</sub> and *I**n*<sub>3</sub>.
 	- run the nominal controller for each combination of reference values.
 	- store and concatenate all the generated traces in the structure `data` which can be accessed via `data.REF`, `data.Y` and `data.U`. 	
 2. Data selection and Neural Network Training
-	- Choose which are the inputs/outputs of the Neural Network. $I_{NN}=\{r, y\}$, and $O_{NN}=\{u\}$. 
+	- Choose which are the inputs/outputs of the Neural Network.  *I*<sub>*N**N*</sub> = {*r*, *y*}, and
+        *O*<sub>*N**N*</sub> = {*u*}.
 
-		**Questions:** Do we need all 6 references (three are always zero)? Do we need all 12 plant outputs or only the ones that are tracked? Do we need memory, i.e. previous/delayes values? 
+		**Questions:** Do we need all 6 references (three are always zero)? Do we need all 12 plant outputs or only the ones that are tracked? Do we need memory, i.e. previous/delayed values? 
 	
 	- Choose network structure
 	- Perform training and generate NN.
 	- Save NN as a Simulink block via `gensim`.
 3. Closed-loop analysis in Simulink
-	-  The NN is saved in Simulink and the plant has to be modelled in Simulink as well via an `Interpreted MATLAB Function`. The references signals have to be modelled as well, see Figure below for the default/nominal reference signals. 
-	![figure](reference_Simulink.png)
+	-  The NN is saved in Simulink and the plant has to be modelled in Simulink as well via an `Interpreted MATLAB Function`. The reference signals have to be modelled as well, see Figure below for the default/nominal reference signals. 
+	![figure](testing/reference_Simulink.png)
 	- After the interconnections are done, the closed-loop system is designed, see `quad_mpc_nn.slx`.
 4. Continue with falsification (not implemented yet)
 
@@ -87,22 +97,87 @@ How to run?
 ``git clone -b nikos_comb --single-branch https://github.com/nikos-kekatos/NNCS_matlab.git``.
 2. Navigate to the right directory `models/QuadMPC/`
 3. run `main_quad_mpc.m`
-4. You can use pre-generated traces (default option) to speed up the process and directly check different NN configurations. You can run the trace generation yourself by changing the command `options.pretrained=1` to `options.pretrained=0`. For evaluation, the simulation section will likely return an error (variables going to infinity). Instead, you culd open the Simulink model and inspect the scopes.
+4. You can use pre-generated traces (default option) to speed up the process and directly check different NN configurations. You can run the trace generation yourself by changing the command `options.pretrained=1` to `options.pretrained=0`. For evaluation, the simulation section will likely return an error (variables going to infinity). Instead, you could open the Simulink model and inspect the scopes.
  
 Experiments
 --
-For the following experiments, we have assumed that 
- (i) initial conditions $x0 = [7;-10;0;0;0;0;0;0;0;0;0;0];$, and (ii) there is a nominal control that keeps the quadrotor floating
-$nloptions.MVTarget = [4.9; 4.9; 4.9; 4.9];$
 
- 
-|      No      |    #Ref   |   #Y   |      Memory| Coverage      | Traces|   Status   |
-|:---:|:-------:|:-------:|:-----:|:---------:|:---:|:-----------:|
-| 1     | 3/6 | 12/12 | no  | $5.5\leq In_1\leq6.5$,<br />$-6.6\leq In_2\leq5.6$,<br /> $5.5\leq In_3\leq6.5$. | 4 | NNCS exploded |
-| 2     | 3/6 | 12/12 | no  | $5.5\leq In_1\leq6.5$,<br />$-6.6\leq In_2\leq5.6$,<br /> $5.5\leq In_3\leq6.5$. | 8 | NNCS exploded |
-| 3     | 3/6 | 6/12 | no  | $5.5\leq In_1\leq6.5$,<br />$-6.6\leq In_2\leq5.6$,<br /> $5.5\leq In_3\leq6.5$. | 8 | NNCS exploded |
-| 4     | 3/6 | 6/12 | yes  | $5.5\leq In_1\leq6.5$,<br />$-6.6\leq In_2\leq5.6$,<br /> $5.5\leq In_3\leq6.5$. | 27 | NNCS exploded |
-| 5     | 3/6 | 12/12 | no  | $5.5\leq In_1\leq6.5$,<br />$-6.6\leq In_2\leq5.6$,<br /> $5.5\leq In_3\leq6.5$. | 27 | NNCS exploded |
+For the following experiments, we have assumed that (i) initial
+conditions *x*<sub>0</sub> = \[7;  − 10; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0\];, and (ii)
+there is a nominal control that keeps the quadrotor floating
+*n**l**o**p**t**i**o**n**s*.*M**V**T**a**r**g**e**t* = \[4.9; 4.9; 4.9; 4.9\];
+
+
+[//]: #(https://pandoc.org/try/?text=&from=markdown&to=gfm&standalone=0)
+<table style="width:100%;">
+<colgroup>
+<col style="width: 8%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 11%" />
+<col style="width: 18%" />
+<col style="width: 8%" />
+<col style="width: 22%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: center;">No</th>
+<th style="text-align: center;">#Ref</th>
+<th style="text-align: center;">#Y</th>
+<th style="text-align: center;">Memory</th>
+<th style="text-align: center;">Coverage</th>
+<th style="text-align: center;">Traces</th>
+<th style="text-align: center;">Status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">3/6</td>
+<td style="text-align: center;">12/12</td>
+<td style="text-align: center;">no</td>
+<td style="text-align: center;"><span class="math inline">\(5.5\leq In_1\leq6.5\)</span>,<br /><span class="math inline">\(-6.6\leq In_2\leq5.6\)</span>,<br /> <span class="math inline">\(5.5\leq In_3\leq6.5\)</span>.</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">NNCS exploded</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">3/6</td>
+<td style="text-align: center;">12/12</td>
+<td style="text-align: center;">no</td>
+<td style="text-align: center;"><span class="math inline">\(5.5\leq In_1\leq6.5\)</span>,<br /><span class="math inline">\(-6.6\leq In_2\leq5.6\)</span>,<br /> <span class="math inline">\(5.5\leq In_3\leq6.5\)</span>.</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">NNCS exploded</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">3/6</td>
+<td style="text-align: center;">6/12</td>
+<td style="text-align: center;">no</td>
+<td style="text-align: center;"><span class="math inline">\(5.5\leq In_1\leq6.5\)</span>,<br /><span class="math inline">\(-6.6\leq In_2\leq5.6\)</span>,<br /> <span class="math inline">\(5.5\leq In_3\leq6.5\)</span>.</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">NNCS exploded</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">3/6</td>
+<td style="text-align: center;">6/12</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;"><span class="math inline">\(5.5\leq In_1\leq6.5\)</span>,<br /><span class="math inline">\(-6.6\leq In_2\leq5.6\)</span>,<br /> <span class="math inline">\(5.5\leq In_3\leq6.5\)</span>.</td>
+<td style="text-align: center;">27</td>
+<td style="text-align: center;">NNCS exploded</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">3/6</td>
+<td style="text-align: center;">12/12</td>
+<td style="text-align: center;">no</td>
+<td style="text-align: center;"><span class="math inline">\(5.5\leq In_1\leq6.5\)</span>,<br /><span class="math inline">\(-6.6\leq In_2\leq5.6\)</span>,<br /> <span class="math inline">\(5.5\leq In_3\leq6.5\)</span>.</td>
+<td style="text-align: center;">27</td>
+<td style="text-align: center;">NNCS exploded</td>
+</tr>
+</tbody>
+</table>
 
 ^^NNCS explosion means that the closed loop system was not able to track the references and some plant outputs were going to infinity.
 
