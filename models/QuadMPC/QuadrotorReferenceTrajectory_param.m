@@ -25,6 +25,7 @@ function [ xdesired ] = QuadrotorReferenceTrajectory_param( t,rx,ry,rz )
  x =rx*sin(t/3);
  y = ry*sin(t/3).*cos(t/3);
  z = rz*cos(t/3);
+ 
 phi = zeros(1,length(t));
 theta = zeros(1,length(t));
 psi = zeros(1,length(t));

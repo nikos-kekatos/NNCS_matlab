@@ -43,20 +43,17 @@ options.error_sd=0.01;
 
 options.testing.train_data=0; %0 for testing centers, 1 for testing training data
 
-%%% Here you specify the ranges of the inputs (references in our case) for
-%%% Breach. The min, max can be scalar or vectors.
-% if options.reference_type==4
-%     options.simin_ref=0;
-%     options.sim_cov=0;
-%     options.sim_ref=0;
-%     options.no_traces=30;
-%     options.breach_ref_min=[0.2 0 ]%0.2];
-%     options.breach_ref_max=[0.4 0.1] %0.3];
-%     options.breach_segments=2;
-% end
+% Specifically, the references that we generated with a coverage approach in mind 
+% were of the form: rx = In1 ⋅ sin (t/3), ry = In2 ⋅ sin (t/3) ⋅ cos (t/3), 
+% rz = In3 ⋅ sin (t/3), with 5.5 ≤ In1 ≤ 6.5, − 6.6 ≤ In2 ≤ 5.6 and 5.5 ≤ In3 ≤ 6.5.
 
-options.ref_min=[ 5.5 -6.5 5.5] ; % o
+%  references: positions in x, y ,z  
+options.ref_min=[ 5.5 -6.5 5.5] ; % %% HERE we specify the amplitude of the sinusoidal references
 options.ref_max=[6.5 -5.5 6.5];
+
+% partition the state space in rectangulars 
+% Grid resolution, box width
+
 options.delta_resolution=1/3; %0.1
 options.no_cells_per_dim=(options.ref_max-options.ref_min)/options.delta_resolution;
 
@@ -78,7 +75,8 @@ for i=1:no_cells
     options.cells{i}.random_value=(options.cells{i}.max-options.cells{i}.min).*rand(3,1)+options.cells{i}.min;
 end
 
-options.coverage.points='c'; % default random
+options.coverage.points='c'; % c for centers, 'r' for random points
+
 % options: choose coverage as value from 0 - 1
 options.coverage.cell_occupancy=1;
 

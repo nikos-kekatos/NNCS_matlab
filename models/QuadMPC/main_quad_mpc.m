@@ -2,12 +2,13 @@
 clear;close all;clc;
 
 addpath(genpath('../../'))
+
 % mpc code/initialization and definition
 quad_mpc_init;
 
 % configuration options
 config_quad_mpc;
-options.pretrained=1;
+options.pretrained=0;
 
 %% TRACE GENERATION
 % Specify the initial conditions
@@ -113,7 +114,10 @@ display_ranges(data);
 % The first three (x,y,z) are sinusoids,
 % The last three: all zeros.
 
+% xyz references
 data.REF=data.REF(:,1:3); % comment if you want all references
+
+data.REF=data.REF(:,:); % comment if you want all references
 
 % You can select plant outputs. In total there are 12.
 % The first six are states while the last 6 are state derivatives.
@@ -130,9 +134,10 @@ training_options.use_previous_ref=2;   % answer: integer, number of previous ref
 training_options.use_previous_y=2;     % answer: integer, number of previous outputs
 options.extra_y=0;
 training_options.use_time=0;
+training_options.use_future_ref=1;
 
 % training_options.neurons=[30 16 8];
-training_options.neurons=[30  15];
+training_options.neurons=[30  15]; % 2 layers, 1st layer: 30 neurons, 2nd layer: 15 neurons
 training_options.input_normalization=0;
 training_options.loss='mse';
 % training_options.loss='custom_v1';
@@ -145,7 +150,7 @@ training_options.regularization=0; %0-1
 training_options.param_ratio=0.5;
 training_options.algo= 'trainlm'%'trainlm'; % trainscg % trainrp
 %add option for saved mat files
-training_options.iter_max_fail=1;
+training_options.iter_max_fail=1; % maximum number of iterations
 iter=1;reached=0;
 training_options.replace_by_zeros=1;
 while true && iter<=training_options.iter_max_fail
@@ -188,7 +193,7 @@ if options.plotting_sim
     %     figure;plotperform(tr)
     plot_NN_sim(data,options);
 end
-%% NN Model
+%% NN Model/ Simulink
 
 options.SLX_model='quad_mpc_nn';
 
@@ -198,7 +203,7 @@ options.SLX_model='quad_mpc_nn';
 % Integrate NN block in the Simulink model
 construct_SLX_with_NN(options,options.SLX_model);
 
-%% Simulate the closed-loop
+% Simulate the closed-loop
 sim(options.SLX_model)
 figure;
 subplot(3,1,1)

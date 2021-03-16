@@ -98,6 +98,13 @@ How to run?
 2. Navigate to the right directory `models/QuadMPC/`
 3. run `main_quad_mpc.m`
 4. You can use pre-generated traces (default option) to speed up the process and directly check different NN configurations. You can run the trace generation yourself by changing the command `options.pretrained=1` to `options.pretrained=0`. For evaluation, the simulation section will likely return an error (variables going to infinity). Instead, you could open the Simulink model and inspect the scopes.
+
+>Update repository
+
+If you have already cloned the repo, you could try
+
+1. git checkout nikos_comb
+2. git pull
  
 Experiments
 --

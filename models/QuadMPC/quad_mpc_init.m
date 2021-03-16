@@ -17,10 +17,12 @@ nlobj.Jacobian.StateFcn = @QuadrotorStateJacobianFcn;
 % Validate your prediction model, your custom functions, and their Jacobians.
 rng(0)
 validateFcns(nlobj,rand(nx,1),rand(nu,1));
+
 % Specify a sample time of 0.1 seconds, prediction horizon of 18 steps, and control horizon of 2 steps. 
 Ts = 0.1;
-p = 18;
-m = 2;
+p = 18; % prediction horizon
+m = 2; % control horizon
+
 nlobj.Ts = Ts;
 nlobj.PredictionHorizon = p;
 nlobj.ControlHorizon = m;
