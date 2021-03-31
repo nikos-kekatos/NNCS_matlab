@@ -54,7 +54,7 @@ options.ref_max=[6.5 -5.5 6.5];
 % partition the state space in rectangulars 
 % Grid resolution, box width
 
-options.delta_resolution=1/3; %0.1
+options.delta_resolution=0.1; %1/3
 options.no_cells_per_dim=(options.ref_max-options.ref_min)/options.delta_resolution;
 
 options.no_cells_total=prod(options.no_cells_per_dim);

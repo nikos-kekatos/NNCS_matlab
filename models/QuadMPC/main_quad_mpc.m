@@ -8,7 +8,7 @@ quad_mpc_init;
 
 % configuration options
 config_quad_mpc;
-options.pretrained=0;
+options.pretrained=1;
 
 %% TRACE GENERATION
 % Specify the initial conditions
@@ -91,7 +91,7 @@ if ~options.pretrained
         % You can animate the trajectory of the quadrotor. The quadrotor moves close to the "target" quadrotor which travels along the reference trajectory within 7 seconds. After that, the quadrotor follows closely the reference trajectory. The animation terminates at 20 seconds.
         
         % animateQuadrotorTrajectory;
-        ref_simu=yreftot(:,1:6);
+        ref_simu=yreftot;
         u_simu=uHistory;
         y_simu=xHistory;
         data.REF=[data.REF;ref_simu];
@@ -104,32 +104,34 @@ if ~options.pretrained
     % data.U=data.U'
     % data.Y=data.Y'
 elseif options.pretrained
-    load('27_traces_3x6.mat')
+    load('27_traces_12by12.mat')
 end
 %% TRAINING
 
 display_ranges(data);
-
+data_backup=data;
 % You can select references. In total there are six.
 % The first three (x,y,z) are sinusoids,
-% The last three: all zeros.
+% The next three: all zeros.
 
 % xyz references
-data.REF=data.REF(:,1:3); % comment if you want all references
+% @Inzemam, I also changed lin 94. Now I store all 12 references and then
+% choose.
+data.REF=data.REF(:,1:6); % comment if you want all references
 
-data.REF=data.REF(:,:); % comment if you want all references
+% data.REF=data.REF(:,:); % comment if you want all references
 
 % You can select plant outputs. In total there are 12.
 % The first six are states while the last 6 are state derivatives.
-% no_y=12;
-no_y=6;
+no_y=12;
+% no_y=6;
 data.Y=data.Y(:,1:no_y);
 
 options.trimming_steady_state=0;
 timer_train=tic;
 training_options.retraining=0;
 training_options.use_error_dyn=0;      % answer: 0 or 1, use error dynamics or not
-training_options.use_previous_u=0;     % answer: integer, number of previous u values
+training_options.use_previous_u=1;     % answer: integer, number of previous u values
 training_options.use_previous_ref=2;   % answer: integer, number of previous references
 training_options.use_previous_y=2;     % answer: integer, number of previous outputs
 options.extra_y=0;

@@ -183,6 +183,16 @@ there is a nominal control that keeps the quadrotor floating
 <td style="text-align: center;">27</td>
 <td style="text-align: center;">NNCS exploded</td>
 </tr>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">6/6</td>
+<td style="text-align: center;">12/12</td>
+<td style="text-align: center;">yes(k-1)</td>
+<td style="text-align: center;"><span class="math inline">\(5.5\leq In_1\leq6.5\)</span>,<br /><span class="math inline">\(-6.6\leq In_2\leq5.6\)</span>,<br /> <span class="math inline">\(5.5\leq In_3\leq6.5\)</span>.</td>
+<td style="text-align: center;">27</td>
+<td style="text-align: center;">NNCS exploded</td>
+</tr>
 </tbody>
 </table>
 
