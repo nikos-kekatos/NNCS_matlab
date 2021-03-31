@@ -8,7 +8,7 @@ quad_mpc_init;
 
 % configuration options
 config_quad_mpc;
-options.pretrained=1;
+options.pretrained=0;
 
 %% TRACE GENERATION
 % Specify the initial conditions
@@ -77,8 +77,9 @@ if ~options.pretrained
         
         % Plot the closed-loop response.
         time = 0:Ts:Duration;
-        yreftot = QuadrotorReferenceTrajectory(time)';
-        
+        % yreftot = QuadrotorReferenceTrajectory(time)';
+        yreftot = QuadrotorReferenceTrajectory_param(time,rx,ry,rz)';
+
         options.plotting_sim=0;
         if options.plotting_sim
             plotQuadrotorTrajectory;
