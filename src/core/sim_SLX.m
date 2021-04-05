@@ -12,16 +12,17 @@ elseif options.model==7
     Kd=3.3894e-004;
     N=9.9135;
 elseif options.model==6
-    PID_TRESH=0.3;
     s=tf('s');
-K1=(-6.694*(s+0.9446)*(s+50.01))/((s^2+13.23*s+9.453^2)*(s+50.05));
-K2=(-2187^2*(s+0.9977)*(s+66.28))/((s^2+467.2*s+486.2^2)*(s+507));
-P=-1000/(s*(s+.875)*(s+50));
-ss1=ss(K1);
-ss2=ss(K2);
-sysP=ss(P);
+    K1=(-6.694*(s+0.9446)*(s+50.01))/((s^2+13.23*s+9.453^2)*(s+50.05));
+    K2=(-2187^2*(s+0.9977)*(s+66.28))/((s^2+467.2*s+486.2^2)*(s+507));
+    P=-1000/(s*(s+.875)*(s+50));
+    ss1=ss(K1);
+    ss2=ss(K2);
+    sysP=ss(P);
 elseif options.model==8 % lookuptable
     load('initialize.mat')
+elseif options.model==9
+    PID_THRESH=0.3;
 end
 get_param(Simulink.allBlockDiagrams(),'Name');
 load_system(model_name)

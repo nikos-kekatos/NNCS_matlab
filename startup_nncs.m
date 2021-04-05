@@ -4,9 +4,9 @@
 addpath(genpath(pwd))
 % main_dir=pwd;
 user_name=char(java.lang.System.getProperty('user.name'));
-if user_name=='kekatos'
+if strcmp(user_name,'kekatos')
     addpath(genpath('/Users/kekatos/Files/Projects/Github/breach'))
-elseif user_name=='haque'
+elseif strcmp(user_name,'haque')
     addpath(genpath('C:\Users\haque\Documents\repos\breach\'))
 else
     disp('Add your path using addpath and genpath')
