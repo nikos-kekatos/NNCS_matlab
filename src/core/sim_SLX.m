@@ -3,7 +3,7 @@ function [ref,y,u,options,y_nn,u_nn,J_current] = sim_SLX(model_name,options)
 %   This is to resolve problems with references between base and local
 %   workspaces.
 if options.model==4
-    load  PIDGainSchedExample
+    load  e4_PIDGainSchedExample
 elseif options.model==5
     run('quad_variables.m')
 elseif options.model==7

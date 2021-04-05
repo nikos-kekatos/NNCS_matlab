@@ -49,7 +49,7 @@ model_name='watertank_comp_design_mod_NN';
 % options.sim_ref=2.93;
 % options.testing.ref_Ts=5;
 if options.model==4
-    load PIDGainSchedExample
+    load e4_PIDGainSchedExample
 elseif options.model==5
     run('quad_variables.m')
 elseif options.model==7
