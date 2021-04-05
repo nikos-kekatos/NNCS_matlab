@@ -8,7 +8,7 @@ load_system(file_name);
 model_path = get_param(bdroot, 'FileName');
 folder_path=fileparts(model_path); % goes up one directory
 original_path=pwd;
-cd(folder_path);
+% cd(folder_path);
 % if nargin>=2
 %     options.SLX_NN_model=file_name;
 % elseif nargin==1
@@ -61,6 +61,6 @@ add_line(file_name,[pos_out(1)-5 pos_out(2); pos_out(1)+5 pos_out(2)]);
 close_system(file_name,1);
 % close_system(options.SLX_NN_model,1)
 delete(strcat(NN_model,'.slx'));
-cd(original_path);
+% cd(original_path);
 end
 

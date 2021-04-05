@@ -2,6 +2,10 @@ function [data_new] = get_new_training_data(data1,data2,training_options)
 %get_new_training_data Combining old training data and cex for retraining
 %   1: combine old and new-> keep all of them
 
+if ~isfield('training_options','combining_old_cex')
+    training_options.combining_old_and_cex=1;
+end
+
 if training_options.combining_old_and_cex==1
     data_new.REF=[data1.REF;data2.REF];
     data_new.U=[data1.U;data2.U];

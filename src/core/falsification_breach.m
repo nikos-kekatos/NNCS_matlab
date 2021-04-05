@@ -60,7 +60,7 @@ load_system(strcat(model_name,'_breach'))
 set_param(strcat(model_name,'_breach'),'FastRestart','on')
 % Br_falsif = BreachSimulinkSystem(model_name);
 
-warning('Only works for 1D systems')
+%warning('Only works for 1D systems')
 
 % Test with constant
 %{
