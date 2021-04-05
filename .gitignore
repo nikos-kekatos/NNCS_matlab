@@ -21,6 +21,8 @@ src/core/MATLAB
 references/
 Reviews.pdf
 NIPS_submission/
+models/Switching_tf_hespanha/backup
+models/Switching_tf_hespanha/okay_results
 
 #File types
 *.png
