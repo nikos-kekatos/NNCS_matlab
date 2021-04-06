@@ -1,4 +1,4 @@
-param sim_time=29.9, r=0.1, dt=0.01, T=10, d=0.01, T_1=6, T_2=4,e=0.01, ov=0.05
+param sim_time=29.9, r=0.1, dt=0.01, T=10, d=0.01, T_1=6, T_2=4,e=0.15, ov=0.05
 
 phi_5:= alw_[0,sim_time]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,7] alw_[0,8] (abs(y[t]-In1[t])<e)))
 
@@ -10,10 +10,10 @@ phi_5:= alw_[0,sim_time]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,7] alw_[0
 
 
 
-phi_3:=   alw_[0,sim_time] (abs(y_nn[t]-y[t])<26)
+#phi_3:=   alw_[0,sim_time] (abs(y_nn[t]-y[t])<26)
 #phi_3:= ((In1[t] > 0) => (alw_[0.2,3](y_nn[t]-In1[t]<ov))) and ((In1[t] <= 0) => (alw_[0.2,3](In1[t]-y_nn[t]<ov))) and (alw_[0,sim_time] ((In1[t+dt]-In1[t] > d) => (alw_[0.2,3](y_nn[t]-In1[t]<ov)))) and (alw_[0,sim_time] ((In1[t]-In1[t+dt] > d) => (alw_[0.2,3](In1[t]-y_nn[t]<ov))))
 
-phi_4:=   alw_[0,sim_time] (abs(y_nn_cex_1[t]-y[t])<20)
+#phi_4:=   alw_[0,sim_time] (abs(y_nn_cex_1[t]-y[t])<20)
 #phi_4:= alw_[0,sim_time] ((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,7] alw_[0,2] (abs(y_nn_cex_1[t]-In1[t])<e)))
 
 #phi_4:= ((In1[t] > 0) => (alw_[0.2,3](y_nn[t]-In1[t]<ov))) and ((In1[t] <= 0) => (alw_[0.2,3](In1[t]-y_nn_cex_1[t]<ov))) and (alw_[0,sim_time] ((In1[t+dt]-In1[t] > d) => (alw_[0.2,3](y_nn_cex_1[t]-In1[t]<ov)))) and (alw_[0,sim_time] ((In1[t]-In1[t+dt] > d) => (alw_[0.2,3](In1[t]-y_nn_cex_1[t]<ov))))

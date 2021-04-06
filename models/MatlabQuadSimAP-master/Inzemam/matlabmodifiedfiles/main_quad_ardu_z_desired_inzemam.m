@@ -27,7 +27,21 @@
 %%------------- BEGIN CODE --------------
 
 %% 0. Add files to MATLAB path
-
+%{
+try
+    run('startup_nncs.m')
+catch
+    try
+        run('../startup_nncs.m')
+    catch
+        try
+        run('../../startup_nncs.m')
+        catch
+            run('../../../startup_nncs.m')
+        end
+    end
+end
+%}
 current_file = matlab.desktop.editor.getActiveFilename;
 current_path=fileparts(current_file);
 % current_file=which('main_nncs_combination.m');
@@ -65,7 +79,7 @@ elseif model==4
 elseif model==5
 %     SLX_model='QuadrotorSimulink_nk_test';
 %     SLX_model='Quadrotor_rangeChecking';
-    SLX_model='Quadrotor_stable';
+    SLX_model='Quadrotor_stable_z_desired_inzemam';
 %     SLX_model='Quadrotor_stable_single';
 end
 load_system(SLX_model)
@@ -84,7 +98,7 @@ elseif model==3
 elseif model==4
     run('config_tank.m')
 elseif model==5
-    run('config_quad_ardu.m')
+    run('config_quad_ardu_z_desired_inzemam.m')
 end
 %% 4a. Run simulations -- Generate training data
 options.error_mean=0%0.0001;
@@ -98,6 +112,7 @@ options.coverage.points='r';
 warning off
 [data,options]=trace_generation_nncs(SLX_model,options);
 timer.trace_gen=toc(timer_trace_gen)
+
 %% 4b. Load previous saved traces
 if options.load==1
     % specify dataset from outputs/ folder
@@ -123,7 +138,6 @@ end
 %% 6. Train NN Controller
 %the assignments could go a function/file
 timer_train=tic;
-options.trimming_steady_state=0;
 training_options.retraining=0;
 if model==1
     training_options.use_error_dyn=1;       % watertank=1    %robotarm=0    %quadcopter=0
@@ -151,7 +165,6 @@ elseif model==5
     training_options.use_previous_ref=2;    % waterank=3     %robotarm=3    %quadcopter=0
     training_options.use_previous_y=2;
     training_options.mixed=0;
-    training_options.use_time=0;
 end
 % training_options.neurons=[30 30 ];
 training_options.neurons=[50 ];
@@ -225,14 +238,14 @@ plot_NN_sim(data,options);
 
 %% 8b. Integrate NN block in the Simulink model
 % file_name='QuadrotorSimulink_no_memory';
-file_name='QuadrotorSimulink_w_memory';
+file_name='QuadrotorSimulink_w_memory_z_desired_inzemam';
 % file_name='QuadrotorSimulink_w_memory_error';
 
 construct_SLX_with_NN(options,file_name);
 
 %% 8c. Use different models for CEX
-[options]=create_NN_diagram(options,net);
-construct_SLX_with_NN(options,'QuadrotorSimulink_w_memory_cex');
+% [options]=create_NN_diagram(options,net);
+% construct_SLX_with_NN(options,'QuadrotorSimulink_w_memory_cex');
 
 %% 9. Analyse NNCS in Simulink
 model_name=[];
@@ -289,31 +302,28 @@ elseif model==5
     options.ref_index_plot=1;
     options.T_train=50;
 end
-tic
 run_simulation_nncs(options,file_name,1);
-t_test=toc;
 options.input_choice=4
 %% 10. Data matching (analysis w/ training data)
-
-if options.reference_type~=3
-    warning('It is not possible to perform data matching');
-else
-    if options.plotting_sim
-        plot_coverage_boxes(options,1);
-    end
-    options.testing.plotting=0;
-    options.testing.train_data=0;% 0: for centers, 1: random points
-    if options.test_dataMatching
-        [testing,options]=test_coverage(options,model_name);
-    end
-end
+% 
+% if options.reference_type~=3
+%     warning('It is not possible to perform data matching');
+% else
+%     if options.plotting_sim
+%         plot_coverage_boxes(options,1);
+%     end
+%     options.testing.plotting=0;
+%     options.testing.train_data=0;% 0: for centers, 1: random points
+%     if options.test_dataMatching
+%         [testing,options]=test_coverage(options,model_name);
+%     end
+% end
 %% 10B. Matching test against STL property
-
+options.num_REF=3
 falsification_options_quad;
 options.input_choice=4;
-[original_rob,In_Original] = check_cex_all_data(data,falsif,file_name,options)
+[original_rob,In_Original] = check_cex_all_data(data,falsif,file_name,options);
 
-% disp('TO-DO: output a text command')
 %% 11. Falsification with Breach
 if ~exist('falsif')
     falsification_options_quad
@@ -321,10 +331,9 @@ end
 %%% ------------------------------------------ %%
 %%% ----- 11-A: Falsification with Breach ---- %%
 %%% ------------------------------------------ %%
-falsif.test_only_original=1;
 
-falsif.iterations_max=3;
-falsif.method='quasi';
+falsif.iterations_max=1;
+falsif.method='GNM';
 falsif.num_samples=100;
 falsif.max_obj_eval=100;
 
@@ -332,7 +341,7 @@ stop=0;
 i_f=1;
 
 % file_name=strcat(options.SLX_model);
-file_name='QuadrotorSimulink_w_memory_cex';
+% file_name='QuadrotorSimulink_w_memory_cex';
 options.input_choice=4;
 net_all{1}=net;
 seeds_all=falsif.seed*(1:falsif.iterations_max);
@@ -425,8 +434,6 @@ while i_f<=falsif.iterations_max && ~stop
         for tm = 1%[2 3 1] % or we choose the preference/order
             timer_retrain=tic;
             fprintf('\nBeginning retraining with cex.\n')
-            training_options.combining_old_and_cex=1; % 1: combine old and cex
-
             training_options.retraining=1; % the structure of the NN remains the same.
             training_options.retraining_method=tm; %1: start from scratch with all data,
             % 2: keep old net and use all data,  3: keep old net and use only new data
@@ -467,12 +474,9 @@ while i_f<=falsif.iterations_max && ~stop
         %%% ------ 11-E: Testing if CEX disappeared   ----- %%
         %%% ----------------------------------------------- %%
         timer_rechecking=tic;
-        falsif.test_previous_nn=0;
 
         fprintf('\n Testing the NN on the training data.\n')
         fprintf('The number of original CEX was %i.\n',length(falsif_pb{i_f}.obj_false));
-        falsif.test_previous_nn=1
-
         [rob_temp_false,rob_temp_all,inputs_cex,inputs_all,options]=check_cex_elimination(falsif_pb{i_f},falsif,data_cex,file_name,idx_cluster,options);
         %     fprintf(' \n The original robustness values were %s.\n',num2str(robustness_checks{1}));
         timer.rechecking{i_f}=toc(timer_rechecking);
@@ -482,16 +486,14 @@ while i_f<=falsif.iterations_max && ~stop
         robustness_checks_all{i_f,3}=rob_temp_all
         fprintf(' \n The original CEX were %i, CEX after cluster, %i and with the new CEX are %i.\n',numel(find(robustness_checks_false{i_f,1}<0)),numel(idx_cluster),numel(find(robustness_checks_all{i_f,3}<0)));
         fprintf('\n We have %i CEX after clustering and after retraining we have %i.\n\n',numel(idx_cluster),numel(find(robustness_checks_false{i_f,2}<0)));
-        if numel(find(robustness_checks_false{i_f,2}<0))
-            disp('The retraining was not done correctly!')
-        end
+        
         if  isequal(falsif_pb_temp.X_log,inputs_all)
             disp(' We have tested the same inputs with CheckSpec.')
         end
         %%% ----------------------------------------------- %%
         %%% ------       11-F: Plotting CEX     ----------- %%
         %%% ----------------------------------------------- %%
-        %
+        %%
         options.input_choice=3
         num_cex=5;options.plotting_sim=1;
         run_and_plot_cex_nncs(options,file_name,inputs_cex,num_cex); %4th input number of counterexamples

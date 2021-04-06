@@ -29,7 +29,8 @@ models/Switching_tf_hespanha/okay_results
 *.zip
 #*.jpg
 !/models/MatlabQuadSimAP-master/simulation_fixed.png
-
+!/models/MatlabQuadSimAP-master/two_blocks/data_keras_40_traces.csv
+!/models/MatlabQuadSimAP-master/two_blocks/data_keras.csv
 # Windows
 *.asv
 

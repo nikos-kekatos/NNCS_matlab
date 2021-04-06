@@ -53,9 +53,12 @@ elseif model==3
 elseif model==4
     falsif.breach_ref_min=8;            %watertank 8 % quadcopter -1 %robotarm -0.5
     falsif.breach_ref_max=9;
-elseif model==5
+elseif model==5 || model==6 
     falsif.breach_ref_min=options.breach_ref_min;    %[0.2 0]        %watertank 8 % quadcopter -1 %robotarm -0.5
     falsif.breach_ref_max=options.breach_ref_max;    %[0.4 0.1]
+elseif model==7 || model==8
+    falsif.breach_ref_min=options.ref_min;
+    falsif.breach_ref_max=options.ref_max;
 end
 falsif.stop_at_false=false;
 falsif.T=options.T_train;

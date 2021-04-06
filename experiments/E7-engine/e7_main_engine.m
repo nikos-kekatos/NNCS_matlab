@@ -398,7 +398,7 @@ while i_f<=falsif.iterations_max && ~stop
         %%% ----------------------------------------------- %%
         %
         options.input_choice=3
-        num_cex=[];options.plotting_sim=1;
+        num_cex=2;options.plotting_sim=1;
         run_and_plot_cex_nncs(options,file_name,inputs_cex,num_cex); %4th input number of counterexamples
         options.input_choice=4;
     end
