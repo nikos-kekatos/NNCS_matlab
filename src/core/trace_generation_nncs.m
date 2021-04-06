@@ -136,7 +136,7 @@ if options.reference_type~=4
         title('Random Simulation Trace')
         %     end
     end
-    if options.save_sim
+    if oe
         if ~isfield(options,'sim_name')
             if options.reference_type==1
                 temp_st='constant_ref_';

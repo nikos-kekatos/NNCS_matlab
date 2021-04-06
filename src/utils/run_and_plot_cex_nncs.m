@@ -63,9 +63,9 @@ for i=1:num_cex
     elseif options.model==5
         run('quad_variables.m')
     elseif options.model==8
-        load('initialize.mat')
+        load('e8_initialize.mat')
     elseif options.model==4
-        load  PIDGainSchedExample
+        load  e4_PIDGainSchedExample
     end
     options.workspace = simset('SrcWorkspace','current');
     sim(model_name,[],options.workspace);

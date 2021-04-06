@@ -54,7 +54,7 @@ end
 %% 4a. Run simulations -- Generate training data
 options.error_mean=0%0.0001;
 options.error_sd=0%0.001;
-options.save_sim=1;
+options.save_sim=0;
 % Breach options
 % options.no_traces=30;
 % options.breach_segments=2;

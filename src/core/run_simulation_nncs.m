@@ -67,7 +67,7 @@ elseif options.model==6
     ss2=ss(K2);
     sysP=ss(P);
 elseif options.model==8
-    load('initialize.mat')
+    load('e8_initialize.mat')
 elseif options.model==9
     PID_THRESH=0.3;
 elseif options.model==10
