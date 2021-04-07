@@ -137,6 +137,7 @@ if options.preprocessing_bool==1
 end
 %% 6. Train NN Controller
 %the assignments could go a function/file
+options.trimming_steady_state=0;
 timer_train=tic;
 training_options.retraining=0;
 if model==1
@@ -165,6 +166,7 @@ elseif model==5
     training_options.use_previous_ref=2;    % waterank=3     %robotarm=3    %quadcopter=0
     training_options.use_previous_y=2;
     training_options.mixed=0;
+    training_options.use_time=0;
 end
 % training_options.neurons=[30 30 ];
 training_options.neurons=[50 ];
