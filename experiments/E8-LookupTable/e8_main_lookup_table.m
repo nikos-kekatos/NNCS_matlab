@@ -157,7 +157,7 @@ plot_NN_sim(data,options);
 [options]=create_NN_diagram(options,net);
 
 % 8b. Integrate NN block in the Simulink model
-file_name='lookuptable_NN_cex';
+file_name='e8_lookuptable_NN_cex';
 
 construct_SLX_with_NN(options,file_name);
 
@@ -180,9 +180,7 @@ t_test=toc;
 options.input_choice=4
 %% 10. Data matching (analysis w/ training data)
 
-if options.reference_type~=3
-    warning('It is not possible to perform data matching');
-else
+if options.reference_type==3
     if options.plotting_sim
         plot_coverage_boxes(options,1);
     end
