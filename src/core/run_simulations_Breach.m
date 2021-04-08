@@ -223,3 +223,8 @@ data_breach.REF=REF_breach';
 data_breach.U=U_breach';
 data_breach.Y=Y_breach';
 
+if options.model == 5 && strcmp(options.SLX_model,'e5_Quadrotor_stable')
+    data_breach.REF=REF_breach';
+    data_breach.REF_all=data_breach.REF;
+    data_breach.REF=data_breach.REF(:,1:2);
+end

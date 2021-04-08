@@ -72,3 +72,4 @@ catch
     falsif.breach_segments=2;
     options.breach_segments=falsif.breach_segments;
 end
+falsif.test_previous_nn=1;
