@@ -1,9 +1,9 @@
 param sim_time=19.99, r=0.1, dt=0.0001, T=10, d=0.00001, T_1=6, T_2=4,e=0.01, ov=0
 
-phi:= alw_[0,sim_time] ((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,T_1] alw_[0,T_2] (abs(y[t]-In1[t])<e)))
+phi:= alw_[0,sim_time-dt] ((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,T_1] alw_[0,T_2] (abs(y[t]-In1[t])<e)))
 
 phi_3:= alw_[0,sim_time-dt]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,T_1] alw_[0,T_2] (abs(y_nn[t]-In1[t])<e)))
 
 phi_4:= alw_[0,sim_time-dt] ((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,T_1] alw_[0,T_2] (abs(y_nn_cex_1[t]-In1[t])<e)))
 
-phi_5:= alw_[0,sim_time-dy]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,T_1] alw_[0,T_2] (abs(y[t]-In1[t])<e)))
+phi_5:= alw_[0,sim_time-dt]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,T_1] alw_[0,T_2] (abs(y[t]-In1[t])<e)))

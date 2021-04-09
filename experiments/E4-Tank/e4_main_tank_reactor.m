@@ -420,34 +420,12 @@ figure;falsif_pb{i_f}.BrSet_Logged.PlotRobustSat(phi_3)
 model_name=[];
 options.input_choice=3;
 
-if model==1
-    model_name='watertank_inport_NN_cex';
-    options.ref_Ts=5;
-    options.T_train=10;
-    options.sim_ref=8;               %watertank 8
-    options.ref_min=8.5;                %watertank 8.5
-    options.ref_max=11.5;               %watertank 11.5
-    options.sim_cov=[8.7;11.8];             %watertank [12;8]
-    %     options.sim_cov=[10.125;10.08];
-    options.sim_cov=[inputs_all(1,3),inputs_all(3,3)];
-elseif model==2
-    model_name='robotarm';
-    options.sim_ref=0.4;               % robotarm
-    options.ref_min=-0.4;
-    options.ref_max=0.3;
-    options.sim_cov=[0.3;0.1];
-elseif model==3
-    model_name='quadcopter_NN_cex';
-    options.sim_ref=0.4;               % quadcopter
-    options.ref_min=1;
-    options.ref_max=2.5;
-    options.sim_cov=[2.5;-1.5];
-elseif model==4
+if model==4
     options.ref_Ts=10;             %tank_reactor
     options.sim_ref=3;
     options.ref_min=2;
     options.ref_max=5;
-    options.sim_cov=[8.9];
+    options.sim_cov=[6.6;6.8];
     options.u_index_plot=1;
     options.y_index_plot=1;
     options.ref_index_plot=1;

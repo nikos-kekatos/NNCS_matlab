@@ -183,7 +183,7 @@ if  model==7
     options.sim_ref=1.2;
     options.ref_min=0;
     options.ref_max=2;
-    options.sim_cov=[2010;2050];
+    options.sim_cov=[2015;2020];
 %     options.sim_cov=options.coverage.cells{1}.random_value;
     options.u_index_plot=1;
     options.y_index_plot=1;

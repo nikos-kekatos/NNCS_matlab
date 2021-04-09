@@ -1,11 +1,11 @@
-param sim_time=29.9, r=0.1, dt=0.01, T=10, d=0.01, T_1=6, T_2=4,e=0.15, ov=0.05
-
-phi_5:= alw_[0,sim_time]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,7] alw_[0,8] (abs(y[t]-In1[t])<e)))
+param sim_time=29.9, r=0.1, dt=0.01, T=10, d=0.01, T_1=6, T_2=4,e=0.1, ov=0.05
+#e:0.15 no cex, e:0.1 no cex
+phi_1:= alw_[0,sim_time]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,7] alw_[0,8] (abs(y[t]-In1[t])<e)))
 
 phi_3:= alw_[0,sim_time]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,7] alw_[0,8] (abs(y_nn[t]-In1[t])<e)))
 phi_4:= alw_[0,sim_time]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,7] alw_[0,8] (abs(y_nn_cex_1[t]-In1[t])<e)))
 phi_5:= alw_[0,sim_time]((abs(In1[t+dt]-In1[t])>d or [t]==0) => (ev_[0,7] alw_[0,8] (abs(y[t]-In1[t])<e)))
-
+=alw_[0,sim_time]((y[t+dt]-y[t]>spike)=> alw_[0,2*d] (y[t]-y[t+dt]<spike))
 
 
 
