@@ -90,11 +90,11 @@ end
 % Coverage- time varying refereces
 options.testing.train_data=0; %0 for testing centers, 1 for testing training data
 if options.reference_type==3
-    options.coverage.m=2;
-    options.ref_Ts=15;
-    options.coverage.ref_min=2000;
-    options.coverage.ref_max=2050;
-    options.coverage.delta_resolution=50/7; %0.1
+        options.coverage.m=2;
+        options.ref_Ts=15;
+        options.coverage.ref_min=2000;
+        options.coverage.ref_max=2050;
+        options.coverage.delta_resolution=50/7; %0.1
 %     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution-1;
     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution;
 

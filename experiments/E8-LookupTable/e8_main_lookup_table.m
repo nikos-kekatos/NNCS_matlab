@@ -86,8 +86,8 @@ if model==8
     training_options.mixed=0;
     training_options.use_time=0;
 end
-% training_options.neurons=[30 30 ];
-training_options.neurons=[20  ];
+training_options.neurons=[30 30 ];
+% training_options.neurons=[20  ];
 training_options.input_normalization=0;
 training_options.loss='mse';
 % training_options.loss='custom_v1';

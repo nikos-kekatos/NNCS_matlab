@@ -323,31 +323,30 @@ options.input_choice=4;
 
 %% 10. Data matching (analysis w/ training data)
 
-warning('This code only works for coverage')
+% warning('This code only works for coverage')
 
-if options.reference_type~=3
-    warning('It is not possible to perform data matching');
-else
+if options.reference_type==3
+   
     if options.plotting_sim && options.coverage.m==2
         plot_coverage_boxes(options,1);
     end
     options.testing.plotting=1;
     options.testing.train_data=1;% 0: for centers, 1: random points
-    options.test_dataMatching=1
+    options.test_dataMatching=0;
     if options.test_dataMatching
         [testing,options]=test_coverage(options,model_name);
     end
 end
 %% 10B. testing on training data
 file_name=options.SLX_model;
-falsification_options_quad;
+falsification_all_options;
 options.input_choice=4;
 [original_rob,In_Original] = check_cex_all_data(data,falsif,file_name,options);
 
 %% 11. Falsification with Breach
 
 if ~exist('falsif')
-    falsification_options_quad
+    falsification_all_options
 end
 %%% ------------------------------------------ %%
 %%% ----- 11-A: Falsification with Breach ---- %%

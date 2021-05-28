@@ -41,7 +41,7 @@ load_system(SLX_model)
 % Uncomment next line if you want to open the model
 % open(SLX_model)
 options.model=model;
-set_param(SLX_model, 'fastrestart', 'on');
+% set_param(SLX_model, 'fastrestart', 'on');
 
 %% 3. Input: specify configuration parameters
 % run('configuration_1.m'),('config_quad_1_ref.m')
@@ -94,6 +94,7 @@ if options.preprocessing_bool==1
 end
 %% 6. Train NN Controller
 %the assignments could go a function/file
+options.trimming_steady_state=0;
 timer_train=tic;
 training_options.retraining=0;
 if model==1

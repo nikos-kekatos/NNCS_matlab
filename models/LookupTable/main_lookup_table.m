@@ -394,7 +394,7 @@ while i_f<=falsif.iterations_max && ~stop
         %%% ----------------------------------------------- %%
         %
         options.input_choice=3
-        num_cex=5;options.plotting_sim=1;
+        num_cex=1;options.plotting_sim=1;
         run_and_plot_cex_nncs(options,file_name,inputs_cex,num_cex); %4th input number of counterexamples
         options.input_choice=4;
         %%
@@ -454,5 +454,5 @@ elseif model==4
     options.ref_index_plot=1;
 end
 
-run_simulation_nncs(options,model_name,1) %3rd input is true for counterexamples
+run_simulation_nncs(options,file_name,1) %3rd input is true for counterexamples
 
