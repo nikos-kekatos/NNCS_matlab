@@ -8,7 +8,7 @@ quad_mpc_init;
 
 % configuration options
 config_quad_mpc;
-options.pretrained=0;
+options.pretrained=1;
 
 %% TRACE GENERATION
 % Specify the initial conditions
@@ -105,12 +105,12 @@ if ~options.pretrained
     % data.U=data.U'
     % data.Y=data.Y'
 elseif options.pretrained
-    load('27_traces_12by12.mat')
+    load('8_traces_12by12.mat')
 end
+data_backup=data;
 %% TRAINING
 
 display_ranges(data);
-data_backup=data;
 % You can select references. In total there are six.
 % The first three (x,y,z) are sinusoids,
 % The next three: all zeros.
@@ -118,29 +118,30 @@ data_backup=data;
 % xyz references
 % @Inzemam, I also changed lin 94. Now I store all 12 references and then
 % choose.
-data.REF=data.REF(:,1:6); % comment if you want all references
+data.REF=data_backup.REF(:,1:3); % uncomment if you want the 6 references (we are tracking(
 
-% data.REF=data.REF(:,:); % comment if you want all references
+% data.REF=data.REF(:,:); % uncomment if you want only all 12 references
+% data.REF=data.REF(:,1:3); % uncomment if you want only non-zero references
 
 % You can select plant outputs. In total there are 12.
 % The first six are states while the last 6 are state derivatives.
-no_y=12;
-% no_y=6;
-data.Y=data.Y(:,1:no_y);
+% no_y=12;
+no_y=6;
+data.Y=data_backup.Y(:,1:no_y);
 
 options.trimming_steady_state=0;
 timer_train=tic;
 training_options.retraining=0;
 training_options.use_error_dyn=0;      % answer: 0 or 1, use error dynamics or not
-training_options.use_previous_u=1;     % answer: integer, number of previous u values
+training_options.use_previous_u=2;     % answer: integer, number of previous u values
 training_options.use_previous_ref=2;   % answer: integer, number of previous references
 training_options.use_previous_y=2;     % answer: integer, number of previous outputs
 options.extra_y=0;
 training_options.use_time=0;
-training_options.use_future_ref=1;
+training_options.use_future_ref=0;
 
-% training_options.neurons=[30 16 8];
-training_options.neurons=[30  15]; % 2 layers, 1st layer: 30 neurons, 2nd layer: 15 neurons
+training_options.neurons=[30];
+% training_options.neurons=[20  10 5]; % 2 layers, 1st layer: 30 neurons, 2nd layer: 15 neurons
 training_options.input_normalization=0;
 training_options.loss='mse';
 % training_options.loss='custom_v1';
@@ -199,7 +200,9 @@ end
 %% NN Model/ Simulink
 
 options.SLX_model='quad_mpc_nn';
-
+if size(data.REF,2)==3
+    options.SLX_model='quad_mpc_nn_3_ref';
+end
 % gensim(net)
 [options]=create_NN_diagram(options,net);
 
