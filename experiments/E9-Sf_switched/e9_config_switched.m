@@ -21,7 +21,7 @@ options.reference_type=3;
 options.plotting_sim=1;
 
 options.test_dataMatching=0;
-options.specs_file='e9_specs_switched.stl';
+options.specs_file='e9_specs_switched_ov.stl';
 % added for Breach
 
 options.input_choice=options.reference_type;

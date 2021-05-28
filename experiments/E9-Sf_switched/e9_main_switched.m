@@ -225,6 +225,7 @@ file_name=strcat(options.SLX_model);
 
 options.input_choice=4;
 net_all{1}=net;
+falsif.seed=30
 seeds_all=falsif.seed*(1:falsif.iterations_max);
 while i_f<=falsif.iterations_max && ~stop
     timer_falsif=tic;
