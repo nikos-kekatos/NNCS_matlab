@@ -5,7 +5,7 @@ try
 catch
     addpath(('../../'))
 end
-addpath(genpath('/Users/kekatos/Files/Projects/Github/breach/'))
+addpath(genpath('/Users/kekatos/Files/Projects/Github/breach/')) %modified
 
 %% Initialization
 clear;clc;
@@ -77,7 +77,7 @@ options.coverage.ref_max=[2;1.04;1;0.8;1.04;0.01*Vx];
 % options.coverage.ref_max=[3;4];
 options.coverage.dim=numel(options.coverage.ref_min);
 
-options.coverage.delta_resolution=[1;1.04;0.5;0.8;1.04;0.15]; %supports multi-resolution boxes
+options.coverage.delta_resolution=[0.5;1.04;0.25;0.4;0.52;0.15]; %supports multi-resolution boxes
 if numel(options.coverage.delta_resolution)~=numel(options.coverage.ref_min)
     options.coverage.delta_resolution=options.coverage.delta_resolution*ones(numel(options.coverage.ref_min),1);
 end
@@ -108,9 +108,9 @@ end
 temp_coverage.cells_centers=[];
 temp_coverage.cells_centers=combvec(temp_coverage.cell_values{:});
 for i=1:options.coverage.no_cells_total
-    options.coverage.cells{i}.centers=temp_coverage.cells_centers(:,i)
-    options.coverage.cells{i}.min=temp_coverage.cells_centers(:,i)-options.coverage.delta_resolution/2
-    options.coverage.cells{i}.max=temp_coverage.cells_centers(:,i)+options.coverage.delta_resolution/2
+    options.coverage.cells{i}.centers=temp_coverage.cells_centers(:,i);
+    options.coverage.cells{i}.min=temp_coverage.cells_centers(:,i)-options.coverage.delta_resolution/2;
+    options.coverage.cells{i}.max=temp_coverage.cells_centers(:,i)+options.coverage.delta_resolution/2;
     % rand(1) -> [0,1]
     % rand(1)*2 -> [0,2]
     % rand(1)*3+1 -> [1,4]
@@ -132,13 +132,15 @@ end
 
 clearvars temp temp_coverage
 
-%%
+%% Trace Generation
 
 options.dt=mpcobj.Ts;
 Tsteps=options.T_train/options.dt;
+Tsteps=1;
 data_u=[];
 data_y=[];%zeros(Tsteps,numel(options.coverage.dim));
 for i=1:numel(options.coverage.cells)
+    %fprintf('Trace %i out of %i.\n\n',i, numel(options.coverage.cells))
     X_all= options.coverage.cells{i}.random_value;
     x0=X_all(1:4);
     u0=X_all(5);
@@ -152,7 +154,7 @@ for i=1:numel(options.coverage.cells)
     
     xHistoryMPC = repmat(x0',Tsteps+1,1);
     uHistoryMPC = repmat(u0',Tsteps,1);
-    deltaHistoryMPC=repmat(Vx*rho,Tsteps+1,1);
+    deltaHistoryMPC=repmat(Vx*rho,Tsteps,1);
     % Run a closed-loop simulation of the MPC controller and the plant using the mpcmove function.
     for k = 1:Tsteps
         % Obtain plant output measurements, which correspond to the plant outputs.
@@ -164,9 +166,10 @@ for i=1:numel(options.coverage.cells)
         % Update the state using the control action.
         xHistoryMPC(k+1,:) = (sys.A*xk + sys.B*[uk;Vx*rho])';
         % Update the disturbance
-        deltaHistoryMPC(k+1,:)=0;
+        deltaHistoryMPC(k,:)=Vx*rho;
     end
-    data_MPC = [xHistoryMPC(1:end-1,:),uHistoryMPC,deltaHistoryMPC(1:end-1,:)];
+    data_MPC = [xHistoryMPC(1:end-1,:),uHistoryMPC,deltaHistoryMPC(:,:)];
+%     data_MPC=[xHistoryMPC(1:end-1,:),[zeros(1,4);xHistoryMPC(2:end-1,:)],[zeros(2,4);xHistoryMPC(3:end-1,:)],uHistoryMPC,deltaHistoryMPC(:,:)];
     data_y=[data_y; data_MPC];
     data_u=[data_u; uHistoryMPC];
 end
@@ -277,18 +280,18 @@ numTrainDataRows = size(trainData,1);
 shuffleIdx = randperm(numTrainDataRows);
 shuffledTrainData = trainData(shuffleIdx,:);
 % Reshape the training and validation data into 4-D matrices to be used with trainNetwork.
-numObservations = 6;
+numObservations = size(data_new,2);
 numActions = 1;
 
-trainInput = reshape(shuffledTrainData(:,1:6)',[numObservations 1 1 numTrainDataRows]);
-trainOutput = reshape(shuffledTrainData(:,7)',[numActions 1 1 numTrainDataRows]);
+trainInput = reshape(shuffledTrainData(:,1:size(data_new,2)-1)',[numObservations 1 1 numTrainDataRows]);
+trainOutput = reshape(shuffledTrainData(:,size(data_new,2))',[numActions 1 1 numTrainDataRows]);
 
-validationInput = reshape(validationData(:,1:6)',[numObservations 1 1 numValidationDataRows]);
-validationOutput = reshape(validationData(:,7)',[numActions 1 1 numValidationDataRows]);
+validationInput = reshape(validationData(:,1:1:size(data_new,2)-1)',[numObservations 1 1 numValidationDataRows]);
+validationOutput = reshape(validationData(:,size(data_new,2))',[numActions 1 1 numValidationDataRows]);
 validationCellArray = {validationInput,validationOutput};
 % Reshape the testing data to be used with predict.
-testDataInput = reshape(testData(:,1:6)',[numObservations 1 1 numTestDataRows]);
-testDataOutput = testData(:,7);
+testDataInput = reshape(testData(:,1:1:size(data_new,2)-1)',[numObservations 1 1 numTestDataRows]);
+testDataOutput = testData(:,size(data_new,2));
 
 imitateMPCNetwork = [
     imageInputLayer([numObservations 1 1],'Normalization','none','Name','InputLayer')
@@ -310,7 +313,7 @@ options_new = trainingOptions('adam', ...
     'Verbose',false, ...
     'Plots','training-progress', ...
     'Shuffle','every-epoch', ...
-    'MaxEpochs', 30, ...
+    'MaxEpochs', 100, ...
     'MiniBatchSize',512, ...
     'ValidationData',validationCellArray, ...
     'InitialLearnRate',1e-3, ...
@@ -394,6 +397,8 @@ plotValidationResultsImLKA(sys.Ts,xHistoryDNN,uHistoryDNN,xHistoryMPC,uHistoryMP
 clearvars  xHistoryMPC uHistoryMPC %initialState
 falsif.no_iterations=100;
 no_viol=0;
+data_cex.Y=[];
+data_cex.U=[];
 for i=1:falsif.no_iterations
     fprintf("Running iteration %i out of %i", i, falsif.no_iterations);
     x0 = [4*(rand-0.5),2.08*(rand-0.5),2*(rand-0.5),1.6*(rand-0.5)]';
@@ -442,12 +447,95 @@ for i=1:falsif.no_iterations
     % plotValidationResultsImLKA(sys.Ts,xHistoryDNN,uHistoryDNN,xHistoryMPC,uHistoryMPC);
     % The neural network successfully imitates the behavior of the MPC controller. The vehicle state and control action trajectories for the controller and the deep neural network closely align.
     
-    x=xHistoryDNN(:,1);
-    r = BreachRequirement('alw x[t]>0')
+    %% Code for falsification
+    v=xHistoryDNN(:,1);
+    x=xHistoryDNN(:,3);
+    r = BreachRequirement('alw_[0,2](x[t]>-0.01 & v[t]<0.01)')
     t = 0:sys.Ts:options.T_train;
-    outcome=r.Eval(t, x);
+    %%
+    
+    outcome=r.Eval(t,x,a);
     if outcome<0
         no_viol=no_viol+1;
-        fprintf("The trace %i is violated. There are %i number of violations\n\n",i,no_viol);
+        fprintf("The trace %i is violated. There are %i violations in total\n\n",i,no_viol);
+        data_cex.Y=[data_cex.Y;[xHistoryMPC(1:end-1,:),[zeros(1,4);xHistoryMPC(2:end-1,:)],[zeros(2,4);xHistoryMPC(3:end-1,:)],uHistoryMPC,deltaHistoryMPC(:,:)]];
+        data_cex.U=[data_cex.U; uHistoryMPC];
     end
 end
+
+%% RETRAINING
+
+data_retrain=[[data_y;data_cex.Y],[data_u;data_cex.U]];
+% Divide the input data into training, validation, and testing data. First, determine number of validation data rows based on a given percentage.
+totalRows = size(data_retrain,1);
+data_new=data_retrain;
+validationSplitPercent = 0.1;
+numValidationDataRows = floor(validationSplitPercent*totalRows);
+% Determine the number of test data rows based on a given percentage.
+testSplitPercent = 0.05;
+numTestDataRows = floor(testSplitPercent*totalRows);
+% Randomly extract validation and testing data from the input data set. To do so, first randomly extract enough rows for both data sets.
+randomIdx = randperm(totalRows,numValidationDataRows + numTestDataRows);
+randomData = data_new(randomIdx,:);
+% Divide the random data into validation and testing data.
+validationData = randomData(1:numValidationDataRows,:);
+testData = randomData(numValidationDataRows + 1:end,:);
+% Extract ther remaining rows as training data.
+trainDataIdx = setdiff(1:totalRows,randomIdx);
+trainData = data_new(trainDataIdx,:);
+% Randomize the training data.
+numTrainDataRows = size(trainData,1);
+shuffleIdx = randperm(numTrainDataRows);
+shuffledTrainData = trainData(shuffleIdx,:);
+% Reshape the training and validation data into 4-D matrices to be used with trainNetwork.
+numObservations = size(data.Y,2);
+numActions = 1;
+
+trainInput = reshape(shuffledTrainData(:,1:size(data_new,2)-1)',[numObservations 1 1 numTrainDataRows]);
+trainOutput = reshape(shuffledTrainData(:,size(data_new,2))',[numActions 1 1 numTrainDataRows]);
+
+validationInput = reshape(validationData(:,1:1:size(data_new,2)-1)',[numObservations 1 1 numValidationDataRows]);
+validationOutput = reshape(validationData(:,size(data_new,2))',[numActions 1 1 numValidationDataRows]);
+validationCellArray = {validationInput,validationOutput};
+% Reshape the testing data to be used with predict.
+testDataInput = reshape(testData(:,1:1:size(data_new,2)-1)',[numObservations 1 1 numTestDataRows]);
+testDataOutput = testData(:,size(data_new,2));
+
+imitateMPCNetwork = [
+    imageInputLayer([numObservations 1 1],'Normalization','none','Name','InputLayer')
+    fullyConnectedLayer(45,'Name','Fc1')
+    reluLayer('Name','Relu1')
+    fullyConnectedLayer(45,'Name','Fc2')
+    reluLayer('Name','Relu2')
+    fullyConnectedLayer(45,'Name','Fc3')
+    reluLayer('Name','Relu3')
+    fullyConnectedLayer(numActions,'Name','OutputLayer')
+    tanhLayer('Name','Tanh1')
+    scalingLayer('Name','Scale1','Scale',1.04)
+    regressionLayer('Name','RegressionOutput')
+    ];
+
+plot(layerGraph(imitateMPCNetwork))
+
+options_new = trainingOptions('adam', ...
+    'Verbose',false, ...
+    'Plots','training-progress', ...
+    'Shuffle','every-epoch', ...
+    'MaxEpochs', 100, ...
+    'MiniBatchSize',512, ...
+    'ValidationData',validationCellArray, ...
+    'InitialLearnRate',1e-3, ...
+    'GradientThresholdMethod','absolute-value', ...
+    'ExecutionEnvironment','cpu', ...
+    'GradientThreshold',10, ...
+    'Epsilon',1e-8);
+
+% Training
+imitateMPCNetObj = trainNetwork(trainInput,trainOutput,imitateMPCNetwork,options_new);
+
+%Testing
+predictedTestDataOutput = predict(imitateMPCNetObj,testDataInput);
+
+% Calculate the root mean-squared error between the network output and the testing data.
+testRMSE = sqrt(mean((testDataOutput - predictedTestDataOutput).^2));
+fprintf('Test Data RMSE = %d\n', testRMSE);
