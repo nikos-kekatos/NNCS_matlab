@@ -1,4 +1,4 @@
-function corner_case_generation()
+function Data=corner_case_generation()
 
 % input data is generated from the grid formed by changing the values of
 % lateral velocity, yaw angle rate, lateral deviation, relative yaw angle,
