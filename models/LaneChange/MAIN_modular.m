@@ -87,7 +87,7 @@ while i_f<=falsif.iterations_max && ~stop
     fprintf('\nThis is iteration %i of the falsification-retraining loop.\n\n',i_f)
     disp('===========================')
     no_viol{i_f}=0;data_cex_y=[]; data_cex_u=[];
-    no_viol_mpc{i_f}=0;
+    no_viol_mpc{i_f}=0;cex_values=cell(falsif.iterations_max,falsif.no_iterations)
     for i=1:falsif.no_iterations
         fprintf("\n\n-----Running iteration %i out of %i.----- \n", i, falsif.no_iterations);
         
@@ -127,6 +127,5 @@ while i_f<=falsif.iterations_max && ~stop
         run('retraining_code.m')
         run('rechecking_cex.m')
     end
-    
     i_f=i_f+1;
 end

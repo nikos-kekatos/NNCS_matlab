@@ -1,7 +1,9 @@
-disp('\n===========================')
+disp('===========================')
 disp(' CEX Elimination')
-CEX=cex_values(~cellfun('isempty',cex_values));
+cex_temp=cex_values(i_f,:);
+CEX=cex_temp(~cellfun('isempty',cex_temp));
 viol_cex_dnn=zeros(length(CEX),1);
+outcome_cex_dnn=zeros(length(CEX),1);
 for i=1:numel(CEX)
     
     %% Falsification with random points
