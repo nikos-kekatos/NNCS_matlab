@@ -4,12 +4,13 @@ cex_temp=cex_values(i_f,:);
 CEX=cex_temp(~cellfun('isempty',cex_temp));
 viol_cex_dnn=zeros(length(CEX),1);
 outcome_cex_dnn=zeros(length(CEX),1);
+v_dnn=[];x_dnn=[];x0=[];u0=[];rho=[];r_dnn_cex=[];Var_dnn=[];
 for i=1:numel(CEX)
     
     %% Falsification with random points
-    x0 = CEX{i}.x0
-    u0 = CEX{i}.u0
-    rho = CEX{i}.rho
+    x0 = CEX{i}.x0;
+    u0 = CEX{i}.u0;
+    rho = CEX{i}.rho;
     
     run('simulation_traces_dnn_mpc.m')
     

@@ -1,3 +1,9 @@
+
+clear imitateMPCNetObj trainInput trainOutput imitateMPCNetwork options_new...
+    predictedTestDataOutput
+
+
+
 %% Note that Data is 9-dimensional while xHistory is 4-dim and the NN input
 %% is 6-dim.
 
@@ -18,7 +24,7 @@ randomData = data_retrain(randomIdx,:);
 % Divide the random data into validation and testing data.
 validationData = randomData(1:numValidationDataRows,:);
 testData = randomData(numValidationDataRows + 1:end,:);
-% Extract ther remaining rows as training data.
+% Extract the remaining rows as training data.
 trainDataIdx = setdiff(1:totalRows,randomIdx);
 trainData = data_retrain(trainDataIdx,:);
 % Randomize the training data.
@@ -32,11 +38,11 @@ numActions = 1;
 trainInput = reshape(shuffledTrainData(:,1:size(data_retrain,2)-1)',[numObservations 1 1 numTrainDataRows]);
 trainOutput = reshape(shuffledTrainData(:,size(data_retrain,2))',[numActions 1 1 numTrainDataRows]);
 
-validationInput = reshape(validationData(:,1:1:size(data_retrain,2)-1)',[numObservations 1 1 numValidationDataRows]);
+validationInput = reshape(validationData(:,1:size(data_retrain,2)-1)',[numObservations 1 1 numValidationDataRows]);
 validationOutput = reshape(validationData(:,size(data_retrain,2))',[numActions 1 1 numValidationDataRows]);
 validationCellArray = {validationInput,validationOutput};
 % Reshape the testing data to be used with predict.
-testDataInput = reshape(testData(:,1:1:size(data_retrain,2)-1)',[numObservations 1 1 numTestDataRows]);
+testDataInput = reshape(testData(:,1:size(data_retrain,2)-1)',[numObservations 1 1 numTestDataRows]);
 testDataOutput = testData(:,size(data_retrain,2));
 
 imitateMPCNetwork = [

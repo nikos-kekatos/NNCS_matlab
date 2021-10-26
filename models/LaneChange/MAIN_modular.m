@@ -66,13 +66,13 @@ clear Data_all no_viol no_viol_mpc outcome_dnn viol_dnn viol_mpc cex_values
 % (falsif.no_iterations=100;) and evaluate a property with Breach.
 
 % Traces or Points (for retraining)
-choice_retrain=1; % 1 for traces, 2 for points
+choice_retrain=2; % 1 for traces, 2 for points
 choice_plot_cex=1;
 
 
 % Maximum number of falsification-retraining loops
-falsif.iterations_max=3;
-falsif.no_iterations=10;
+falsif.iterations_max=4;
+falsif.no_iterations=100;
 
 stop=0;
 i_f=1;
@@ -87,7 +87,7 @@ while i_f<=falsif.iterations_max && ~stop
     fprintf('\nThis is iteration %i of the falsification-retraining loop.\n\n',i_f)
     disp('===========================')
     no_viol{i_f}=0;data_cex_y=[]; data_cex_u=[];
-    no_viol_mpc{i_f}=0;cex_values=cell(falsif.iterations_max,falsif.no_iterations)
+    no_viol_mpc{i_f}=0;cex_values=cell(falsif.iterations_max,falsif.no_iterations);
     for i=1:falsif.no_iterations
         fprintf("\n\n-----Running iteration %i out of %i.----- \n", i, falsif.no_iterations);
         
