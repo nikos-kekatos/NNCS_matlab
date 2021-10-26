@@ -9,6 +9,11 @@
    copied code from Mathworks to create a plant and controller object
    >>run('lane_change_modeling.m')
 
+2b. Evaluate STL property on nominal control
+    ---------------------
+    We run multiple iterations to evaluate whether the nominal controller always satisfies the given 
+    property.
+
 3. Data Generation
    ------------------
    4 ways to get the data from MPC controller

@@ -9,6 +9,12 @@ InitBreach;
 
 run('lane_change_modeling.m')
 
+%% Evaluate STL nominal control
+
+no_attempts=1000; % 1 traces, 1 sec
+
+% run('evaluate_nominal_stl.m')
+
 %% DATA GENERATION (not traces but 1-step computations)
 
 % Output u: Steering angle computed by MPC controller
@@ -102,8 +108,8 @@ while i_f<=falsif.iterations_max && ~stop
         
         v_dnn=xHistoryDNN(:,1);v_mpc=xHistoryMPC(:,1);
         x_dnn=xHistoryDNN(:,3);x_mpc=xHistoryMPC(:,3);
-        r_dnn = BreachRequirement('alw_[2,3](x_dnn[t]>-0.5 and x_dnn[t]<0.5 and v_dnn[t]>-0.6 and v_dnn[t]<0.6)');
-        r_mpc = BreachRequirement('alw_[2,3](x_mpc[t]>-0.5 and x_mpc[t]<0.5 and v_mpc[t]>-0.6 and v_mpc[t]<0.6)');
+        r_dnn = BreachRequirement('alw_[2.1,3](x_dnn[t]>-0.55 and x_dnn[t]<0.55 and v_dnn[t]>-0.65 and v_dnn[t]<0.65)');
+        r_mpc = BreachRequirement('alw_[2.1,3](x_mpc[t]>-0.55 and x_mpc[t]<0.55 and v_mpc[t]>-0.65 and v_mpc[t]<0.65)');
         run('stl_evaluation.m')
 
         if outcome_dnn{i_f,i}<=0            
