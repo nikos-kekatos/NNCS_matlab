@@ -7,7 +7,7 @@ function plotValidationResultsImLKA(Ts,xDNN,uDNN,xMPC,uMPC)
 
 %%
 % Plot the state trajectories
-figure(1)
+figure
 Tx  = ((0:(size(xDNN,1))-1)*Ts)';
 states = {'Lateral Velocity (m/s)','Yaw Angle Rate (deg/s)',...
     'Lateral Deviation (m)','Relative Yaw Angle (deg)'};
@@ -23,7 +23,7 @@ end
 %%
 % Plot the control action trajectories.
 Tu  = ((0:(size(uDNN,1))-1)*Ts)';
-figure(2)
+figure
 stairs(Tu,uDNN);
 title(sprintf('Steering angle (deg)'));
 xlabel('Time (s)')

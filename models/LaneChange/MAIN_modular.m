@@ -25,7 +25,7 @@ switch input_choice
     case 1
         load('InputDataFileImLKA.mat'); % The data in InputDataFileImLKA.mat was created by computing the MPC control action
         % for randomly generated states, previous control actions, and measured disturbances.
-        data=Data;
+        data=Data;clear Data;
     case 2
         no_points=1e5;
         data=random_points_generation(no_points);
@@ -61,15 +61,18 @@ run('closed_loop_analysis.m')
 %% FALSIFICATION - RETRAINING LOOP
 %% Falsification with Breach
 
+clear Data_all no_viol no_viol_mpc outcome_dnn viol_dnn viol_mpc cex_values
 % Note that we randomly sample the input space, generate multiple traces
 % (falsif.no_iterations=100;) and evaluate a property with Breach.
 
 % Traces or Points (for retraining)
-choice_retrain=2; % 1 for traces, 2 for points
+choice_retrain=1; % 1 for traces, 2 for points
+choice_plot_cex=1;
+
 
 % Maximum number of falsification-retraining loops
 falsif.iterations_max=3;
-falsif.no_iterations=100;
+falsif.no_iterations=10;
 
 stop=0;
 i_f=1;
@@ -79,12 +82,14 @@ Data_all{1,1}=data_original;
 no_viol=cell(1,falsif.iterations_max);
 
 while i_f<=falsif.iterations_max && ~stop
-    
+    disp(' ')
+    disp('===========================')
     fprintf('\nThis is iteration %i of the falsification-retraining loop.\n\n',i_f)
+    disp('===========================')
     no_viol{i_f}=0;data_cex_y=[]; data_cex_u=[];
-    
+    no_viol_mpc{i_f}=0;
     for i=1:falsif.no_iterations
-        fprintf("Running iteration %i out of %i. \n", i, falsif.no_iterations);
+        fprintf("\n\n-----Running iteration %i out of %i.----- \n", i, falsif.no_iterations);
         
         %% Falsification with random points
         x0 = [4*(rand-0.5),2.08*(rand-0.5),2*(rand-0.5),1.6*(rand-0.5)]';
@@ -97,23 +102,14 @@ while i_f<=falsif.iterations_max && ~stop
         
         v_dnn=xHistoryDNN(:,1);v_mpc=xHistoryMPC(:,1);
         x_dnn=xHistoryDNN(:,3);x_mpc=xHistoryMPC(:,3);
-        r_dnn = BreachRequirement('alw_[2,3](x_dnn[t]>-0.1 & x_dnn[t]<0.1 & v_dnn[t]>-0.1 &v_dnn[t]<0.1)');
-        r_mpc = BreachRequirement('alw_[2,3](x_mpc[t]>-0.1 & x_mpc[t]<0.1 & v_mpc[t]>-0.1 &v_mpc[t]<0.1)');
+        r_dnn = BreachRequirement('alw_[2,3](x_dnn[t]>-0.5 and x_dnn[t]<0.5 and v_dnn[t]>-0.6 and v_dnn[t]<0.6)');
+        r_mpc = BreachRequirement('alw_[2,3](x_mpc[t]>-0.5 and x_mpc[t]<0.5 and v_mpc[t]>-0.6 and v_mpc[t]<0.6)');
+        run('stl_evaluation.m')
 
-        t = 0:sys.Ts:3;
-        Var_dnn=[v_dnn,x_dnn]';
-        Var_mpc=[v_mpc,x_mpc]';
-
-        
-        outcome_dnn{i_f}=r.Eval(t,Var_dnn);
-        outcome_mpc{i_f}=r.Eval(t,Var_mpc);
-
-        if outcome_dnn{i_f}<0
-            no_viol{i_f}=no_viol{i_f}+1;
-            fprintf("The trace %i is violated. There are %i violations in total.\n\n",i,no_viol{i_f});
+        if outcome_dnn{i_f,i}<=0            
             if choice_retrain==1 % ENTIRE TRACE
-                error("Need to complete this code")
-                data_cex_y=[data_cex_y;[xHistoryMPC(1:end-1,:),uHistoryMPC]];
+                %error("Need to complete this code")
+                data_cex_y=[data_cex_y;[xHistoryMPC(1:end-1,:),uHistoryMPC,Vx*rho*ones(length(uHistoryMPC),1)]];
                 data_cex_u=[data_cex_u; uHistoryMPC];
             elseif choice_retrain==2 % SINGLE POINT
                 data_cex_y=[data_cex_y;[xHistoryMPC(1,:),uHistoryMPC(1,:),Vx*rho]];
@@ -122,12 +118,14 @@ while i_f<=falsif.iterations_max && ~stop
             end
         end
     end
+    fprintf('==========\n\nIn iteration %i, there are %i CEX. The nominal controller has %i CEX.\n\n',i_f,no_viol{i_f},no_viol_mpc{i_f});
     if no_viol{i_f}==0
         stop=1;
         disp('There is no CEX. The loop terminated.')
         break
     else
         run('retraining_code.m')
+        run('rechecking_cex.m')
     end
     
     i_f=i_f+1;
