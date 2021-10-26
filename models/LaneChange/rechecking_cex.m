@@ -1,7 +1,7 @@
-disp('===========================')
+disp('\n===========================')
 disp(' CEX Elimination')
 CEX=cex_values(~cellfun('isempty',cex_values));
-viol_cex_dnn=[];
+viol_cex_dnn=zeros(length(CEX),1);
 for i=1:numel(CEX)
     
     %% Falsification with random points
@@ -25,7 +25,7 @@ for i=1:numel(CEX)
     outcome_cex_dnn(i)=r_dnn_cex.Eval(t,Var_dnn);
     %         outcome_mpc{i_f,i}=r_mpc.Eval(t,Var_mpc);
     if outcome_cex_dnn(i)<=0
-        viol_cex_dn(i)=1;
+        viol_cex_dnn(i)=1;
     end
 end
-fprintf('\n\n After rechecking, there are still %i CEX out of the original %i.\n\n',sum(viol_cex_dn),numel(CEX))
+fprintf('\n\n After rechecking, there are still %i CEX out of the original %i.\n\n',sum(viol_cex_dnn),numel(CEX))

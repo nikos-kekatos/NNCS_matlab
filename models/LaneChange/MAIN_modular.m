@@ -109,7 +109,7 @@ while i_f<=falsif.iterations_max && ~stop
         if outcome_dnn{i_f,i}<=0            
             if choice_retrain==1 % ENTIRE TRACE
                 %error("Need to complete this code")
-                data_cex_y=[data_cex_y;[xHistoryMPC(1:end-1,:),uHistoryMPC,Vx*rho*ones(length(uHistoryMPC),1)]];
+                data_cex_y=[data_cex_y;[xHistoryMPC(1:end-1,:),[u0;uHistoryMPC(1:end-1)],Vx*rho*ones(length(uHistoryMPC),1)]];
                 data_cex_u=[data_cex_u; uHistoryMPC];
             elseif choice_retrain==2 % SINGLE POINT
                 data_cex_y=[data_cex_y;[xHistoryMPC(1,:),uHistoryMPC(1,:),Vx*rho]];
