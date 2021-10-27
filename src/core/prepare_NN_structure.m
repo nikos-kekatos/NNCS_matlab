@@ -178,7 +178,7 @@ if ~options.trimming_steady_state && ~options.trimming && ~options.preprocessing
 no_points=options.T_train/options.dt;
 no_traces=size(in,2)/no_points;
 end
-if options.trimming_steady_state
+if options.trimming_steady_state||options.trimming
     no_traces=options.no_traces
     no_points=size(data.REF_trim,1)/options.no_traces
 end
