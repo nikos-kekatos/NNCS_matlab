@@ -7,7 +7,7 @@ outcome_cex_dnn=zeros(length(CEX),1);
 v_dnn=[];x_dnn=[];x0=[];u0=[];rho=[];r_dnn_cex=[];Var_dnn=[];
 for i=1:numel(CEX)
     
-    %% Falsification with random points
+    %% Falsification with previous points
     x0 = CEX{i}.x0;
     u0 = CEX{i}.u0;
     rho = CEX{i}.rho;
@@ -18,7 +18,7 @@ for i=1:numel(CEX)
     
     v_dnn=xHistoryDNN(:,1);v_mpc=xHistoryMPC(:,1);
     x_dnn=xHistoryDNN(:,3);x_mpc=xHistoryMPC(:,3);
-    r_dnn_cex = BreachRequirement('alw_[2,3](x_dnn[t]>-0.5 and x_dnn[t]<0.5 and v_dnn[t]>-0.5 and v_dnn[t]<0.5)');
+    r_dnn_cex = BreachRequirement('alw_[2.3,3](x_dnn[t]>-0.55 and x_dnn[t]<0.55 and v_dnn[t]>-0.65 and v_dnn[t]<0.65)');
     %         r_mpc = BreachRequirement('alw_[2,3](x_mpc[t]>-0.5 and x_mpc[t]<0.5 and v_mpc[t]>-0.5 and v_mpc[t]<0.5)');
     
     %         t = 0:sys.Ts:3;

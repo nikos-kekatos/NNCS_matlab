@@ -25,7 +25,7 @@ no_attempts=1000; % 1 traces, 1 sec
 % 3: corner cases as an input (Mathworks script),
 % 4: coverage (our code -- Inzemam)
 
-input_choice=1;
+input_choice=4;
 
 switch input_choice
     case 1
@@ -40,7 +40,8 @@ switch input_choice
     case 4
         % ref_min=[-2;-1.04;-1;-0.8;-1.04;-0.01*Vx];
         % ref_max=[2;1.04;1;0.8;1.04;0.01*Vx];
-        delta_resolution=[1;1.04/2;0.5;0.4;0.52;0.15/2];
+        delta_resolution=[0.5;0.52;0.25;0.4;0.52;0.15/2];
+
         %         delta_resolution=[0.25;0.72;0.25;0.2;0.26;0.15];
         if exist('delta_resolution','var')
             data=coverage_generation(delta_resolution);
@@ -72,12 +73,12 @@ clear Data_all no_viol no_viol_mpc outcome_dnn viol_dnn viol_mpc cex_values
 % (falsif.no_iterations=100;) and evaluate a property with Breach.
 
 % Traces or Points (for retraining)
-choice_retrain=2; % 1 for traces, 2 for points
-choice_plot_cex=1;
+choice_retrain=1; % 1 for traces, 2 for points
+choice_plot_cex=0;
 
 
 % Maximum number of falsification-retraining loops
-falsif.iterations_max=4;
+falsif.iterations_max=3;
 falsif.no_iterations=100;
 
 stop=0;
@@ -99,6 +100,8 @@ while i_f<=falsif.iterations_max && ~stop
         
         %% Falsification with random points
         x0 = [4*(rand-0.5),2.08*(rand-0.5),2*(rand-0.5),1.6*(rand-0.5)]';
+%         x0 = [12*(rand-0.5),8.08*(rand-0.5),8*(rand-0.5),1.6*(rand-0.5)]';
+
         u0 = 2.08*(rand-0.5); % Steering angle: range (-60,60) deg
         rho = 0.02*(rand-0.5); % Curvature: range (-0.01,0.01), minimum road radius 100m.
         
@@ -108,8 +111,8 @@ while i_f<=falsif.iterations_max && ~stop
         
         v_dnn=xHistoryDNN(:,1);v_mpc=xHistoryMPC(:,1);
         x_dnn=xHistoryDNN(:,3);x_mpc=xHistoryMPC(:,3);
-        r_dnn = BreachRequirement('alw_[2.1,3](x_dnn[t]>-0.55 and x_dnn[t]<0.55 and v_dnn[t]>-0.65 and v_dnn[t]<0.65)');
-        r_mpc = BreachRequirement('alw_[2.1,3](x_mpc[t]>-0.55 and x_mpc[t]<0.55 and v_mpc[t]>-0.65 and v_mpc[t]<0.65)');
+        r_dnn = BreachRequirement('alw_[2.3,3](x_dnn[t]>-0.55 and x_dnn[t]<0.55 and v_dnn[t]>-0.65 and v_dnn[t]<0.65)');
+        r_mpc = BreachRequirement('alw_[2.3,3](x_mpc[t]>-0.55 and x_mpc[t]<0.55 and v_mpc[t]>-0.65 and v_mpc[t]<0.65)');
         run('stl_evaluation.m')
 
         if outcome_dnn{i_f,i}<=0            

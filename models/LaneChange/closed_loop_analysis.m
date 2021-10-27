@@ -6,7 +6,7 @@
 % relative yaw angle  : range (-45,45) deg
 % last steering angle (control variable)  : range (-60,60) deg
 % measured disturbance (road yaw rate: longitudinal velocity * curvature ()) : range (-0.01,0.01), minimum road radius: 100 m.
-rng(5e7)
+%rng(5e7)
 [x0,u0,rho] = generateRandomDataImLKA(data);
 % Set the initial plant state and control action in the mpcstate object.
 initialState.Plant = x0;

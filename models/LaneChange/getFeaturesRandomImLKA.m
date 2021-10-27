@@ -10,6 +10,7 @@ function [x0,u0,rho] = getFeaturesRandomImLKA
 % e1 range : (-1,1) m
 % e2 range : (-45,45) deg
 x0 = [4*(rand-0.5),2.08*(rand-0.5),2*(rand-0.5),1.6*(rand-0.5)]';
+%  x0 = [12*(rand-0.5),8.08*(rand-0.5),8*(rand-0.5),1.6*(rand-0.5)]';
 
 %%
 % Steering angle: range (-60,60) deg
