@@ -11,7 +11,7 @@ run('lane_change_modeling.m')
 
 %% Evaluate STL nominal control
 
-no_attempts=1000; % 1 traces, 1 sec
+no_attempts=2000; % 1 traces, 1 sec. Tested 2000 traces.
 
 % run('evaluate_nominal_stl.m')
 
@@ -78,8 +78,8 @@ choice_plot_cex=0;
 
 
 % Maximum number of falsification-retraining loops
-falsif.iterations_max=3;
-falsif.no_iterations=100;
+falsif.iterations_max=5;
+falsif.no_iterations=300;
 
 stop=0;
 i_f=1;
