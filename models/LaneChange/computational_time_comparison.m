@@ -11,6 +11,7 @@ run('lane_change_modeling.m')
 load('nn_elimin.mat')
 %% Simulation time Comparison
 
+Tsteps=30;
 no_traces=100;
 timer_mpc=zeros(1,no_traces);
 timer_dnn=zeros(1,no_traces);
@@ -69,5 +70,5 @@ for i=1:no_traces
     
 end
 
-fprintf('For one trace of the MPC, the minimum computational time is %.3f, the maximum time is %.3f, and the average is %.3f',min(timer_mpc),max(timer_mpc),mean(timer_mpc));
-fprintf('For one trace of the DNN, the minimum computational time is %.3f, the maximum time is %.3f, and the average is %.3f',min(timer_mpc),max(timer_dnn),mean(timer_dnn));
+fprintf('\nFor one trace of the MPC, the minimum computational time is %.3f, the maximum time is %.3f, and the average is %.3f.\n',min(timer_mpc),max(timer_mpc),mean(timer_mpc));
+fprintf('\nFor one trace of the DNN, the minimum computational time is %.3f, the maximum time is %.3f, and the average is %.3f.\n',min(timer_mpc),max(timer_dnn),mean(timer_dnn));
