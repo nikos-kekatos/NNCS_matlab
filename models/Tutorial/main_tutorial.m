@@ -317,7 +317,7 @@ options.ref_Ts=20;
 options.sim_ref=1.2;
 options.ref_min=0;
 options.ref_max=2;
-options.sim_cov=options.coverage.cells{5}.random_value;
+options.sim_cov=options.coverage.cells{3}.random_value;
 % options.sim_cov=[0.5; 0.25]
 
 options.u_index_plot=1;
