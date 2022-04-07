@@ -34,6 +34,7 @@ try
     run('/startup_nncs.m')
 end
 rmpath(genpath('/Users/kekatos/Files/Projects/Gitlab/Matlab_Python_Interfacing/NNCS_matlab/modules/NIPS_submission/'))
+addpath(genpath('/Users/kekatos/Files/Projects/Github/breach'))
 %% 1. Initialization
 clear;close all;clc; bdclose all;
 try
