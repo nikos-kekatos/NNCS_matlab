@@ -25,6 +25,7 @@ if options.plotting_sim
     title('Random Simulation Trace')
     % we need to delete last element from all Y_new, U_new and REF_new
 end
+if options.reference_type~=1
 if mod(options.T_train,options.ref_Ts)==0
     if options.debug
         fprintf('Last point of all traces will be deleted.\n');
@@ -38,6 +39,7 @@ if mod(options.T_train,options.ref_Ts)==0
         REF_struct(i).signals.values=REF_struct(i).signals.values(1:end-1,:);
         
     end
+end
 end
 %% Elements mismatch -- problem with reference structure
 % Simulink only updates the value of Ref when it changes which happens

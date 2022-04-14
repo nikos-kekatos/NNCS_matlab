@@ -2,6 +2,9 @@ function [ref,y,u,options,y_nn,u_nn,J_current] = sim_SLX(model_name,options)
 % sim_SLX simulate once the Simulink model
 %   This is to resolve problems with references between base and local
 %   workspaces.
+if ~isfield(options,'model')
+    options.model=0;
+end
 if options.model==4
     load  e4_PIDGainSchedExample
 elseif options.model==5
@@ -26,6 +29,9 @@ elseif options.model==9
 end
 get_param(Simulink.allBlockDiagrams(),'Name');
 load_system(model_name)
+if ~isfield(options,'combination')
+    options.combination=0;
+end
 if options.combination
     options.workspace = simset('SrcWorkspace','current');
     

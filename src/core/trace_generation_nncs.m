@@ -14,9 +14,13 @@ Y_struct=[];
 t_comput=[];
 
 if options.reference_type==1 % constant reference
-    simin_all_constant=combvec(options.simin_ref,options.simin_x0);
+    try
+%         simin_all_constant=combvec(options.simin_ref,options.simin_x0);
+%     catch
+        simin_all_constant=mycombvec(options.simin_ref,options.simin_x0);
+    end
 elseif options.reference_type==2 % time-varying
-    simin_all_varying=repmat(options.simin_x0,[1 options.no_ref]);
+        simin_all_varying=repmat(options.simin_x0,[1 options.no_ref])
 elseif options.reference_type==3 % coverage
     sim_cov_ref=[];
     for i_cov=1:options.coverage.no_traces_ref
@@ -26,7 +30,11 @@ elseif options.reference_type==3 % coverage
             sim_cov_ref=[sim_cov_ref,options.coverage.cells{i_cov}.centers];
         end
     end
-    simin_all_coverage=combvec(sim_cov_ref,options.simin_x0);
+    try
+        simin_all_coverage=combvec(sim_cov_ref,options.simin_x0);
+    catch
+        simin_all_coverage=combvec(sim_cov_ref,options.simin_x0);
+    end
 end
 
 if options.reference_type~=4
