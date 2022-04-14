@@ -15,8 +15,8 @@ t_comput=[];
 
 if options.reference_type==1 % constant reference
     try
-%         simin_all_constant=combvec(options.simin_ref,options.simin_x0);
-%     catch
+        simin_all_constant=combvec(options.simin_ref,options.simin_x0);
+    catch
         simin_all_constant=mycombvec(options.simin_ref,options.simin_x0);
     end
 elseif options.reference_type==2 % time-varying
