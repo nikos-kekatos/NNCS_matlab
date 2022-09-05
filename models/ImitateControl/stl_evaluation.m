@@ -1,7 +1,7 @@
 t = 0:nlobj.Ts:Tf;
 t = [t (t(:,end)+nlobj.Ts)];
-Var_dnn=[x_dnn,y_dnn,theta_dnn]';
-Var_mpc=[x_mpc,y_mpc,theta_mpc]';
+Var_dnn=[theta_dnn,x_dnn,y_dnn]';
+Var_mpc=[theta_mpc,x_mpc,y_mpc]';
 % Var_dnn=[x_dnn,theta_dnn]';
 % Var_mpc=[x_mpc,theta_mpc]';
 

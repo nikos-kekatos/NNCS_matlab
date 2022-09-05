@@ -21,7 +21,7 @@ no_attempts=2000; % 1 traces, 1 sec. Tested 2000 traces.
 % 2: generation with random inputs INVALID
 % 3: corner cases as an input INVALID
 % 4: coverage OK
-% 5: coverage pre computed 438 points
+% 5: coverage pre computed 432 points
 
 input_choice=5;
 
@@ -62,6 +62,7 @@ run('data_splitting.m')
 
 % this code uses the "new" training tool from mathworks.
 run('create_neural_network.m')
+%%% INCORRECT number of layers
 
 %% CLOSED-LOOP ANALYSIS (single trace with random initial inputs)
 %% Compare Trained Network with MPC Controller
@@ -122,7 +123,7 @@ while i_f<=falsif.iterations_max && ~stop
         % need to change this part also for the current usecase
         if outcome_dnn{i_f,i}<=0            
             if choice_retrain==1 % ENTIRE TRACE
-                %error("Need to complete this code")
+                %%% ΝΕΕD to check this part again
                 data_cex_y=[data_cex_y;[xHistoryMPC(1:end-1,:),[u0';uHistoryMPC(1:end-1,:)]]];
                 data_cex_u=[data_cex_u; uHistoryMPC];
             elseif choice_retrain==2 % SINGLE POINT

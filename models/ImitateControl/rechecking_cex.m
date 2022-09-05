@@ -31,12 +31,12 @@ for i=1:numel(CEX)
         x_dnn = xHistoryDNN(:,1); %x_mpc = xHistoryMPC(:,1);
         y_dnn = xHistoryDNN(:,2); %y_mpc = xHistoryMPC(:,2);
         theta_dnn = xHistoryDNN(:, 3);% theta_mpc = xHistoryMPC(:,3);
-        r_dnn_cex = BreachRequirement('alw_[8,15](x_dnn[t]>-0.2 and x_dnn[t]<0.2 and y_dnn[t]>-0.2 and y_dnn[t]<0.2 and theta_dnn[t] > -0.2 and theta_dnn[t] < 0.2)');
+        r_dnn_cex = BreachRequirement('alw_[10,15](x_dnn[t]>-0.2 and x_dnn[t]<0.2 and y_dnn[t]>-0.2 and y_dnn[t]<0.2 and theta_dnn[t] > -0.2 and theta_dnn[t] < 0.2)');
 %         r_mpc = BreachRequirement('alw_[8,15](x_mpc[t]>-0.2 and x_mpc[t]<0.2 and y_mpc[t]>-0.2 and y_mpc[t]<0.2 and theta_mpc[t] > -0.2 and theta_mpc[t] < 0.2)');
 %         run('stl_evaluation.m')
     t = 0:nlobj.Ts:Tf;
     t = [t (t(:,end)+nlobj.Ts)];
-    Var_dnn=[x_dnn,y_dnn,theta_dnn]';
+    Var_dnn=[theta_dnn,x_dnn,y_dnn]';
     outcome_cex_dnn(i)=r_dnn_cex.Eval(t,Var_dnn);
 
     %         outcome_mpc{i_f,i}=r_mpc.Eval(t,Var_mpc);
