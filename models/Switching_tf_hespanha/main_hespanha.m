@@ -171,20 +171,9 @@ if model==6
 end
 run_simulation_nncs(options,file_name,1);
 options.input_choice=4
-%% 10. Data matching (analysis w/ training data)
 
-if options.reference_type~=3
-    warning('It is not possible to perform data matching');
-else
-    if options.plotting_sim
-        plot_coverage_boxes(options,1);
-    end
-    options.testing.plotting=0;
-    options.testing.train_data=0;% 0: for centers, 1: random points
-    if options.test_dataMatching
-        [testing,options]=test_coverage(options,model_name);
-    end
-end
+disp('falsification not done')
+stop
 %% 10B. Matching test against STL property
 
 falsification_options_quad;
