@@ -62,10 +62,10 @@ end
 
 model=7;
 SLX_model='tutorial_switched_nominal';
-load_system(SLX_model)
+%load_system(SLX_model)
 
 % Uncomment next line if you want to open the model
-% open(SLX_model)
+ open(SLX_model)
 
 timer_trace_gen=tic; % clock for trace generation
 

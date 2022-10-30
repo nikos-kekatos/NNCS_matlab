@@ -311,7 +311,7 @@ else
 end
 %% 10B. testing on training data
 file_name=options.SLX_model;
-falsification_options_quad;
+falsification_all_options;
 options.input_choice=4;
 [original_rob,In_Original] = check_cex_all_data(data,falsif,file_name,options);
 
@@ -492,7 +492,7 @@ while i_f<=falsif.iterations_max && ~stop
         %%% ----------------------------------------------- %%
         %
         options.input_choice=3
-        num_cex=[];options.plotting_sim=1;
+        num_cex=2;options.plotting_sim=1;
         run_and_plot_cex_nncs(options,file_name,inputs_cex,num_cex); %4th input number of counterexamples
         options.input_choice=4;
     end
@@ -606,7 +606,7 @@ elseif model==4
     options.ref_index_plot=1;
 end
 
-run_simulation_nncs(options,model_name,1) %3rd input is true for counterexamples
+run_simulation_nncs(options,file_name,2) %3rd input is true for counterexamples
 
 %{
 %% Test multiple reference traces

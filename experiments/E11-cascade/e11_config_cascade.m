@@ -12,7 +12,7 @@ options.y_index_plot=1;
 options.u_index_plot=1;
 
 % Time horizon of simulation in Simulink
-options.T_train=20; 
+options.T_train=15; 
 options.SLX_model=SLX_model;
 % Choose reference type: (1) for constant, (2) for time varying and (3) for
 % coverage and (4) for Breach
@@ -39,7 +39,6 @@ if options.reference_type==4
     options.breach_ref_max=[0.3 0.1] %0.3];
     options.breach_segments=2;
     options.ref_Ts=options.T_train/options.breach_segments;
-
 end
 % end of Breach additions
 % CONSTANT references (Specify the values here)
@@ -77,10 +76,10 @@ end
 options.testing.train_data=0; %0 for testing centers, 1 for testing training data
 if options.reference_type==3
     options.coverage.m=2;
-    options.ref_Ts=10;
-    options.coverage.ref_min=150; % o
-    options.coverage.ref_max=200; % 0.3
-    options.coverage.delta_resolution=10; %0.1
+    options.ref_Ts=7.5;
+    options.coverage.ref_min=15; % o
+    options.coverage.ref_max=20; % 0.3
+    options.coverage.delta_resolution=1; %0.1
 %     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution-1;
     options.coverage.no_cells_per_dim=(options.coverage.ref_max-options.coverage.ref_min)/options.coverage.delta_resolution;
 
@@ -182,7 +181,7 @@ options.load=0;
 options.error_mean=0;
 options.error_sd=0.01;
 
-options.dt=0.1; % PID sampling time
+options.dt=0.01; % PID sampling time
 % Do NOT change this part
 
 if options.reference_type==1

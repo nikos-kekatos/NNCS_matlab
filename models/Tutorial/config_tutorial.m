@@ -18,6 +18,7 @@ options.SLX_model=SLX_model;
 
 % Choose reference type: (1) for constant, (2) for time varying and (3) for
 % coverage and (4) for Breach
+
 options.dt=0.005;
 options.reference_type=3;
 
@@ -78,7 +79,8 @@ end
 % Coverage- time varying refereces
 options.testing.train_data=0; %0 for testing centers, 1 for testing training data
 if options.reference_type==3
-    options.coverage.m=2;options.breach_segments=options.coverage.m;
+    options.coverage.m=2;
+    options.breach_segments=options.coverage.m;
     options.ref_Ts=20;
     options.coverage.ref_min=0;
     options.coverage.ref_max=1;
