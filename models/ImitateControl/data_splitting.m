@@ -29,7 +29,9 @@ trainOutput = reshape(shuffledTrainData(:,9:10)',[numActions 1 1 numTrainDataRow
 
 validationInput = reshape(validationData(:,1:8)',[numObservations 1 1 numValidationDataRows]);
 validationOutput = reshape(validationData(:,9:10)',[numActions 1 1 numValidationDataRows]);
-validationCellArray = {validationInput,permute(validationOutput, [2,3,1,4])};
+% validationCellArray = {validationInput,permute(validationOutput, [2,3,1,4])};
+validationCellArray = {validationInput,validationOutput};
+
 % Reshape the testing data to be used with predict.
 testDataInput = reshape(testData(:,1:8)',[numObservations 1 1 numTestDataRows]);
 testDataOutput = testData(:,9:10);

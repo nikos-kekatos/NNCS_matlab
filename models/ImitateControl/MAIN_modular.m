@@ -23,14 +23,14 @@ no_attempts=2000; % 1 traces, 1 sec. Tested 2000 traces.
 % 4: coverage OK
 % 5: coverage pre computed 432 points
 
-input_choice=5;
+input_choice=1;
 
 switch input_choice
     case 1
-%         DAggerData = load('DAggerInputDataFileImFlyingRobot.mat'); 
-%         data = DAggerData.data;
-%         existingData = data;
-%         numCol = size(data, 2);
+        DAggerData = load('DAggerInputDataFileImFlyingRobot.mat'); 
+        data = DAggerData.data;
+        existingData = data;
+        numCol = size(data, 2);
     case 2
 %         no_points=1e5;
 %         data=random_points_generation(no_points);
@@ -39,7 +39,7 @@ switch input_choice
     case 4
 %         ref_min=[-4;-4;-3.2;-2;-2;-1; -umax; -umax];
 %         ref_max=[4;4;3.2;2;2;1; umax; umax];
-        delta_resolution=[4;4;3;2;2;2;2;2];
+        delta_resolution=[4;4;3.2;2;2;1;3;3];
 
         %         delta_resolution=[0.25;0.72;0.25;0.2;0.26;0.15];
         if exist('delta_resolution','var')

@@ -20,7 +20,7 @@ p = nlobj.p;
 nloptions = nlmpcmoveopt;
 
 if nargin==0
-    delta=[0.5;1.04;0.25;0.4;0.52;0.15;0.5;0.5]; %supports multi-resolution boxes
+    delta=[4;4;3.2;2;2;1;3;3]; %supports multi-resolution boxes
 end
 
 

@@ -14,6 +14,8 @@ hiddenLayerSize = 256;
 
 imitateMPCNetwork = [
     imageInputLayer([numObservations 1 1],'Normalization','none','Name','observation')
+%     imageInputLayer([ 1 1 numObservations],'Normalization','none','Name','observation')
+
     fullyConnectedLayer(hiddenLayerSize,'Name','fc1')
     reluLayer('Name','relu1')
     fullyConnectedLayer(hiddenLayerSize,'Name','fc2')
@@ -50,8 +52,8 @@ options = trainingOptions('adam', ...
 
 % validationOutput = permute(validationOutput, [2,3,1,4]);
 % Train Network
-imitateMPCNetObj = trainNetwork(trainInput,permute(trainOutput,[2,3,1,4]),imitateMPCNetwork,options);
-% imitateMPCNetObj = trainNetwork(trainInput,trainOutput,imitateMPCNetwork,options);
+% imitateMPCNetObj = trainNetwork(trainInput,permute(trainOutput,[2,3,1,4]),imitateMPCNetwork,options);
+imitateMPCNetObj = trainNetwork(trainInput,trainOutput,imitateMPCNetwork,options);
 % Test Network
 predictedTestDataOutput = predict(imitateMPCNetObj,testDataInput);
 
