@@ -41,7 +41,7 @@ end
 % The models are saved in ./models/
 % SLX_model='models/robotarm/robotarm_PID','robotarm_PID','quad_1_ref','quad_3_ref',
 %'quad_3_ref_6_y','helicopter','watertank_comp_design_mod';
-model=3; % 1: watertank, 2: robotarm, 3: quadcopter
+model=1; % 1: watertank, 2: robotarm, 3: quadcopter
 
 if model==1
     SLX_model='watertank_inport_NN_cex';
@@ -301,6 +301,7 @@ falsif.max_obj_eval=100;
 falsif.max_obj_eval_local=20;
 falsif.seed=100;
 falsif.num_inputs=1;
+falsif.test_previous_nn=1;
 
 falsif.property_file=options.specs_file;
 falsif.property_file='specs_watertank_stabilization.stl';
@@ -406,7 +407,7 @@ while i_f<=falsif.iterations_max && ~stop
     %%% ------------------------------------ %%
     %
     timer_cluster=tic;
-    cluster_all=0;
+    cluster_all=1;
     [data_cex_cluster,idx_cluster]=cluster_and_sample(data_cex,falsif_pb{i_f},falsif,options,cluster_all);
     
     if i_f==1
